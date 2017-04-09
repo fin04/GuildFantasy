@@ -12,6 +12,7 @@ public class MemberEnty {
     public String age;
     public String race;
     public String image;
+    public int imageId;
     public String play_class;
     public String renown_class;
 

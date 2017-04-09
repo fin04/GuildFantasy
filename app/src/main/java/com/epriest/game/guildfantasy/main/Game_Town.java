@@ -33,6 +33,7 @@ public class Game_Town extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-        gameMain.onTouchEvent(event);
+        if(gameMain.onTouchEvent(event))
+            return;
     }
 }

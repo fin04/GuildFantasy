@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
+import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.Scene;
 import com.epriest.game.guildfantasy.enty.ClipImageEnty;
 import com.epriest.game.guildfantasy.enty.ImageEnty;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 
 public class Scene_Home extends Scene {
 
-    private Game_Home gameHome;
+    private Game gameHome;
     private Scene_Main sceneMain;
     private int canvasW, canvasH;
 
@@ -49,7 +50,7 @@ public class Scene_Home extends Scene {
 //
 //    private final int statusBarH = 32;
 
-    public Scene_Home(Game_Home gameHome, Scene_Main sceneMain) {
+    public Scene_Home(Game gameHome, Scene_Main sceneMain) {
         this.gameHome = gameHome;
         this.sceneMain = sceneMain;
     }
@@ -127,7 +128,7 @@ public class Scene_Home extends Scene {
         //manager mode
         drawManager(mCanvas, paint);
 
-        sceneMain.drawMain(mCanvas, paint);
+        sceneMain.drawMain(mCanvas, paint, true);
     }
 
 

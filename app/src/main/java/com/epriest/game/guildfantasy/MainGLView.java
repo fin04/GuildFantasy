@@ -2,7 +2,6 @@ package com.epriest.game.guildfantasy;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -13,18 +12,19 @@ import android.view.MotionEvent;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.graphics.GLView;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
-import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.Scene;
 import com.epriest.game.CanvasGL.util.gameLog;
 import com.epriest.game.guildfantasy.main.Game_Home;
 import com.epriest.game.guildfantasy.main.Game_Main;
-import com.epriest.game.guildfantasy.main.Game_Member;
 import com.epriest.game.guildfantasy.main.Game_Party;
+import com.epriest.game.guildfantasy.main.Game_Member;
+import com.epriest.game.guildfantasy.main.Game_Quest;
 import com.epriest.game.guildfantasy.main.Game_Town;
 import com.epriest.game.guildfantasy.main.Scene_Home;
 import com.epriest.game.guildfantasy.main.Scene_Main;
-import com.epriest.game.guildfantasy.main.Scene_Member;
 import com.epriest.game.guildfantasy.main.Scene_Party;
+import com.epriest.game.guildfantasy.main.Scene_Member;
+import com.epriest.game.guildfantasy.main.Scene_Quest;
 import com.epriest.game.guildfantasy.main.Scene_Title;
 import com.epriest.game.guildfantasy.main.Scene_Town;
 
@@ -38,9 +38,10 @@ public class MainGLView extends GLView {
 
     private Game_Main gameMain;
     private Game_Home gameHome;
-    private Game_Party gameParty;
+    private Game_Quest gameQuest;
     private Game_Member gameMember;
     private Game_Town gameTown;
+    private Game_Party gameParty;
 
     private Bitmap mCanvasBitmap;
     private Canvas mCanvas;
@@ -63,7 +64,7 @@ public class MainGLView extends GLView {
 
     @Override
     public String cOnSurfaceCreate() {
-        appClass.mGameOrientation = ApplicationClass.GAMECANVAS_ORIENTATION_LANDSCAPE;
+//        appClass.mGameOrientation = ApplicationClass.GAMECANVAS_ORIENTATION_LANDSCAPE;
         return appClass.getGameCanvasWidth() + "," + appClass.getGameCanvasHeight() + "," + appClass.mGameOrientation;
     }
 
@@ -92,9 +93,10 @@ public class MainGLView extends GLView {
     public void cUpdateLogic() {
         if (appClass.isGameInit) {
             gameHome = null;
-            gameParty = null;
+            gameQuest = null;
             gameMember = null;
             gameTown = null;
+            gameParty = null;
         }
         switch (appClass.gameFlag) {
             case Game_Main.GAME_INTRO:
@@ -114,6 +116,14 @@ public class MainGLView extends GLView {
                 }
                 gameHome.gUpdate();
                 break;
+            case Game_Main.GAME_QUEST:
+                if (appClass.isGameInit) {
+                    gameQuest = new Game_Quest(gameMain);
+                    gameQuest.Start();
+                    appClass.isGameInit = false;
+                }
+                gameQuest.gUpdate();
+                break;
             case Game_Main.GAME_PARTY:
                 if (appClass.isGameInit) {
                     gameParty = new Game_Party(gameMain);
@@ -122,7 +132,7 @@ public class MainGLView extends GLView {
                 }
                 gameParty.gUpdate();
                 break;
-            case Game_Main.GAME_MEMEBER:
+            case Game_Main.GAME_MEMBER:
                 if (appClass.isGameInit) {
                     gameMember = new Game_Member(gameMain);
                     gameMember.Start();
@@ -144,6 +154,7 @@ public class MainGLView extends GLView {
 
     @Override
     public Bitmap cOnDraw() {
+        mCanvas.drawColor(Color.BLACK);
         if (appClass.isSceneInit) {
             gameLog.d("flag : " + appClass.gameFlag);
             if (mScene != null) {
@@ -166,12 +177,17 @@ public class MainGLView extends GLView {
                     mScene.initScene(appClass);
                     appClass.isSceneInit = false;
                     break;
+                case Game_Main.GAME_QUEST:
+                    mScene = new Scene_Quest(gameQuest, sceneMain);
+                    mScene.initScene(appClass);
+                    appClass.isSceneInit = false;
+                    break;
                 case Game_Main.GAME_PARTY:
                     mScene = new Scene_Party(gameParty, sceneMain);
                     mScene.initScene(appClass);
                     appClass.isSceneInit = false;
                     break;
-                case Game_Main.GAME_MEMEBER:
+                case Game_Main.GAME_MEMBER:
                     mScene = new Scene_Member(gameMember, sceneMain);
                     mScene.initScene(appClass);
                     appClass.isSceneInit = false;
@@ -203,10 +219,12 @@ public class MainGLView extends GLView {
     @Override
     public void cOnTouchEvent(MotionEvent event) {
         appClass.touch.Action = event.getAction();
-        appClass.touch.oriX = event.getX();
-        appClass.touch.oriY = event.getY();
         appClass.touch.axisX = event.getX() * appClass.mGameScreenWidthVal;
         appClass.touch.axisY = event.getY() * appClass.mGameScreenHeightVal;
+        if(event.getAction() == MotionEvent.ACTION_DOWN){
+            appClass.touch.oriX =  appClass.touch.axisX;
+            appClass.touch.oriY = appClass.touch.axisY;
+        }
 
         switch (appClass.gameFlag) {
             case Game_Main.GAME_INTRO:
@@ -221,10 +239,13 @@ public class MainGLView extends GLView {
             case Game_Main.GAME_HOME:
                 gameHome.gOnTouchEvent(event);
                 break;
+            case Game_Main.GAME_QUEST:
+                gameQuest.gOnTouchEvent(event);
+                break;
             case Game_Main.GAME_PARTY:
                 gameParty.gOnTouchEvent(event);
                 break;
-            case Game_Main.GAME_MEMEBER:
+            case Game_Main.GAME_MEMBER:
                 gameMember.gOnTouchEvent(event);
                 break;
             case Game_Main.GAME_TOWN:
@@ -255,25 +276,15 @@ public class MainGLView extends GLView {
                 }).create().show();*/
                 android.os.Process.killProcess(android.os.Process.myPid());
                 break;
-            case Game_Main.GAME_MEMEBER:
-                /*builder = new AlertDialog.Builder(mainActivity);
-                builder.setTitle("알림")
-                        .setMessage("메뉴로 돌아가겠습니까?")
-                        .setCancelable(false)
-                        .setPositiveButton("확인", new android.content.DialogInterface.OnClickListener(){
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                appClass.gameFlag = Game_Main.GAME_HOME;
-                                appClass.isGameInit = true;
-                                appClass.isSceneInit = true;
-                            }
-
-                        }).setNegativeButton("취소", new android.content.DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                }).create().show();*/
+            default:
+                appClass.gameFlag = Game_Main.GAME_HOME;
+                appClass.isGameInit = true;
+                appClass.isSceneInit = true;
+                break;
+            case Game_Main.GAME_PARTY:
+                appClass.gameFlag = Game_Main.GAME_QUEST;
+                appClass.isGameInit = true;
+                appClass.isSceneInit = true;
                 break;
         }
     }
@@ -287,7 +298,7 @@ public class MainGLView extends GLView {
     private void drawFps(Canvas mCanvas) {
         try {
             Paint paint = new Paint();
-            paint.setColor(Color.YELLOW);
+            paint.setColor(Color.RED);
             paint.setTextSize(20);
 //			paint.setTextAlign(Align.RIGHT);
             mCanvas.drawText("fps: " + GLView.framelate,10,20, paint);

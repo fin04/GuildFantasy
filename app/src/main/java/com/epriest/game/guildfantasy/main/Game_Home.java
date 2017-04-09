@@ -105,7 +105,8 @@ public class Game_Home extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-        gameMain.onTouchEvent(event);
+        if(gameMain.onTouchEvent(event))
+            return;
         /*for(ButtonEnty mBtn : menuButtonList){
             if(GameUtil.equalsTouch(appClass.touch, mBtn.x, mBtn.y, mBtn.w, mBtn.h)){
                 mBtn.clickState = ButtonEnty.ButtonClickOn;

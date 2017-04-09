@@ -10,7 +10,6 @@
         android:largeHeap="true"
         android:hardwareAccelerated="true">
         <activity android:name=".MainActivity"
-            android:hardwareAccelerated="true"
             android:screenOrientation="sensorLandscape"
             android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>

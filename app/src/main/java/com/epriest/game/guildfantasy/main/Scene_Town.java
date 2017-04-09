@@ -62,6 +62,6 @@ public class Scene_Town extends Scene {
         //manager mode
 //        drawManager(mCanvas, paint);
 
-        sceneMain.drawMain(mCanvas, paint);
+        sceneMain.drawMain(mCanvas, paint, true);
     }
 }
