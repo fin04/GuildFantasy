@@ -6,10 +6,10 @@ import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.CanvasGL.util.TextUtil;
 import com.epriest.game.guildfantasy.TestData;
-import com.epriest.game.guildfantasy.enty.ButtonEnty;
-import com.epriest.game.guildfantasy.enty.QuestEnty;
-
-import java.util.ArrayList;
+import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
+import com.epriest.game.guildfantasy.main.enty.PartyEnty;
+import com.epriest.game.guildfantasy.main.enty.QuestEnty;
+import com.epriest.game.guildfantasy.main.play.DataManager;
 
 /**
  * Created by darka on 2017-03-26.
@@ -28,12 +28,19 @@ public class Game_Quest extends Game {
 
     @Override
     public void gStart() {
-        gameMain.playerEnty.QUESTLIST = TestData.testQuestList();
-        for (int i = 0; i < gameMain.playerEnty.QUESTLIST.size(); i++) {
-            gameMain.playerEnty.QUESTLIST.get(i).text
-                    = TextUtil.setMultiLineText(gameMain.playerEnty.QUESTLIST.get(i).text, 24, 300);
-            gameMain.playerEnty.QUESTLIST.get(i).tip
-                    = TextUtil.setMultiLineText(gameMain.playerEnty.QUESTLIST.get(i).tip, 20, 300);
+        for (int i=0; i < gameMain.playerEnty.QUESTLIST.size(); i++) {
+            gameMain.playerEnty.QUESTLIST.get(i).btnEnty.clipW = 200;
+            gameMain.playerEnty.QUESTLIST.get(i).btnEnty.clipH = 270;
+            gameMain.playerEnty.QUESTLIST.get(i).btnEnty.clipX = 0;
+            gameMain.playerEnty.QUESTLIST.get(i).btnEnty.clipY = 0;
+            gameMain.playerEnty.QUESTLIST.get(i).btnEnty.drawX = 35 + (i*(gameMain.playerEnty.QUESTLIST.get(i).btnEnty.clipW+20));
+            gameMain.playerEnty.QUESTLIST.get(i).btnEnty.drawY = 115;
+
+            for (PartyEnty partyEnty : gameMain.playerEnty.PARTYLIST) {
+                if (partyEnty.questId.equals(gameMain.playerEnty.QUESTLIST.get(i).id)) {
+                    gameMain.playerEnty.QUESTLIST.get(i).actPartyNum = partyEnty.num;
+                }
+            }
         }
     }
 
@@ -54,20 +61,22 @@ public class Game_Quest extends Game {
             return;
 
         for (QuestEnty enty : gameMain.playerEnty.QUESTLIST) {
-            if (GameUtil.equalsTouch(gameMain.appClass.touch, enty.btnEnty.x, enty.btnEnty.y, enty.btnEnty.w, enty.btnEnty.h)) {
+            if (GameUtil.equalsTouch(gameMain.appClass.touch, enty.btnEnty.drawX, enty.btnEnty.drawY, enty.btnEnty.clipW, enty.btnEnty.clipH)) {
                 enty.btnEnty.clickState = ButtonEnty.ButtonClickOn;
-                if (gameMain.appClass.touch.Action == MotionEvent.ACTION_UP) {
+                if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                     enty.btnEnty.clickState = ButtonEnty.ButtonClickOff;
 //                    selectQuestId = Integer.parseInt(enty.id);
-                    gameMain.QuestEnty = enty;
-                    gameMain.appClass.gameFlag = Game_Main.GAME_PARTY;
-                    gameMain.appClass.isGameInit = true;
-                    gameMain.appClass.isSceneInit = true;
+                    gameMain.selectQuestEnty = enty;
+                    if(enty.actPartyNum > 0){
+                        gameMain.mainButtonAct(Game_Main.GAME_PARTY, Game_Main.MODE_PARTY_INFO);
+                    }else {
+                        gameMain.mainButtonAct(Game_Main.GAME_PARTY, Game_Main.MODE_PARTY_SELECT);
+
+                    }
                 }
                 return;
             } else {
-                if (enty.btnEnty.clickState == ButtonEnty.ButtonClickOn)
-                    enty.btnEnty.clickState = ButtonEnty.ButtonClickOff;
+                enty.btnEnty.clickState = ButtonEnty.ButtonClickOff;
             }
         }
 

@@ -1,14 +1,27 @@
 package com.epriest.game.guildfantasy;
 
+import android.graphics.Color;
+import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
+
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.graphics.GLActivity;
+import com.epriest.game.guildfantasy.main.play.GameDbAdapter;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 public class MainActivity extends GLActivity {
 
-    MainGLView mGLView;
+    private MainGLView mGLView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,24 +31,48 @@ public class MainActivity extends GLActivity {
 
     @Override
     public void baseCreate() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        ApplicationClass applicationClass = (ApplicationClass) getApplicationContext();
-        applicationClass.setGamecanvasOrientation(ApplicationClass.GAMECANVAS_ORIENTATION_LANDSCAPE);
-//        applicationClass.setGameCanvasWidth(ApplicationClass.GAMECANVAS_WIDTH);
-//        applicationClass.setGameCanvasHeight(ApplicationClass.GAMECANVAS_HEIGHT);
-//		applicationClass.setScreenWidth(displayMetrics.widthPixels);
-//		applicationClass.setScreenHeight(displayMetrics.heightPixels);
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT){
+            display.getSize( size );
+        }else{
+            display.getRealSize( size );
+        }
 
-        setContentView(R.layout.surface_main);
+        ApplicationClass applicationClass = (ApplicationClass) getApplicationContext();
+        applicationClass.setGameCanvasOrientation(applicationClass.GAMECANVAS_ORIENTATION_PORTRAIT);
+        applicationClass.setDeviceScreenWidth(size.x);
+        applicationClass.setDeviceScreenHeight(size.y);
+
+        setContentView(R.layout.activity_main);
 
         if (hasGLES20()) {
             mGLView = new MainGLView(this);
-            FrameLayout fl = (FrameLayout) findViewById(R.id.surfaceFrame);
-            fl.addView(mGLView);
+//            FrameLayout fl = (FrameLayout) findViewById(R.id.surfaceFrame);
+//            fl.addView(mGLView);
         } else {
             finish();
         }
+
+        AdView adView = new AdView(this);
+        adView.setAdSize(AdSize.BANNER);
+        adView.setAdUnitId(getString(R.string.banner_ad_unit_id));
+        adView.setBackgroundColor(Color.TRANSPARENT);
+
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
+                .addTestDevice("ECAF49B3732444D2F7049DDA9DDA3873")
+                .addTestDevice("BF3716FB412CF7AC6A7798B108B93CDB")
+                .build();
+        adView.loadAd(adRequest);
+
+        RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        adParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+
+        FrameLayout layout = (FrameLayout) findViewById(R.id.surfaceFrame);
+        layout.addView(mGLView);
+        layout.addView(adView , adParams) ;
     }
 
     @Override
@@ -55,4 +92,5 @@ public class MainActivity extends GLActivity {
         mGLView.onBackPressed(this);
 
     }
+
 }

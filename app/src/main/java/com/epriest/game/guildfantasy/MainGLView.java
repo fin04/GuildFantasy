@@ -1,25 +1,27 @@
 package com.epriest.game.guildfantasy;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.v4.view.MotionEventCompat;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
+import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.graphics.GLView;
-import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
-import com.epriest.game.CanvasGL.util.gameLog;
+import com.epriest.game.guildfantasy.main.Game_Event;
 import com.epriest.game.guildfantasy.main.Game_Home;
 import com.epriest.game.guildfantasy.main.Game_Main;
 import com.epriest.game.guildfantasy.main.Game_Party;
 import com.epriest.game.guildfantasy.main.Game_Member;
 import com.epriest.game.guildfantasy.main.Game_Quest;
 import com.epriest.game.guildfantasy.main.Game_Town;
+import com.epriest.game.guildfantasy.main.Scene_Event;
 import com.epriest.game.guildfantasy.main.Scene_Home;
 import com.epriest.game.guildfantasy.main.Scene_Main;
 import com.epriest.game.guildfantasy.main.Scene_Party;
@@ -27,14 +29,13 @@ import com.epriest.game.guildfantasy.main.Scene_Member;
 import com.epriest.game.guildfantasy.main.Scene_Quest;
 import com.epriest.game.guildfantasy.main.Scene_Title;
 import com.epriest.game.guildfantasy.main.Scene_Town;
+import com.epriest.game.guildfantasy.main.play.GameDbAdapter;
 
 /**
  * Created by darka on 2016-10-25.
  */
 
 public class MainGLView extends GLView {
-    private Context mContext;
-    private ApplicationClass appClass;
 
     private Game_Main gameMain;
     private Game_Home gameHome;
@@ -42,6 +43,7 @@ public class MainGLView extends GLView {
     private Game_Member gameMember;
     private Game_Town gameTown;
     private Game_Party gameParty;
+    private Game_Event gameEvent;
 
     private Bitmap mCanvasBitmap;
     private Canvas mCanvas;
@@ -49,43 +51,34 @@ public class MainGLView extends GLView {
     private Scene_Main sceneMain;
     private Scene mTrashScene;
 
+    private Bitmap pointer;
+
+    private GameDbAdapter dbAdapter;
+
     public MainGLView(Context context) {
         super(context);
-        mContext = context;
-        appClass = (ApplicationClass) context.getApplicationContext();
-        appClass.gameFlag = Game_Main.GAME_INTRO;
+        appClass.gameState = Game_Main.GAME_INTRO;
         appClass.isGameInit = true;
         appClass.isSceneInit = true;
-    }
-
-    public Context cGLView() {
-        return mContext;
+        dbAdapter = new GameDbAdapter(context);
+        dbAdapter.open();
     }
 
     @Override
     public String cOnSurfaceCreate() {
-//        appClass.mGameOrientation = ApplicationClass.GAMECANVAS_ORIENTATION_LANDSCAPE;
-        return appClass.getGameCanvasWidth() + "," + appClass.getGameCanvasHeight() + "," + appClass.mGameOrientation;
+        return null;
     }
 
     @Override
     public void cOnSurfaceChanged(int width, int height) {
-        appClass.setScreenWidth(width);
-        appClass.setScreenHeight(height);
-        appClass.mGameScreenWidthVal = (float) appClass.getGameCanvasWidth() / (float) appClass.getScreenWidth();
-        appClass.mGameScreenHeightVal = (float) appClass.getGameCanvasHeight() / (float) appClass.getScreenHeight();
-
-//		gameLog.d("mGameScreenVal:" + appClass.getScreenWidth() + "/" + INN.GAMECANVAS_WIDTH + "="
-//				+ appClass.mGameScreenVal);
-//		gameLog.d("mScreenOverWidth:" + appClass.mScreenOverWidth + "\nmScreenOverHeight" + appClass.mScreenOverHeight);
-//		gameLog.d("mGameCanvasWidth:" + appClass.mGameCanvasWidth + "\nmGameCanvasHeight" + appClass.mGameCanvasHeight);
-//
         if (mCanvasBitmap != null) {
             mCanvasBitmap.recycle();
             mCanvasBitmap = null;
         }
+//        mCanvasBitmap = Bitmap.createBitmap(appClass.getTextureWidth(), appClass.getTextureHeight(), Bitmap.Config.RGB_565);
         mCanvasBitmap = Bitmap.createBitmap(appClass.getGameCanvasWidth(), appClass.getGameCanvasHeight(), Bitmap.Config.RGB_565);
         mCanvas = new Canvas(mCanvasBitmap);
+        pointer = GLUtil.loadAssetsBitmap(appClass, "pointer.png", null);
 //		mCanvas.translate(appClass.mScreenOverWidth, appClass.mScreenOverHeight);
     }
 
@@ -97,26 +90,44 @@ public class MainGLView extends GLView {
             gameMember = null;
             gameTown = null;
             gameParty = null;
+            gameEvent = null;
+            if (gameMain != null && appClass.gameState != Game_Main.GAME_PARTY)
+                gameMain.selectQuestEnty = null;
         }
-        switch (appClass.gameFlag) {
+
+        switch (appClass.gameState) {
             case Game_Main.GAME_INTRO:
                 appClass.isGameInit = false;
                 break;
-            case Game_Main.GAME_MAIN:
+/*            case Game_Main.GAME_MAIN:
                 if (appClass.isGameInit) {
-                    gameMain = new Game_Main(mContext);
+                    gameMain = new Game_Main(appClass.getBaseContext());
                     gameMain.Init();
+                    gameMain.mainButtonAct(Game_Main.GAME_HOME);
                 }
-//                break;
+                break;*/
             case Game_Main.GAME_HOME:
                 if (appClass.isGameInit) {
+                    if (gameMain == null) {
+                        gameMain = new Game_Main(appClass.getBaseContext(), dbAdapter);
+                        gameMain.Init();
+                    }
+
                     gameHome = new Game_Home(gameMain);
                     gameHome.Start();
                     appClass.isGameInit = false;
                 }
                 gameHome.gUpdate();
                 break;
-            case Game_Main.GAME_QUEST:
+            case Game_Main.GAME_EVENT:
+                if (appClass.isGameInit) {
+                    gameEvent = new Game_Event(gameMain);
+                    gameEvent.Start();
+                    appClass.isGameInit = false;
+                }
+                gameEvent.gUpdate();
+                break;
+            case Game_Main.GAME_QUEST_SELECT:
                 if (appClass.isGameInit) {
                     gameQuest = new Game_Quest(gameMain);
                     gameQuest.Start();
@@ -126,7 +137,7 @@ public class MainGLView extends GLView {
                 break;
             case Game_Main.GAME_PARTY:
                 if (appClass.isGameInit) {
-                    gameParty = new Game_Party(gameMain);
+                    gameParty = new Game_Party(gameMain, appClass.gameMode);
                     gameParty.Start();
                     appClass.isGameInit = false;
                 }
@@ -154,30 +165,37 @@ public class MainGLView extends GLView {
 
     @Override
     public Bitmap cOnDraw() {
-        mCanvas.drawColor(Color.BLACK);
+        mCanvas.drawColor(Color.DKGRAY);
         if (appClass.isSceneInit) {
-            gameLog.d("flag : " + appClass.gameFlag);
             if (mScene != null) {
                 mScene.recycleScene();
                 mScene = null;
-                System.gc();
+//                System.gc();
             }
-            switch (appClass.gameFlag) {
+            if (appClass.gameState != Game_Main.GAME_INTRO) {
+
+            }
+            switch (appClass.gameState) {
                 case Game_Main.GAME_INTRO:
                     mScene = new Scene_Title();
                     mScene.initScene(appClass);
                     appClass.isSceneInit = false;
                     break;
-                case Game_Main.GAME_MAIN:
-                    sceneMain = new Scene_Main();
-                    sceneMain.initScene(gameMain);
+//                case Game_Main.GAME_MAIN:
+/*                    sceneMain = new Scene_Main();
+                    sceneMain.initScene(gameMain);*/
 //                    break;
                 case Game_Main.GAME_HOME:
                     mScene = new Scene_Home(gameHome, sceneMain);
                     mScene.initScene(appClass);
                     appClass.isSceneInit = false;
                     break;
-                case Game_Main.GAME_QUEST:
+                case Game_Main.GAME_EVENT:
+                    mScene = new Scene_Event(gameEvent, sceneMain);
+                    mScene.initScene(appClass);
+                    appClass.isSceneInit = false;
+                    break;
+                case Game_Main.GAME_QUEST_SELECT:
                     mScene = new Scene_Quest(gameQuest, sceneMain);
                     mScene.initScene(appClass);
                     appClass.isSceneInit = false;
@@ -200,46 +218,100 @@ public class MainGLView extends GLView {
             }
         }
 
-        if(appClass.isGameInit || appClass.isSceneInit){
-            if(appClass.loadingBg == null){
+        if (appClass.isGameInit || appClass.isSceneInit || mCanvas == null) {
+            if (appClass.loadingBg == null) {
                 appClass.loadingBg = GLUtil.loadAssetsBitmap(appClass, "loading.jpg", null);
             }
             mScene.drawLoading(mCanvas, appClass.loadingBg);
-        }else {
+        } else {
             mScene.draw(mCanvas);
         }
 
 //		drawGuideLine(mCanvas);
         drawFps(mCanvas);
-//        drawTouchPoint(mCanvas);
+        drawTouchPoint(mCanvas);
 
         return mCanvasBitmap;
     }
 
     @Override
     public void cOnTouchEvent(MotionEvent event) {
-        appClass.touch.Action = event.getAction();
-        appClass.touch.axisX = event.getX() * appClass.mGameScreenWidthVal;
-        appClass.touch.axisY = event.getY() * appClass.mGameScreenHeightVal;
-        if(event.getAction() == MotionEvent.ACTION_DOWN){
-            appClass.touch.oriX =  appClass.touch.axisX;
-            appClass.touch.oriY = appClass.touch.axisY;
+        appClass.touch.action = MotionEventCompat.getActionMasked(event);
+        switch (appClass.touch.action) {
+            case MotionEvent.ACTION_DOWN: {
+                final int pointerIndex = MotionEventCompat.getActionIndex(event);
+                final float x = MotionEventCompat.getX(event, pointerIndex) * appClass.mGameScaleValueWidth;
+                final float y = MotionEventCompat.getY(event, pointerIndex) * appClass.mGameScaleValueHeight;
+                appClass.touch.mLastTouchX = x;
+                appClass.touch.mLastTouchY = y;
+                appClass.touch.mActivePointerId = MotionEventCompat.getPointerId(event, 0);
+                break;
+            }
+
+            case MotionEvent.ACTION_MOVE: {
+                final int pointerIndex = MotionEventCompat.getActionIndex(event);
+                final float x = MotionEventCompat.getX(event, pointerIndex) * appClass.mGameScaleValueWidth;
+                final float y = MotionEventCompat.getY(event, pointerIndex) * appClass.mGameScaleValueHeight;
+
+                // Calculate the distance moved
+                final float dx = x - appClass.touch.mLastTouchX;
+                final float dy = y - appClass.touch.mLastTouchY;
+
+                appClass.touch.mPosX += dx;
+                appClass.touch.mPosY -= dy;
+
+                // Remember this touch position for the next move event
+                appClass.touch.mLastTouchX = x;
+                appClass.touch.mLastTouchY = y;
+
+                break;
+            }
+
+            case MotionEvent.ACTION_UP: {
+                appClass.touch.mActivePointerId = MotionEvent.INVALID_POINTER_ID;
+                break;
+            }
+
+            case MotionEvent.ACTION_CANCEL: {
+                appClass.touch.mActivePointerId = MotionEvent.INVALID_POINTER_ID;
+                break;
+            }
+
+            /*case MotionEvent.ACTION_POINTER_UP: {
+
+                final int pointerIndex = MotionEventCompat.getActionIndex(event);
+                final int pointerId = MotionEventCompat.getPointerId(event, pointerIndex);
+
+                if (pointerId == appClass.touch.mActivePointerId) {
+                    // This was our active pointer going up. Choose a new
+                    // active pointer and adjust accordingly.
+                    final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+                    appClass.touch.mLastTouchX = MotionEventCompat.getX(event, newPointerIndex) * appClass.mGameScaleValueWidth;
+                    appClass.touch.mLastTouchY = MotionEventCompat.getY(event, newPointerIndex) * appClass.mGameScaleValueHeight;
+                    appClass.touch.mActivePointerId = MotionEventCompat.getPointerId(event, newPointerIndex);
+                }
+                break;
+            }*/
         }
 
-        switch (appClass.gameFlag) {
+        switch (appClass.gameState) {
+
             case Game_Main.GAME_INTRO:
-                if (appClass.touch.Action != MotionEvent.ACTION_UP)
+                if (appClass.touch.action != MotionEvent.ACTION_UP)
                     return;
-                appClass.gameFlag = Game_Main.GAME_MAIN;
+                appClass.gameState = Game_Main.GAME_HOME;
                 appClass.isGameInit = true;
                 appClass.isSceneInit = true;
                 break;
-            case Game_Main.GAME_MAIN:
-                appClass.gameFlag = Game_Main.GAME_HOME;
+//            case Game_Main.GAME_MAIN:
+//                appClass.gameState = Game_Main.GAME_HOME;
             case Game_Main.GAME_HOME:
                 gameHome.gOnTouchEvent(event);
                 break;
-            case Game_Main.GAME_QUEST:
+            case Game_Main.GAME_EVENT:
+                gameEvent.gOnTouchEvent(event);
+                break;
+            case Game_Main.GAME_QUEST_SELECT:
                 gameQuest.gOnTouchEvent(event);
                 break;
             case Game_Main.GAME_PARTY:
@@ -255,8 +327,8 @@ public class MainGLView extends GLView {
     }
 
     public void onBackPressed(MainActivity mainActivity) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
-        switch (appClass.gameFlag) {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+        switch (appClass.gameState) {
             case Game_Main.GAME_INTRO:
             case Game_Main.GAME_HOME:
                /* builder.setTitle("알림")
@@ -277,12 +349,12 @@ public class MainGLView extends GLView {
                 android.os.Process.killProcess(android.os.Process.myPid());
                 break;
             default:
-                appClass.gameFlag = Game_Main.GAME_HOME;
+                appClass.gameState = Game_Main.GAME_HOME;
                 appClass.isGameInit = true;
                 appClass.isSceneInit = true;
                 break;
             case Game_Main.GAME_PARTY:
-                appClass.gameFlag = Game_Main.GAME_QUEST;
+                appClass.gameState = Game_Main.GAME_QUEST_SELECT;
                 appClass.isGameInit = true;
                 appClass.isSceneInit = true;
                 break;
@@ -298,10 +370,11 @@ public class MainGLView extends GLView {
     private void drawFps(Canvas mCanvas) {
         try {
             Paint paint = new Paint();
-            paint.setColor(Color.RED);
+            paint.setColor(Color.YELLOW);
             paint.setTextSize(20);
 //			paint.setTextAlign(Align.RIGHT);
-            mCanvas.drawText("fps: " + GLView.framelate,10,20, paint);
+            CanvasUtil.drawBox(mCanvas, Color.argb(150, 0, 0, 0), true, 10, 0, 100, 40);
+            mCanvas.drawText("fps-" + GLView.framelate, 10, 20, paint);
         } catch (Exception e) {
             e.getStackTrace();
         }
@@ -333,18 +406,24 @@ public class MainGLView extends GLView {
 
     private void drawTouchPoint(Canvas mCanvas) {
         Paint drawPaint = new Paint();
-        drawPaint.setColor(Color.MAGENTA);
+        /*drawPaint.setColor(Color.MAGENTA);
         drawPaint.setAlpha(150);
-        mCanvas.drawRect(appClass.touch.axisX - 20, appClass.touch.axisY - 1, appClass.touch.axisX + 20,
-                appClass.touch.axisY + 1, drawPaint);
-        mCanvas.drawRect(appClass.touch.axisX - 1, appClass.touch.axisY - 20, appClass.touch.axisX + 1,
-                appClass.touch.axisY + 20, drawPaint);
+        mCanvas.drawRect(appClass.touch.mTouchX - 20, appClass.touch.mTouchY - 1,
+                appClass.touch.mTouchX + 20, appClass.touch.mTouchY + 1, drawPaint);
+        mCanvas.drawRect(appClass.touch.mTouchX - 1, appClass.touch.mTouchY - 20,
+                appClass.touch.mTouchX + 1, appClass.touch.mTouchY + 20, drawPaint);
         // mCanvas.drawCircle(game.appClass.touch.axisX-10,
-        // game.appClass.touch.axisY-10, 20, drawPaint);
-        drawPaint.setColor(Color.YELLOW);
-//		drawPaint.setAlpha(255);
-        drawPaint.setTextSize(20);
-        mCanvas.drawText((int) appClass.touch.oriX + "," + (int) appClass.touch.oriY + "||" + (int) appClass.touch.axisX
-                + "," + (int) appClass.touch.axisY, 0, appClass.getGameCanvasHeight(), drawPaint);
+        // game.appClass.touch.axisY-10, 20, drawPaint);*/
+        int value = pointer.getWidth() / 2;
+        CanvasUtil.drawBitmap(pointer, mCanvas, (int) appClass.touch.mLastTouchX - value, (int) appClass.touch.mLastTouchY - value);
+
+//        drawPaint.setColor(Color.YELLOW);
+////		drawPaint.setAlpha(255);
+//        drawPaint.setTextSize(20);
+        String text = (int) appClass.touch.mLastTouchX + "," + (int) appClass.touch.mLastTouchY;
+        CanvasUtil.drawString(mCanvas, text, 20, Color.YELLOW, Paint.Align.CENTER,
+                (int) appClass.touch.mLastTouchX - value, (int) appClass.touch.mLastTouchY);
+//        mCanvas.drawText((int) appClass.touch.mLastTouchY + "," + (int) appClass.touch.mLastTouchY,
+//                0, appClass.getGameCanvasHeight(), drawPaint);
     }
 }

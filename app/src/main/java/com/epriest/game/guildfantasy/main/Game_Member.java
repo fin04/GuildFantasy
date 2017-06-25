@@ -3,9 +3,6 @@ package com.epriest.game.guildfantasy.main;
 import android.view.MotionEvent;
 
 import com.epriest.game.CanvasGL.util.Game;
-import com.epriest.game.guildfantasy.enty.ButtonEnty;
-
-import java.util.ArrayList;
 
 /**
  * Created by darka on 2017-03-26.

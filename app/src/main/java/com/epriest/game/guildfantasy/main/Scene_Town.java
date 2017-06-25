@@ -8,7 +8,7 @@ import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
-import com.epriest.game.guildfantasy.enty.ImageEnty;
+import com.epriest.game.guildfantasy.main.enty.ImageEnty;
 
 /**
  * Created by darka on 2017-03-26.
@@ -36,7 +36,7 @@ public class Scene_Town extends Scene {
         canvasW = appClass.getGameCanvasWidth();
         canvasH = appClass.getGameCanvasHeight();
 
-        bg = GLUtil.loadAssetsBitmap(appClass, "main/town.png", null);
+        bg = GLUtil.loadAssetsBitmap(appClass, "main/town.jpg", null);
         char_01 = GLUtil.loadAssetsBitmap(appClass, "main/char_01.jpg", null);
     }
 
@@ -57,11 +57,11 @@ public class Scene_Town extends Scene {
         paint.setAntiAlias(true);
 //        mCanvas.drawColor(Color.BLACK);
 
-        mCanvas.drawBitmap(bg, 0, 0, null);
+        CanvasUtil.drawBgBitmap(bg, mCanvas);
 
         //manager mode
 //        drawManager(mCanvas, paint);
 
-        sceneMain.drawMain(mCanvas, paint, true);
+        gameTown.gameMain.drawMain(mCanvas, false);
     }
 }

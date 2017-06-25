@@ -4,8 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.epriest.game.guildfantasy.enty.MemberEnty;
-import com.epriest.game.guildfantasy.enty.PlayerEnty;
+import com.epriest.game.guildfantasy.main.enty.PlayerEnty;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;

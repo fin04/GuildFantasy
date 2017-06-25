@@ -1,15 +1,8 @@
 package com.epriest.game.guildfantasy.main;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 
-import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
-import com.epriest.game.guildfantasy.enty.ButtonEnty;
-
-import java.util.ArrayList;
 
 /**
  * Created by darka on 2017-03-26.
@@ -17,54 +10,69 @@ import java.util.ArrayList;
 
 public class Scene_Main {
 
-    private final int charRow = 10;
-    private final int charNum = 28;
-    private final int charW = 80;
-    private final int charH = 96;
+    /*private Game_Main gameMain;
 
-    private final int insigniaRow = 10;
-    private final int insigniaNum = 20;
-    private final int insigniaW = 80;
-    private final int insigniaH = 96;
-
-    private final int btnW = 96;
-    private final int btnH = 84;
-
-    public final static int statusBarH = 45;
-
-    private int canvasW, canvasH;
-    private Bitmap menu_icon;
+    public Bitmap img_mainBtn;
     private Bitmap status_bar;
-    private Game_Main gameMain;
+    private Bitmap alertBox;
+    private Bitmap alertCard;
 
-    public Scene_Main(){
-
+    public Scene_Main(Game_Main gameMain){
+        this.gameMain = gameMain;
     }
 
-    public void initScene(Game_Main gameMain) {
-        this.gameMain = gameMain;
-        this.canvasW = gameMain.appClass.getGameCanvasWidth();
-        this.canvasH = gameMain.appClass.getGameCanvasHeight();
-        menu_icon = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/main_btn.png", null);
-        status_bar = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/statusBar.png", null);
-
-        gameMain.menuButtonList = setMenuIcon(canvasW, canvasH);
+    public void initScene() {
+        img_mainBtn = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/main_btn.png", null);
+        status_bar = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/statusbar_tile.png", null);
+        alertBox = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/alertbox.png", null);
+        alertCard = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/alertcard.png", null);
         gameMain.appClass.isSceneInit = false;
     }
 
     private ArrayList<ButtonEnty> setMenuIcon(int canvasW, int canvasH) {
         ArrayList<ButtonEnty> menuButtonList = new ArrayList<>();
-        for(int i=0; i< gameMain.menuIconName.length-2; i++) {
-            ButtonEnty mBtn = new ButtonEnty();
-            mBtn.num = i;
-            mBtn.name = gameMain.menuIconName[i];
-            mBtn.iconImgNum = gameMain.menuIconNum[i];
-            mBtn.w = btnW;
-            mBtn.h = btnH;
-            mBtn.x = canvasW - 110 - (4-i)*(mBtn.w+10);
-            mBtn.y = canvasH - mBtn.h - 10;
-            menuButtonList.add(mBtn);
+        switch(gameMain.appClass.gameFlag) {
+            default:
+                for(int i=0; i< gameMain.menuIconName.length-2; i++) {
+                    ButtonEnty mBtn = new ButtonEnty();
+                    mBtn.num = i;
+                    mBtn.name = gameMain.menuIconName[i];
+                    mBtn.iconImgNum = gameMain.menuIconNum[i];
+                    mBtn.clipW = btnW;
+                    mBtn.clipH = btnH;
+                    mBtn.clipX = ((mBtn.iconImgNum-1)%4)*mBtn.clipW;
+                    mBtn.clipY = ((mBtn.iconImgNum-1)/4)*mBtn.clipH;
+                    mBtn.drawX = canvasW - 110 - (4-i)*(mBtn.clipW+10);
+                    mBtn.drawY = canvasH - mBtn.clipH - 10;
+                    menuButtonList.add(mBtn);
+                }
+                break;
+
+            case Game_Main.GAME_PARTY:
+                ButtonEnty mBtn1 = new ButtonEnty();
+                mBtn1.num = 0;
+                mBtn1.name = "start";
+                mBtn1.clipW = 117;
+                mBtn1.clipH = 117;
+                mBtn1.clipX = 1;
+                mBtn1.clipY = 172;
+                mBtn1.drawX = canvasW- mBtn1.clipW-20;
+                mBtn1.drawY = canvasH-mBtn1.clipH-10;
+                menuButtonList.add(mBtn1);
+
+                ButtonEnty mBtn2 = new ButtonEnty();
+                mBtn2.num = 1;
+                mBtn2.name = "back";
+                mBtn2.clipW = 90;
+                mBtn2.clipH = 90;
+                mBtn2.clipX = 230;
+                mBtn2.clipY = 172;
+                mBtn2.drawX = canvasW- mBtn1.clipW-20;
+                mBtn2.drawY = 90;
+                menuButtonList.add(mBtn2);
+                break;
         }
+
         return  menuButtonList;
     }
 
@@ -88,19 +96,33 @@ public class Scene_Main {
         CanvasUtil.drawString(mCanvas, "member "+ gameMain.playerEnty.MEMBERLIST.size(), paint, 600, 3);
     }
 
-    public void drawMenuButton(Canvas mCanvas, Paint paint) {
-//        int btnArea = (canvasH - statusBarH)/ gameMain.menuButtonList.size();
+    private void drawPartyMenuButton(Canvas mCanvas, Paint paint) {
         for(ButtonEnty mBtn : gameMain.menuButtonList){
-            int iconNum = mBtn.iconImgNum-1;
+            int clipY = mBtn.clipY;
             if(mBtn.clickState == ButtonEnty.ButtonClickOn){
-                iconNum+=4;
+                clipY += mBtn.clipH;
             }
-            CanvasUtil.drawClip(menu_icon, mCanvas, null, (iconNum%4)*mBtn.w, (iconNum/4)*mBtn.h,
-                    mBtn.w, mBtn.h, mBtn.x, mBtn.y);
+            CanvasUtil.drawClip(menu_icon, mCanvas, null, mBtn.clipX, clipY,
+                    mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
 //            CanvasUtil.drawClip(menu_icon, mCanvas, null, (iconNum%5)*mBtn.w, (iconNum/5)*mBtn.h,
 //                    mBtn.w, mBtn.h, mBtn.x+(btnArea-mBtn.w)/2, mBtn.y);
 
         }
     }
+
+    public void drawMenuButton(Canvas mCanvas, Paint paint) {
+//        int btnArea = (canvasH - statusBarH)/ gameMain.menuButtonList.size();
+        for(ButtonEnty mBtn : gameMain.menuButtonList){
+            int clipY = mBtn.clipY;
+            if(mBtn.clickState == ButtonEnty.ButtonClickOn){
+                clipY += mBtn.clipH;
+            }
+            CanvasUtil.drawClip(menu_icon, mCanvas, null, mBtn.clipX, clipY,
+                    mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
+//            CanvasUtil.drawClip(menu_icon, mCanvas, null, (iconNum%5)*mBtn.w, (iconNum/5)*mBtn.h,
+//                    mBtn.w, mBtn.h, mBtn.x+(btnArea-mBtn.w)/2, mBtn.y);
+
+        }
+    }*/
 
 }

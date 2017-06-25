@@ -1,19 +1,14 @@
 package com.epriest.game.guildfantasy.main;
 
-import android.content.Context;
+import android.graphics.Point;
+import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.Toast;
 
-import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.CanvasGL.util.TextUtil;
-import com.epriest.game.guildfantasy.enty.ButtonEnty;
-import com.epriest.game.guildfantasy.enty.EquipEnty;
-import com.epriest.game.guildfantasy.enty.MemberEnty;
-import com.epriest.game.guildfantasy.enty.PlayerEnty;
-import com.epriest.game.guildfantasy.enty.StatusEnty;
-import com.epriest.game.guildfantasy.util.PPreference;
+import com.epriest.game.guildfantasy.main.enty.MapEnty;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,13 +19,15 @@ import java.util.ArrayList;
 
 public class Game_Home extends Game {
 
-    private Game_Main gameMain;
-//    public PlayerEnty playerEnty;
+    public Game_Main gameMain;
+    //    public PlayerEnty playerEnty;
 //    public ArrayList<ButtonEnty> menuButtonList;
     public ArrayList<String> prologStrList;
     public boolean isAlert;
     public int maxChar = 18;
     public boolean isNext;
+    public int mapDrawW, mapDrawH;
+    public int mapTotalW, mapTotalH;
 
     public Game_Home(Game_Main gameMain) {
         this.gameMain = gameMain;
@@ -47,6 +44,23 @@ public class Game_Home extends Game {
 //        menuButtonList = new ArrayList();
 
 
+        int tileW = gameMain.mapLayer.getTileWidth();
+        int tileH = gameMain.mapLayer.getTileHeight();
+
+        gameMain.mapLayer.mMapTileRowNum = gameMain.mapLayer.getLayers().get(0).getWidth();
+        if (gameMain.mapLayer.mMapTileRowNum * tileW > gameMain.appClass.getGameCanvasWidth()) {
+            gameMain.mapLayer.mMapTileRowNum = gameMain.appClass.getGameCanvasWidth() / tileW + 2;
+        }
+
+        gameMain.mapLayer.mMapTileColumnNum = 9;
+
+        //그려지는 맵의 크기
+        mapDrawW = gameMain.mapLayer.mMapTileRowNum * tileW;
+        mapDrawH = gameMain.mapLayer.mMapTileColumnNum * tileH;
+
+        //맵의 총 크기
+        mapTotalW = gameMain.mapLayer.terrainColumnList.get(0).length*tileW;
+        mapTotalH = gameMain.mapLayer.terrainColumnList.size()*tileH;
     }
 
 
@@ -61,8 +75,7 @@ public class Game_Home extends Game {
     }
 
 
-
-    private void startProlog1(){
+    private void startProlog1() {
         String str = null;
         try {
             str = TextUtil.getStringToAsset(gameMain.appClass, "main/intro.txt");
@@ -79,7 +92,7 @@ public class Game_Home extends Game {
                     isProlog = true;
                     continue;
                 }
-            }else{
+            } else {
                 if (strArr[i].charAt(0) == '[') {
                     isProlog = false;
                     break;
@@ -89,12 +102,12 @@ public class Game_Home extends Game {
                         prologStrList.add(strArr[i]);
                     } else {
                         for (int j = 0; j <= strCnt; j++) {
-                            int endStrNum = maxChar+maxChar*j;
-                            if(strArr[i].length() < endStrNum){
-                                prologStrList.add(strArr[i].substring(maxChar*j, strArr[i].length()));
+                            int endStrNum = maxChar + maxChar * j;
+                            if (strArr[i].length() < endStrNum) {
+                                prologStrList.add(strArr[i].substring(maxChar * j, strArr[i].length()));
                                 break;
                             }
-                            prologStrList.add(strArr[i].substring(maxChar*j, endStrNum));
+                            prologStrList.add(strArr[i].substring(maxChar * j, endStrNum));
                         }
                     }
 
@@ -105,8 +118,45 @@ public class Game_Home extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-        if(gameMain.onTouchEvent(event))
+        if (gameMain.onTouchEvent(event))
             return;
+        boolean hasTouchMap = false;
+        if (GameUtil.equalsTouch(gameMain.appClass.touch, 0, Game_Main.statusBarH, mapDrawW, mapDrawH)) {
+            hasTouchMap = true;
+        }
+        switch (gameMain.appClass.touch.action) {
+            case MotionEvent.ACTION_DOWN:
+                if (hasTouchMap) {
+                    gameMain.mapLayer.isMapMove = true;
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (hasTouchMap && gameMain.mapLayer.isMapMove) {
+                    gameMain.mapLayer.mMapAxis.x = (int) (gameMain.appClass.touch.mPosX);
+                    if (gameMain.mapLayer.mMapAxis.x > 0)
+                        gameMain.mapLayer.mMapAxis.x = 0;
+                    else if(gameMain.mapLayer.mMapAxis.x < (mapTotalW - mapDrawW)*-1)
+                        gameMain.mapLayer.mMapAxis.x = (mapTotalW - mapDrawW)*-1;
+
+                    gameMain.mapLayer.mMapAxis.y = (int) (gameMain.appClass.touch.mPosY);
+                    if (gameMain.mapLayer.mMapAxis.y < 0)
+                        gameMain.mapLayer.mMapAxis.y = 0;
+                    else if(gameMain.mapLayer.mMapAxis.y > mapTotalH - mapDrawH)
+                        gameMain.mapLayer.mMapAxis.y = mapTotalH - mapDrawH;
+
+                    gameMain.mapLayer.getTileNum(gameMain.mapLayer.LeftTopTileNum,
+                            gameMain.mapLayer.mMapAxis.x, gameMain.mapLayer.mMapAxis.y);
+
+
+                }
+                break;
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                if (gameMain.mapLayer.isMapMove) {
+                    gameMain.mapLayer.isMapMove = false;
+                }
+                break;
+        }
         /*for(ButtonEnty mBtn : menuButtonList){
             if(GameUtil.equalsTouch(appClass.touch, mBtn.x, mBtn.y, mBtn.w, mBtn.h)){
                 mBtn.clickState = ButtonEnty.ButtonClickOn;

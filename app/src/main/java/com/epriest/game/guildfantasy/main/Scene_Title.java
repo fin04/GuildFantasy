@@ -27,7 +27,7 @@ public class Scene_Title extends Scene {
     @Override
     public void initScene(ApplicationClass appClass) {
         this.appClass = appClass;
-        intro_bg = GLUtil.loadAssetsBitmap(appClass, "title.png", null);
+        intro_bg = GLUtil.loadAssetsBitmap(appClass, "title.jpg", null);
     }
 
     @Override
@@ -47,9 +47,9 @@ public class Scene_Title extends Scene {
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         mCanvas.drawColor(Color.MAGENTA);
-		mCanvas.drawBitmap(intro_bg, 0, 0, null);
+        CanvasUtil.drawBgBitmap(intro_bg, mCanvas);
         if(cnt < 30){
-            CanvasUtil.drawString(mCanvas, str, 30, paint, Color.GREEN,
+            CanvasUtil.drawString(mCanvas, str, 30, Color.GREEN,
                     Paint.Align.CENTER, appClass.getGameCanvasWidth()/2, appClass.getGameCanvasHeight()-100);
         }else{
             if(cnt == 50){

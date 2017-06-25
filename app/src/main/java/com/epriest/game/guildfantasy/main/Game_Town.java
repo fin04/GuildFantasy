@@ -10,7 +10,7 @@ import com.epriest.game.CanvasGL.util.Game;
 
 public class Game_Town extends Game {
 
-    private Game_Main gameMain;
+    public Game_Main gameMain;
 
     public Game_Town(Game_Main gameMain){
         this.gameMain = gameMain;

@@ -2,15 +2,14 @@ package com.epriest.game.guildfantasy.main;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
+import android.util.Log;
 
 import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
-import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.Scene;
-import com.epriest.game.guildfantasy.enty.ClipImageEnty;
-import com.epriest.game.guildfantasy.enty.ImageEnty;
+import com.epriest.game.guildfantasy.main.enty.ClipImageEnty;
+import com.epriest.game.guildfantasy.main.enty.ImageEnty;
 
 import java.util.ArrayList;
 
@@ -20,11 +19,11 @@ import java.util.ArrayList;
 
 public class Scene_Home extends Scene {
 
-    private Game gameHome;
-    private Scene_Main sceneMain;
+    private Game_Home gameHome;
+    //    private Scene_Main sceneMain;
     private int canvasW, canvasH;
 
-    private Bitmap bg;
+    private Bitmap mapBg;
     private Bitmap char_01;
 //    private Bitmap menu_icon;
 
@@ -50,9 +49,9 @@ public class Scene_Home extends Scene {
 //
 //    private final int statusBarH = 32;
 
-    public Scene_Home(Game gameHome, Scene_Main sceneMain) {
+    public Scene_Home(Game_Home gameHome, Scene_Main sceneMain) {
         this.gameHome = gameHome;
-        this.sceneMain = sceneMain;
+//        this.sceneMain = sceneMain;
     }
 
     @Override
@@ -60,7 +59,7 @@ public class Scene_Home extends Scene {
         canvasW = appClass.getGameCanvasWidth();
         canvasH = appClass.getGameCanvasHeight();
 
-        bg = GLUtil.loadAssetsBitmap(appClass, "main/home.png", null);
+        mapBg = GLUtil.loadAssetsBitmap(appClass, "map/tilemap.png", null);
         char_01 = GLUtil.loadAssetsBitmap(appClass, "main/char_01.jpg", null);
 //        menu_icon = GLUtil.loadAssetsBitmap(appClass, "main/main_icon.png", null);
 
@@ -107,7 +106,7 @@ public class Scene_Home extends Scene {
 
     @Override
     public void recycleScene() {
-        CanvasUtil.recycleBitmap(bg);
+        CanvasUtil.recycleBitmap(mapBg);
         CanvasUtil.recycleBitmap(char_01);
         CanvasUtil.recycleBitmap(managerImg.bitmap);
     }
@@ -119,36 +118,54 @@ public class Scene_Home extends Scene {
 
     @Override
     public void draw(Canvas mCanvas) {
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-//        mCanvas.drawColor(Color.BLACK);
-
-        mCanvas.drawBitmap(bg, 0, 0, null);
+        //draw map tile
+        drawMap(mCanvas);
 
         //manager mode
-        drawManager(mCanvas, paint);
+//        drawManager(mCanvas);
 
-        sceneMain.drawMain(mCanvas, paint, true);
+        gameHome.gameMain.drawMain(mCanvas, true);
     }
 
+    private void drawMap(Canvas mCanvas) {
+        int tileW = gameHome.gameMain.mapLayer.getTileWidth();
+        int tileH = gameHome.gameMain.mapLayer.getTileHeight();
+        int row = gameHome.gameMain.mapLayer.mMapTileRowNum;
+        int column = gameHome.gameMain.mapLayer.mMapTileColumnNum;
+        int tempX = tileW / 2; // Hex DrawX per Line
+        int tempY = tileH / 4 * 3; // Hex DrawY per Line
+        int startY = Game_Main.statusBarH - (tileH / 4) - gameHome.gameMain.mapLayer.mMapAxis.y;
+        int startTempX = gameHome.gameMain.mapLayer.mMapAxis.x;
+        int mapLeftTileNum = gameHome.gameMain.mapLayer.LeftTopTileNum.x;
+        int mapTopTileNum = gameHome.gameMain.mapLayer.LeftTopTileNum.y;
+        for (int i = mapTopTileNum; i < column + mapTopTileNum; i++) {
+            int startX = startTempX - tempX;
+            if (i % 2 == 1)
+                startX = startTempX;
+            int drawY = i * tempY + startY;
+            for (int j = mapLeftTileNum; j < row + mapLeftTileNum; j++) {
+                int mapNum = gameHome.gameMain.mapLayer.terrainColumnList.get(i)[j]-1;
+                int buildNum = gameHome.gameMain.mapLayer.buildiingColumnList.get(i)[j]-1;
+                CanvasUtil.drawClip(mapBg, mCanvas, (mapNum % 4) * tileW, (mapNum / 4) * tileH, tileW, tileH, j * tileW + startX, drawY);
+                CanvasUtil.drawClip(mapBg, mCanvas, (buildNum % 4) * tileW, (buildNum / 4) * tileH, tileW, tileH, j * tileW + startX, drawY);
+            }
+        }
+    }
 
+    private void drawManager(Canvas mCanvas) {
+        CanvasUtil.drawClip(managerImg.bitmap, mCanvas, 490, 156,
+                228, 484, 50, canvasH - 484);
 
-
-
-    private void drawManager(Canvas mCanvas, Paint paint) {
-        CanvasUtil.drawClip(managerImg.bitmap, mCanvas, paint, 490, 156,
-                228, 484, 50, canvasH-484);
-
-        if(managerImg.animCnt < managerImg.animMaxFrame){
+        if (managerImg.animCnt < managerImg.animMaxFrame) {
             managerImg.animCnt++;
-        }else{
+        } else {
             managerImg.animCnt = 0;
         }
 
-        for(ClipImageEnty enty : managerImg.animClipList){
-            if(enty.animStartFrame <= managerImg.animCnt && enty.animEndFrame >= managerImg.animCnt){
-                CanvasUtil.drawClip(managerImg.bitmap, mCanvas, paint, enty.animClipX, enty.animClipY,
-                        enty.animClipW, enty.animClipH, enty.animDrawX-490+50, enty.animDrawY-156+canvasH-484);
+        for (ClipImageEnty enty : managerImg.animClipList) {
+            if (enty.animStartFrame <= managerImg.animCnt && enty.animEndFrame >= managerImg.animCnt) {
+                CanvasUtil.drawClip(managerImg.bitmap, mCanvas, enty.animClipX, enty.animClipY,
+                        enty.animClipW, enty.animClipH, enty.animDrawX - 490 + 50, enty.animDrawY - 156 + canvasH - 484);
                 break;
             }
         }
