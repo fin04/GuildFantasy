@@ -1,0 +1,5 @@
+﻿id,race,STR,DEX,INT,VIT,HP,MP
+R01,human,3,2,4,3,10,10
+R02,dwarf,5,1,2,4,10,7
+R03,elf,2,4,3,2,6,9
+R04,furry,4,3,1,5,9,5

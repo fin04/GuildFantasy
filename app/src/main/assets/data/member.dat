@@ -1,0 +1,10 @@
+﻿id,name,engname,sex,race,class,imageId,mainArms,subArms,head,body
+M001,존,John,male,R01,C01,,,,,
+M002,스미스,Smith,male,R01,C01,,,,,
+M003,터너,Terner,male,R01,C01,,,,,
+M004,만손,Manson,male,R01,C03,,,,,
+M005,에커튼,Ecurton,male,R01,C03,,,,,
+M006,로바스,Robath,male,R01,C03,,,,,
+M007,엘란,Ellan,male,R01,C04,,,,,
+M008,자이메,Jamer,male,R01,C04,,,,,
+M009,올슨,Aulson,male,R01,C04,,,,,
