@@ -1,7 +1,8 @@
 package com.epriest.game.guildfantasy.main.play;
 
-import com.epriest.game.guildfantasy.main.enty.QuestEnty;
 import com.epriest.game.guildfantasy.main.Game_Main;
+import com.epriest.game.guildfantasy.main.enty.QuestEnty;
+import com.epriest.game.guildfantasy.util.INN;
 
 import java.util.ArrayList;
 
@@ -51,7 +52,7 @@ public class TurnManager {
         game_main.playerEnty.isStartTurnAlert = true;
         game_main.playerEnty.eventEnty.changeView = true;
         if(game_main.playerEnty.eventEnty.ImageList.size() > 0)
-            game_main.mainButtonAct(game_main.GAME_EVENT, 0);
+            game_main.mainButtonAct(INN.GAME_EVENT, 0);
     }
 
     private void QuestLife(){

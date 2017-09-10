@@ -4,12 +4,10 @@ import android.view.MotionEvent;
 
 import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
-import com.epriest.game.CanvasGL.util.TextUtil;
-import com.epriest.game.guildfantasy.TestData;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.PartyEnty;
 import com.epriest.game.guildfantasy.main.enty.QuestEnty;
-import com.epriest.game.guildfantasy.main.play.DataManager;
+import com.epriest.game.guildfantasy.util.INN;
 
 /**
  * Created by darka on 2017-03-26.
@@ -66,11 +64,11 @@ public class Game_Quest extends Game {
                 if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                     enty.btnEnty.clickState = ButtonEnty.ButtonClickOff;
 //                    selectQuestId = Integer.parseInt(enty.id);
-                    gameMain.selectQuestEnty = enty;
+//                    gameMain.selectQuestEnty = enty;
                     if(enty.actPartyNum > 0){
-                        gameMain.mainButtonAct(Game_Main.GAME_PARTY, Game_Main.MODE_PARTY_INFO);
+                        gameMain.mainButtonAct(INN.GAME_INN, INN.MODE_PARTY_INFO);
                     }else {
-                        gameMain.mainButtonAct(Game_Main.GAME_PARTY, Game_Main.MODE_PARTY_SELECT);
+                        gameMain.mainButtonAct(INN.GAME_INN, INN.MODE_PARTY_SELECT);
 
                     }
                 }

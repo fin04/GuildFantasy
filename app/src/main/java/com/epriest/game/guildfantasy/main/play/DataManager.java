@@ -6,6 +6,7 @@ import android.database.SQLException;
 
 import com.epriest.game.guildfantasy.main.enty.EventEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
+import com.epriest.game.guildfantasy.main.enty.PartyEnty;
 import com.epriest.game.guildfantasy.main.enty.PlayerEnty;
 import com.epriest.game.guildfantasy.main.enty.QuestEnty;
 import com.epriest.game.guildfantasy.main.enty.StatusEnty;
@@ -39,7 +40,7 @@ public class DataManager {
     }
 
     public static Cursor getRaceCursor(GameDbAdapter dbAdapter, String raceName) {
-        return dbAdapter.getCursor(GameDbAdapter.RACE_TABLE, GameDbAdapter.KEY_RACENAME , raceName);
+        return dbAdapter.getCursor(GameDbAdapter.RACE_TABLE, GameDbAdapter.KEY_RACENAME, raceName);
     }
 
     public static PlayerEnty setStartGamePlayerData(Context context, GameDbAdapter dbAdapter) {
@@ -52,6 +53,12 @@ public class DataManager {
         enty.MEMBERLIST = getMemberDataList(dbAdapter, enty.eventEnty.MemberIDList);
         enty.QUESTLIST = getQuestDataList(dbAdapter, enty.eventEnty.QuestIDList);
         enty.PARTYLIST = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            PartyEnty partyEnty = new PartyEnty();
+            partyEnty.partyId = "00"+i;
+            partyEnty.num = i;
+            enty.PARTYLIST.add(partyEnty);
+        }
         return enty;
     }
 
@@ -72,31 +79,36 @@ public class DataManager {
         eventEnty.ImageList = new ArrayList<>();
         eventEnty.TextList = new ArrayList<>();
 
-        while(!eventCursor.isAfterLast()){
+        while (!eventCursor.isAfterLast()) {
             String questId = eventCursor.getString(eventCursor.getColumnIndex(GameDbAdapter.KEY_EVENTQUEST));
-            if(questId.equals("") || questId == null){}else{
+            if (questId.equals("") || questId == null) {
+            } else {
                 eventEnty.QuestIDList.add(questId);
             }
             String memberId = eventCursor.getString(eventCursor.getColumnIndex(GameDbAdapter.KEY_EVENTMEMBER));
-            if(memberId.equals("") || memberId == null){}else{
-                eventEnty.MemberIDList.add(memberId);
+            if (memberId.equals("") || memberId == null) {
+            } else {
+                eventEnty.MemberIDList.add(memberId+"-"+System.currentTimeMillis());
             }
             gold = eventCursor.getString(eventCursor.getColumnIndex(GameDbAdapter.KEY_EVENTGOLD));
-            if(gold.equals("") || gold == null){
+            if (gold.equals("") || gold == null) {
                 gold = "0";
             }
             eventEnty.Gold += Integer.parseInt(gold);
 
             String itemId = eventCursor.getString(eventCursor.getColumnIndex(GameDbAdapter.KEY_EVENTITEM));
-            if(itemId.equals("") || itemId == null){}else{
+            if (itemId.equals("") || itemId == null) {
+            } else {
                 eventEnty.ItemList.add(itemId);
             }
             String ImageName = eventCursor.getString(eventCursor.getColumnIndex(GameDbAdapter.KEY_EVENTIMAGE));
-            if(ImageName.equals("") || ImageName == null){}else{
+            if (ImageName.equals("") || ImageName == null) {
+            } else {
                 eventEnty.ImageList.add(ImageName);
             }
             String text = eventCursor.getString(eventCursor.getColumnIndex(GameDbAdapter.KEY_EVENTTEXT));
-            if(text.equals("") || text == null){}else{
+            if (text.equals("") || text == null) {
+            } else {
                 eventEnty.TextList.add(text);
             }
             eventCursor.moveToNext();
@@ -107,20 +119,23 @@ public class DataManager {
 
     public static ArrayList<MemberEnty> getMemberDataList(GameDbAdapter dbAdapter, ArrayList<String> eventMember) {
         ArrayList<MemberEnty> entyList = new ArrayList<>();
-        for(String memberID : eventMember){
+        for (String memberID : eventMember) {
+            String id = memberID.split("-")[0];
             MemberEnty memEenty = new MemberEnty();
-            Cursor memberCursor = getMemberCursor(dbAdapter, memberID);
+            Cursor memberCursor = getMemberCursor(dbAdapter, id);
+            memEenty.charId = id;
+            memEenty.memebrId = memberID.split("-")[1];
             memEenty.name = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_NAME));
             memEenty.engname = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_ENGNAME));
             memEenty.sex = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_SEX));
             memEenty.age = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_AGE));
-            memEenty.race  = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_RACE));
-            memEenty._class  = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_CLASS));
-            memEenty.mercy  = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MERCY));
-            memEenty.image  = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_IMAGENAME));
-            memEenty.iconid  = memberCursor.getInt(memberCursor.getColumnIndex(GameDbAdapter.KEY_ICONID));
-            memEenty.profile  = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_PROFILE));
-            memEenty.dialog1  = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_DIALOG1));
+            memEenty.race = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_RACE));
+            memEenty._class = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_CLASS));
+            memEenty.mercy = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MERCY));
+            memEenty.image = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_IMAGENAME));
+            memEenty.iconid = memberCursor.getInt(memberCursor.getColumnIndex(GameDbAdapter.KEY_ICONID));
+            memEenty.profile = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_PROFILE));
+            memEenty.dialog1 = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_DIALOG1));
 
             memEenty.status = new StatusEnty();
             Cursor classCursor = getClassCursor(dbAdapter, memEenty._class);
@@ -139,7 +154,7 @@ public class DataManager {
 
     public static ArrayList<QuestEnty> getQuestDataList(GameDbAdapter dbAdapter, ArrayList<String> eventQuest) {
         ArrayList<QuestEnty> entyList = new ArrayList<>();
-        for(String questId : eventQuest){
+        for (String questId : eventQuest) {
             Cursor questCursor = getQuestCursor(dbAdapter, questId);
             QuestEnty enty = new QuestEnty();
             enty.id = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTID));

@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "527449221914",
+    "firebase_url": "https://guild-fantasy.firebaseio.com",
+    "project_id": "guild-fantasy",
+    "storage_bucket": "guild-fantasy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:527449221914:android:5f9cb6eced4554dd",
+        "android_client_info": {
+          "package_name": "com.epriest.game.guildfantasy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "527449221914-r6qb12r4tcfkhc33a6vpe1d2dgjqg9lg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDOSo60DYifUfsgz0ErDnaRU1-TpYVEvE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

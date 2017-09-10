@@ -33,10 +33,10 @@ public class MainActivity extends GLActivity {
     public void baseCreate() {
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT){
-            display.getSize( size );
-        }else{
-            display.getRealSize( size );
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            display.getSize(size);
+        } else {
+            display.getRealSize(size);
         }
 
         ApplicationClass applicationClass = (ApplicationClass) getApplicationContext();
@@ -48,31 +48,30 @@ public class MainActivity extends GLActivity {
 
         if (hasGLES20()) {
             mGLView = new MainGLView(this);
-//            FrameLayout fl = (FrameLayout) findViewById(R.id.surfaceFrame);
-//            fl.addView(mGLView);
+            FrameLayout fl = (FrameLayout) findViewById(R.id.surfaceFrame);
+            fl.addView(mGLView);
         } else {
             finish();
         }
 
-        AdView adView = new AdView(this);
-        adView.setAdSize(AdSize.BANNER);
-        adView.setAdUnitId(getString(R.string.banner_ad_unit_id));
-        adView.setBackgroundColor(Color.TRANSPARENT);
-
+//        AdView adView = new AdView(this);
+        MobileAds.initialize(getApplicationContext(), getString(R.string.banner_ad_unit_id));
+        AdView adView = (AdView) findViewById(R.id.adView);
+//        adView.setAdUnitId(getString(R.string.banner_ad_unit_id));
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
-                .addTestDevice("ECAF49B3732444D2F7049DDA9DDA3873")
-                .addTestDevice("BF3716FB412CF7AC6A7798B108B93CDB")
+                .addTestDevice("5A92EEA5FFFE4715F8EBD04418F47C10")
+                .addTestDevice("C6BBAF77674324608544CB6B78DF28ED")
                 .build();
         adView.loadAd(adRequest);
 
-        RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+/*        RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
         adParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
 
         FrameLayout layout = (FrameLayout) findViewById(R.id.surfaceFrame);
         layout.addView(mGLView);
-        layout.addView(adView , adParams) ;
+        layout.addView(adView, adParams);*/
     }
 
     @Override

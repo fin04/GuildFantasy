@@ -2,16 +2,21 @@ package com.epriest.game.guildfantasy.main;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.util.Log;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
+import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.ClipImageEnty;
 import com.epriest.game.guildfantasy.main.enty.ImageEnty;
+import com.epriest.game.guildfantasy.util.INN;
 
 import java.util.ArrayList;
+
+import static com.epriest.game.CanvasGL.graphics.CanvasUtil.drawClip;
 
 /**
  * Created by darka on 2016-10-31.
@@ -21,33 +26,11 @@ public class Scene_Home extends Scene {
 
     private Game_Home gameHome;
     //    private Scene_Main sceneMain;
-    private int canvasW, canvasH;
 
-    private Bitmap mapBg;
-    private Bitmap char_01;
-//    private Bitmap menu_icon;
 
     private ImageEnty managerImg;
 
-//    private String[] menuIcon = {"Home" , "Party", "Member", "Town", "Quest", "Setting"};
-//    private int[] menuIconNum = {1 , 2, 3, 4, 5, 20};
-//
-//    private final int charRow = 10;
-//    private final int charNum = 28;
-//    private final int charW = 80;
-//    private final int charH = 96;
-//
-//    private final int insigniaRow = 10;
-//    private final int insigniaNum = 20;
-//    private final int insigniaW = 80;
-//    private final int insigniaH = 96;
-//
-//    private final int iconRow = 5;
-//    private final int iconNum = 20;
-//    private final int iconW = 120;
-//    private final int iconH = 120;
-//
-//    private final int statusBarH = 32;
+    private int cursorTileAnimCnt;
 
     public Scene_Home(Game_Home gameHome, Scene_Main sceneMain) {
         this.gameHome = gameHome;
@@ -56,12 +39,9 @@ public class Scene_Home extends Scene {
 
     @Override
     public void initScene(ApplicationClass appClass) {
-        canvasW = appClass.getGameCanvasWidth();
-        canvasH = appClass.getGameCanvasHeight();
+//        canvasW = appClass.getGameCanvasWidth();
+//        canvasH = appClass.getGameCanvasHeight();
 
-        mapBg = GLUtil.loadAssetsBitmap(appClass, "map/tilemap.png", null);
-        char_01 = GLUtil.loadAssetsBitmap(appClass, "main/char_01.jpg", null);
-//        menu_icon = GLUtil.loadAssetsBitmap(appClass, "main/main_icon.png", null);
 
         managerImg = new ImageEnty();
         managerImg.bitmap = GLUtil.loadAssetsBitmap(appClass, "main/manager_0.png", null);
@@ -106,8 +86,13 @@ public class Scene_Home extends Scene {
 
     @Override
     public void recycleScene() {
-        CanvasUtil.recycleBitmap(mapBg);
-        CanvasUtil.recycleBitmap(char_01);
+        CanvasUtil.recycleBitmap(gameHome.bg);
+        CanvasUtil.recycleBitmap(gameHome.img_char_01);
+        CanvasUtil.recycleBitmap(gameHome.img_mainBtn);
+        CanvasUtil.recycleBitmap(gameHome.img_homeBtn);
+        CanvasUtil.recycleBitmap(gameHome.img_menuBar);
+        CanvasUtil.recycleBitmap(gameHome.alertBox);
+
         CanvasUtil.recycleBitmap(managerImg.bitmap);
     }
 
@@ -118,43 +103,110 @@ public class Scene_Home extends Scene {
 
     @Override
     public void draw(Canvas mCanvas) {
-        //draw map tile
-        drawMap(mCanvas);
 
+        drawBG(mCanvas);
         //manager mode
-//        drawManager(mCanvas);
+        drawManager(mCanvas);
 
-        gameHome.gameMain.drawMain(mCanvas, true);
+//        if (viewMenuButton) {
+            drawMenuButton(mCanvas);
+//        }
+
+        if (gameHome.gameMain.appClass.gameState == INN.GAME_HOME && gameHome.gameMain.playerEnty.isStartTurnAlert)
+            drawTurnStartAlert(mCanvas);
+
+//        gameHome.gameMain.drawMain(mCanvas, true);
     }
 
-    private void drawMap(Canvas mCanvas) {
-        int tileW = gameHome.gameMain.mapLayer.getTileWidth();
-        int tileH = gameHome.gameMain.mapLayer.getTileHeight();
-        int row = gameHome.gameMain.mapLayer.mMapTileRowNum;
-        int column = gameHome.gameMain.mapLayer.mMapTileColumnNum;
-        int tempX = tileW / 2; // Hex DrawX per Line
-        int tempY = tileH / 4 * 3; // Hex DrawY per Line
-        int startY = Game_Main.statusBarH - (tileH / 4) - gameHome.gameMain.mapLayer.mMapAxis.y;
-        int startTempX = gameHome.gameMain.mapLayer.mMapAxis.x;
-        int mapLeftTileNum = gameHome.gameMain.mapLayer.LeftTopTileNum.x;
-        int mapTopTileNum = gameHome.gameMain.mapLayer.LeftTopTileNum.y;
-        for (int i = mapTopTileNum; i < column + mapTopTileNum; i++) {
-            int startX = startTempX - tempX;
-            if (i % 2 == 1)
-                startX = startTempX;
-            int drawY = i * tempY + startY;
-            for (int j = mapLeftTileNum; j < row + mapLeftTileNum; j++) {
-                int mapNum = gameHome.gameMain.mapLayer.terrainColumnList.get(i)[j]-1;
-                int buildNum = gameHome.gameMain.mapLayer.buildiingColumnList.get(i)[j]-1;
-                CanvasUtil.drawClip(mapBg, mCanvas, (mapNum % 4) * tileW, (mapNum / 4) * tileH, tileW, tileH, j * tileW + startX, drawY);
-                CanvasUtil.drawClip(mapBg, mCanvas, (buildNum % 4) * tileW, (buildNum / 4) * tileH, tileW, tileH, j * tileW + startX, drawY);
-            }
+    private void drawBG(Canvas mCanvas) {
+        CanvasUtil.drawBgBitmap(gameHome.bg, mCanvas);
+//        CanvasUtil.drawBox(mCanvas, Color.argb(255, 50,50,50),true,
+//                0, 0,
+//                gameHome.gameMain.appClass.getGameCanvasWidth(), gameHome.mMainScreenY);
+
+        int barNum = gameHome.gameMain.appClass.getGameCanvasWidth() / gameHome.gameMain.statusBarW;
+        for (int i = 0; i <= barNum; i++) {
+            CanvasUtil.drawClip(gameHome.img_menuBar, mCanvas, 0, 0, gameHome.gameMain.statusBarW, gameHome.gameMain.statusBarH,
+                    gameHome.gameMain.statusBarW*i, gameHome.mMenuTabBarY);
         }
     }
 
+    public void drawMenuButton(Canvas mCanvas) {
+//        int btnArea = (canvasH - statusBarH)/ gameMain.menuButtonList.size();
+        for (ButtonEnty mBtn : gameHome.menuButtonList) {
+            int clipX = mBtn.clipX;
+            int clipY = mBtn.clipY;
+            if (mBtn.clickState == ButtonEnty.ButtonClickOn) {
+                if (mBtn.num == gameHome.menuButtonList.size() - 1)
+                    clipX += mBtn.clipW;
+                else
+                    clipY += mBtn.clipH;
+            }
+            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, clipX, clipY,
+                    mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
+
+            int btnNameX = mBtn.drawX+(mBtn.clipW-180)/2;
+            int btnNameY = mBtn.drawY+(mBtn.clipH-50)/2;
+            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 320, mBtn.iconImgNum*50,
+                    180, 50, btnNameX, btnNameY);
+            btnNameX= mBtn.drawX+(mBtn.clipW-130);
+            btnNameY = mBtn.drawY;
+            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 500, mBtn.iconImgNum*50,
+                    130, 50, btnNameX, btnNameY);
+//            CanvasUtil.drawClip(menu_icon, mCanvas, null, (iconNum%5)*mBtn.w, (iconNum/5)*mBtn.h,
+//                    mBtn.w, mBtn.h, mBtn.x+(btnArea-mBtn.w)/2, mBtn.y);
+        }
+
+        int clipY = gameHome.optionBtn.clipY;
+        if (gameHome.optionBtn.clickState == ButtonEnty.ButtonClickOn) {
+            clipY = 54;
+        }
+        CanvasUtil.drawClip(gameHome.img_menuBar, mCanvas, gameHome.optionBtn.clipX, clipY,
+                gameHome.optionBtn.clipW, gameHome.optionBtn.clipH, gameHome.optionBtn.drawX, gameHome.optionBtn.drawY);
+
+        CanvasUtil.drawClip(gameHome.img_menuBar, mCanvas, 121, 107,
+                82, 23, gameHome.optionBtn.drawX + (gameHome.optionBtn.clipW-82)/2, gameHome.optionBtn.drawY + (gameHome.optionBtn.clipH-23)/2);
+//
+//        switch (gameHome.gameMain.appClass.gameState) {
+//            case INN.GAME_HOME:
+//                CanvasUtil.drawClip(gameHome.img_mainBtn, mCanvas, 270, 0,
+//                        gameHome.optionBtn.clipW, 18, gameHome.optionBtn.drawX, gameHome.optionBtn.drawY + 12);
+//                break;
+//            default:
+//                CanvasUtil.drawClip(gameHome.img_mainBtn, mCanvas, 270, 18,
+//                        gameHome.optionBtn.clipW, 18, gameHome.optionBtn.drawX, gameHome.optionBtn.drawY + 12);
+//                break;
+//        }
+    }
+
+    private void drawTurnStartAlert(Canvas mCanvas) {
+        CanvasUtil.drawBitmap(gameHome.alertBox, mCanvas, (gameHome.gameMain.appClass.getGameCanvasWidth() - gameHome.alertBox.getWidth()) / 2
+                , (gameHome.gameMain.appClass.getGameCanvasHeight() - gameHome.alertBox.getHeight()) / 2);
+        int alertBtnClipX = gameHome.alertBtn.clipX;
+        if (gameHome.alertBtn.clickState == ButtonEnty.ButtonClickOn) {
+            alertBtnClipX += gameHome.alertBtn.clipW;
+        }
+        drawClip(gameHome.img_mainBtn, mCanvas,
+                alertBtnClipX, gameHome.alertBtn.clipY,
+                gameHome.alertBtn.clipW, gameHome.alertBtn.clipH,
+                gameHome.alertBtn.drawX, gameHome.alertBtn.drawY);
+        Paint paint = new Paint();
+        paint.setColor(Color.BLACK);
+//        paint.setAntiAlias(true);
+        paint.setTextSize(20);
+        int strX = (gameHome.gameMain.appClass.getGameCanvasWidth() - 400) / 2 + 30;
+        int strY = (gameHome.gameMain.appClass.getGameCanvasHeight() - 300) / 2;
+        CanvasUtil.drawString(mCanvas, gameHome.gameMain.playerEnty.TURN + " 턴", paint, strX, strY);
+        CanvasUtil.drawString(mCanvas, "완료된 퀘스트 수 - ", paint, strX, strY + 30);
+        CanvasUtil.drawString(mCanvas, "길드 수입 - " + gameHome.gameMain.playerEnty.eventEnty.Gold + "Gold", paint, strX, strY + 80);
+//        CanvasUtil.drawString(mCanvas, "충전된 AP - " + turnManager.turnEnty.AP + "point", paint, strX, strY + 130);
+        CanvasUtil.drawString(mCanvas, "새로운 퀘스트 수 - " + gameHome.gameMain.playerEnty.eventEnty.QuestIDList.size(), paint, strX, strY + 180);
+    }
+
     private void drawManager(Canvas mCanvas) {
+        int managerBottomY = gameHome.mMenuTabBarY - 484;
         CanvasUtil.drawClip(managerImg.bitmap, mCanvas, 490, 156,
-                228, 484, 50, canvasH - 484);
+                228, 484, 50, managerBottomY);
 
         if (managerImg.animCnt < managerImg.animMaxFrame) {
             managerImg.animCnt++;
@@ -165,7 +217,7 @@ public class Scene_Home extends Scene {
         for (ClipImageEnty enty : managerImg.animClipList) {
             if (enty.animStartFrame <= managerImg.animCnt && enty.animEndFrame >= managerImg.animCnt) {
                 CanvasUtil.drawClip(managerImg.bitmap, mCanvas, enty.animClipX, enty.animClipY,
-                        enty.animClipW, enty.animClipH, enty.animDrawX - 490 + 50, enty.animDrawY - 156 + canvasH - 484);
+                        enty.animClipW, enty.animClipH, enty.animDrawX - 490 + 50, enty.animDrawY - 156 + managerBottomY);
                 break;
             }
         }

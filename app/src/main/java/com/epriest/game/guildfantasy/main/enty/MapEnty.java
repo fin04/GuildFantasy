@@ -15,20 +15,20 @@ public class MapEnty {
 
     public class MapLayer {
         @SerializedName("tilewidth")
-        private String tilewidth;
+        private int tilewidth;
 
         @SerializedName("tileheight")
-        private String tileheight;
+        private int tileheight;
 
         @SerializedName("layers")
         private List<MapData> mapList = new ArrayList<MapData>();
 
         public int getTileWidth() {
-            return Integer.parseInt(tilewidth);
+            return tilewidth;//Integer.parseInt(tilewidth);
         }
 
         public int getTileHeight() {
-            return Integer.parseInt(tilewidth);
+            return tileheight;//Integer.parseInt(tilewidth);
         }
 
         public List<MapData> getLayers() {
@@ -42,16 +42,25 @@ public class MapEnty {
         public int mMapTileColumnNum;
 
         public Point mMapAxis;
-        public Point curClickTile;
         public Point LeftTopTileNum;
 
-        public boolean isMapMove;
+        public CursorTile cursor;
+
+        public boolean isMapTouch;
+        public boolean isClick;
+
+        public int mTileHeightForMap;
 
         public Point getTileNum(Point point, int x, int y) {
             if (x < 0)
                 x *= -1;
-            point.x = x / getTileWidth();
-            point.y = y / getTileHeight();
+            point.y = y / (getTileHeight() / 4 * 3);
+
+            if (point.y % 2 == 0)
+                point.x = (x + getTileWidth() / 2) / getTileWidth();
+            else
+                point.x = x / getTileWidth();
+
             return point;
         }
     }
@@ -91,5 +100,13 @@ public class MapEnty {
         public int getY() {
             return Integer.parseInt(y);
         }
+    }
+
+    public static class CursorTile{
+        public Point point;
+        public Point curTile;
+        public int tileNum;
+        public int animCnt;
+        public int state;
     }
 }

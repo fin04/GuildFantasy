@@ -78,7 +78,7 @@ public class Scene_Quest extends Scene {
         //manager mode
 //        drawManager(mCanvas, paint);
 
-        gameQuest.gameMain.drawMain(mCanvas, false);
+        gameQuest.gameMain.drawMain(mCanvas, true);
     }
 
     private void drawQuestList(Canvas mCanvas) {
