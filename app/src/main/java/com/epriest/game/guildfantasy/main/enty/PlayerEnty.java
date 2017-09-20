@@ -16,5 +16,6 @@ public class PlayerEnty {
     public EventEnty eventEnty;
     public ArrayList<QuestEnty> QUESTLIST;
     public ArrayList<MemberEnty> MEMBERLIST;
-    public ArrayList<PartyEnty> PARTYLIST;
+    public ArrayList<MemberEnty> PARTY_MEMBERLIST;
+//    public ArrayList<PartyEnty> PARTYLIST;
 }

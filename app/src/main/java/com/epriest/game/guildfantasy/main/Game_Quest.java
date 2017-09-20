@@ -34,11 +34,11 @@ public class Game_Quest extends Game {
             gameMain.playerEnty.QUESTLIST.get(i).btnEnty.drawX = 35 + (i*(gameMain.playerEnty.QUESTLIST.get(i).btnEnty.clipW+20));
             gameMain.playerEnty.QUESTLIST.get(i).btnEnty.drawY = 115;
 
-            for (PartyEnty partyEnty : gameMain.playerEnty.PARTYLIST) {
+            /*for (PartyEnty partyEnty : gameMain.playerEnty.PARTYLIST) {
                 if (partyEnty.questId.equals(gameMain.playerEnty.QUESTLIST.get(i).id)) {
                     gameMain.playerEnty.QUESTLIST.get(i).actPartyNum = partyEnty.num;
                 }
-            }
+            }*/
         }
     }
 

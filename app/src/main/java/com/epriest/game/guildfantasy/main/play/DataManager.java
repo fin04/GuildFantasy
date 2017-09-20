@@ -52,12 +52,11 @@ public class DataManager {
         enty.eventEnty = getEventDataList(dbAdapter, enty.TURN);
         enty.MEMBERLIST = getMemberDataList(dbAdapter, enty.eventEnty.MemberIDList);
         enty.QUESTLIST = getQuestDataList(dbAdapter, enty.eventEnty.QuestIDList);
-        enty.PARTYLIST = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            PartyEnty partyEnty = new PartyEnty();
-            partyEnty.partyId = "00"+i;
-            partyEnty.num = i;
-            enty.PARTYLIST.add(partyEnty);
+        enty.PARTY_MEMBERLIST = new ArrayList<>();
+        for (int i = 0; i < 16; i++) {
+            MemberEnty memberEnty = new MemberEnty();
+            memberEnty.charId = null;
+            enty.PARTY_MEMBERLIST.add(memberEnty);
         }
         return enty;
     }

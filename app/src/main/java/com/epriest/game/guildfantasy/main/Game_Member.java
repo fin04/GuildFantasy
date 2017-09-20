@@ -80,7 +80,7 @@ public class Game_Member extends Game {
             int cy = 300 + i / cardRowNum * (cardH + 30);
             if (GameUtil.equalsTouch(gameMain.appClass.touch, cx, cy, cardW, cardH)) {
                 if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
-//                    gameMain.playerEnty.PARTYLIST.add(gameMain.selectCardNum, memberList.get(i));
+                    gameMain.playerEnty.PARTY_MEMBERLIST.set(gameMain.selectCardNum, memberList.get(i));
                     gameMain.mainButtonAct(INN.GAME_INN, 0);
 
                 }

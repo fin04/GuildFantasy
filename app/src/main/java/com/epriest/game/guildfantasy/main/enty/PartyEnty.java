@@ -12,7 +12,7 @@ public class PartyEnty {
 	public String questId;
 	public String questTime;
 
-	public ArrayList<Integer> memberNum = new ArrayList<>();
+//	public ArrayList<Integer> memberNum = new ArrayList<>();
 //	public ArrayList<String> playerIdList = new ArrayList<>();
 		
 }

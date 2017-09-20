@@ -55,6 +55,9 @@ public class Scene_Member extends Scene {
         if (gameMember.img_member.size() == 0)
             return;
 
+        String partyNum = "Party-"+gameMember.gameMain.selectCardNum/4+1+" Member-"+ gameMember.gameMain.selectCardNum%4+1;
+        CanvasUtil.drawString(mCanvas, partyNum, 20, Color.argb(255,255,255,255), Paint.Align.LEFT, 200, 50);
+
         int chrImgX = (200 - gameMember.img_member.get(0).getWidth()) / 2;
         int chrImgY = 30;// + (180 - gameMember.img_member.get(0).getHeight()) / 2;
         int cardTextBoxY = gameMember.cardH - gameMember.cardTextBoxH - 15;
