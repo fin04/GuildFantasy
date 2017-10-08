@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.epriest.game.guildfantasy.main.enty.PlayerEnty;
+import com.epriest.game.guildfantasy.main.enty.UserEnty;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -151,14 +151,14 @@ public class PPreference {
         write(key, value);
     }*/
 
-    public PlayerEnty readPlayer(String key) {
+    public UserEnty readPlayer(String key) {
         Gson gson = new Gson();
         String str = read(key, null);
-        PlayerEnty enty = gson.fromJson(str, PlayerEnty.class);
+        UserEnty enty = gson.fromJson(str, UserEnty.class);
         return enty;
     }
 
-    public void writePlayer(String key, PlayerEnty enty) {
+    public void writePlayer(String key, UserEnty enty) {
         Gson gson = new Gson();
         String value = gson.toJson(enty);
         write(key, value);

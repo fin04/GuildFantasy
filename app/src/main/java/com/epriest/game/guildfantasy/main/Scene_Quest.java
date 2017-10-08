@@ -46,7 +46,7 @@ public class Scene_Quest extends Scene {
         bg = GLUtil.loadAssetsBitmap(context, "main/quest.jpg", null);
         questcard = GLUtil.loadAssetsBitmap(context, "main/questcard.png", null);
 
-        for (QuestEnty enty : gameQuest.gameMain.playerEnty.QUESTLIST) {
+        for (QuestEnty enty : gameQuest.gameMain.userEnty.QUESTLIST) {
             questBitmap.add(GLUtil.loadAssetsBitmap(context, "quest/" + enty.image, null));
         }
     }
@@ -83,8 +83,8 @@ public class Scene_Quest extends Scene {
 
     private void drawQuestList(Canvas mCanvas) {
 
-        for(int i=0; i<gameQuest.gameMain.playerEnty.QUESTLIST.size(); i++){
-            QuestEnty enty = gameQuest.gameMain.playerEnty.QUESTLIST.get(i);
+        for(int i = 0; i<gameQuest.gameMain.userEnty.QUESTLIST.size(); i++){
+            QuestEnty enty = gameQuest.gameMain.userEnty.QUESTLIST.get(i);
             CanvasUtil.drawClip(questcard, mCanvas, enty.btnEnty.clipX, enty.btnEnty.clipY,
                     enty.btnEnty.clipW, enty.btnEnty.clipH, enty.btnEnty.drawX, enty.btnEnty.drawY);
 

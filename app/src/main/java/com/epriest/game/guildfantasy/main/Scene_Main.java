@@ -89,11 +89,11 @@ public class Scene_Main {
         CanvasUtil.drawBitmap(status_bar, mCanvas, null, 0, 0);
         paint.setColor(Color.argb(255, 50, 50, 50));
         paint.setTextSize(25);
-        CanvasUtil.drawString(mCanvas, gameMain.playerEnty.Name, paint, 30, 3);
-        CanvasUtil.drawString(mCanvas, "Level "+ gameMain.playerEnty.LEVEL, paint, 150, 3);
-        CanvasUtil.drawString(mCanvas, "quest "+ gameMain.playerEnty.QUESTLIST.size(), paint, 300, 3);
-        CanvasUtil.drawString(mCanvas, "party "+ gameMain.playerEnty.PARTYLIST.size(), paint, 450, 3);
-        CanvasUtil.drawString(mCanvas, "member "+ gameMain.playerEnty.MEMBERLIST.size(), paint, 600, 3);
+        CanvasUtil.drawString(mCanvas, gameMain.userEnty.Name, paint, 30, 3);
+        CanvasUtil.drawString(mCanvas, "Level "+ gameMain.userEnty.LEVEL, paint, 150, 3);
+        CanvasUtil.drawString(mCanvas, "quest "+ gameMain.userEnty.QUESTLIST.size(), paint, 300, 3);
+        CanvasUtil.drawString(mCanvas, "party "+ gameMain.userEnty.PARTYLIST.size(), paint, 450, 3);
+        CanvasUtil.drawString(mCanvas, "member "+ gameMain.userEnty.MEMBERLIST.size(), paint, 600, 3);
     }
 
     private void drawPartyMenuButton(Canvas mCanvas, Paint paint) {

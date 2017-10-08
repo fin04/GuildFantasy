@@ -6,8 +6,8 @@ import android.view.MotionEvent;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
-import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
+import com.epriest.game.guildfantasy.main.play.DataManager;
 import com.epriest.game.guildfantasy.util.INN;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class Game_Member extends Game {
     public ArrayList<MemberEnty> memberList;
     public ArrayList<Bitmap> img_member;
 
-    public int cardW , cardH;
+    public int cardW, cardH;
     public int cardRowNum;
     public int cardTextBoxW, cardTextBoxH;
     public int scrollY, prevScrollY;
@@ -42,13 +42,13 @@ public class Game_Member extends Game {
 
     @Override
     public void gStart() {
-        memberList = gameMain.playerEnty.MEMBERLIST;
+        memberList = DataManager.getAllUserMemberList(gameMain.dbAdapter, gameMain.userEnty.Name);
         img_memberSheet = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member_sheet.png", null);
         img_membercard = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/membercard.png", null);
         bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member.jpg", null);
-        img_member= new ArrayList<>();
-        for(int i=0; i< memberList.size(); i++){
-            img_member.add(GLUtil.loadAssetsBitmap(gameMain.appClass, "member/"+memberList.get(i).image, null));
+        img_member = new ArrayList<>();
+        for (int i = 0; i < memberList.size(); i++) {
+            img_member.add(GLUtil.loadAssetsBitmap(gameMain.appClass, "member/" + memberList.get(i).image, null));
         }
 
         cardW = 212;
@@ -75,14 +75,13 @@ public class Game_Member extends Game {
         if (gameMain.onTouchEvent(event))
             return;
 
-        for(int i=0; i<memberList.size(); i++ ){
-            int cx = 20 + i % cardRowNum * (cardW + 10);
-            int cy = 300 + i / cardRowNum * (cardH + 30);
-            if (GameUtil.equalsTouch(gameMain.appClass.touch, cx, cy, cardW, cardH)) {
-                if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
-                    gameMain.playerEnty.PARTYMemberIdLIST.set(gameMain.selectCardNum, memberList.get(i).memebrId);
+        if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
+            for (int i = 0; i < memberList.size(); i++) {
+                int cx = 20 + i % cardRowNum * (cardW + 10);
+                int cy = 300 + i / cardRowNum * (cardH + 30);
+                if (GameUtil.equalsTouch(gameMain.appClass.touch, cx, cy, cardW, cardH)) {
+                    gameMain.userEnty.PARTY_MEMBERID_LIST.set(gameMain.selectCardNum, memberList.get(i).memberId);
                     gameMain.mainButtonAct(INN.GAME_INN, 0);
-
                 }
                 return;
             }

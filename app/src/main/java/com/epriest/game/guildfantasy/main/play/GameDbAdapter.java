@@ -7,6 +7,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
 import java.io.InputStream;
 
 import jxl.Sheet;
@@ -18,18 +19,18 @@ import jxl.Workbook;
 
 public class GameDbAdapter {
     public static final String KEY_ROWID = "_id";
-    public static final String KEY_MEMBERID = "memberid";
-    public static final String KEY_NAME = "name";
-    public static final String KEY_ENGNAME = "engname";
-    public static final String KEY_SEX = "sex";
-    public static final String KEY_AGE = "age";
-    public static final String KEY_RACE = "race";
-    public static final String KEY_CLASS = "class";
-    public static final String KEY_MERCY = "mercy";
-    public static final String KEY_IMAGENAME = "imagename";
-    public static final String KEY_ICONID = "iconid";
-    public static final String KEY_PROFILE = "profile";
-    public static final String KEY_DIALOG1 = "dialog1";
+    public static final String KEY_MEMBERID = "member_id";
+    public static final String KEY_MEMBERNAME = "member_name";
+    public static final String KEY_MEMBERENGNAME = "member_engname";
+    public static final String KEY_MEMBERSEX = "member_sex";
+    public static final String KEY_MEMBERAGE = "member_age";
+    public static final String KEY_MEMBERRACE = "member_race";
+    public static final String KEY_MEMBERCLASS = "member_class";
+    public static final String KEY_MEMBERMERCY = "member_mercy";
+    public static final String KEY_MEMBERIMAGENAME = "member_imagename";
+    public static final String KEY_MEMBERICONID = "member_iconid";
+    public static final String KEY_MEMBERPROFILE = "member_profile";
+    public static final String KEY_MEMBERDIALOG1 = "member_dialog1";
 
     public static final String KEY_CLASSID = "class_id";
     public static final String KEY_CLASSNAME = "class_name";
@@ -77,9 +78,37 @@ public class GameDbAdapter {
     public static final String KEY_EVENTIMAGE = "event_image";
     public static final String KEY_EVENTTEXT = "event_text";
 
+    public static final String KEY_PLAYERID = "player_id";
+    public static final String KEY_USERNAME = "player_name";
+    public static final String KEY_USEREXP = "player_exp";
+    public static final String KEY_USERLEVEL = "player_lv";
+    public static final String KEY_USERAP = "player_ap";
+    public static final String KEY_USERTURN = "player_turn";
+    public static final String KEY_USERGOLD = "player_gold";
+    public static final String KEY_USERGEM_RED = "player_gem_red";
+    public static final String KEY_USERGEM_GREEN = "player_gem_green";
+    public static final String KEY_USERGEM_BLUE = "player_gem_blue";
 
-    private static String[] MemberColumns = new String[]{KEY_MEMBERID, KEY_NAME, KEY_ENGNAME, KEY_SEX,
-            KEY_AGE, KEY_RACE, KEY_CLASS, KEY_MERCY, KEY_IMAGENAME, KEY_ICONID, KEY_PROFILE, KEY_DIALOG1};
+    public static final String KEY_MEMBERLEVEL = "member_lv";
+    public static final String KEY_MEMBEREXP = "member_exp";
+    public static final String KEY_MEMBERHP = "member_hp";
+    public static final String KEY_MEMBERMP = "member_mp";
+    public static final String KEY_MEMBERAP = "member_ap";
+    public static final String KEY_MEMBERSTR = "member_str";
+    public static final String KEY_MEMBERDEX = "member_dex";
+    public static final String KEY_MEMBERINT = "member_int";
+    public static final String KEY_MEMBERVIT = "member_vit";
+    public static final String KEY_MEMBERRENOWN = "member_renown";
+    public static final String KEY_MEMBERFOOD = "member_food";
+    public static final String KEY_MEMBERITEM1 = "member_item1";
+    public static final String KEY_MEMBERITEM2 = "member_item2";
+    public static final String KEY_MEMBERITEM3 = "member_item3";
+    public static final String KEY_MEMBERARM1 = "member_arm1";
+    public static final String KEY_MEMBERARM2 = "member_arm2";
+
+    private static String[] MemberColumns = new String[]{KEY_MEMBERID, KEY_MEMBERNAME, KEY_MEMBERENGNAME, KEY_MEMBERSEX,
+            KEY_MEMBERAGE, KEY_MEMBERRACE, KEY_MEMBERCLASS, KEY_MEMBERMERCY, KEY_MEMBERIMAGENAME, KEY_MEMBERICONID,
+            KEY_MEMBERPROFILE, KEY_MEMBERDIALOG1};
     private static String[] ClassColumns = new String[]{KEY_CLASSID, KEY_CLASSNAME, KEY_CLASSSTR, KEY_CLASSDEX,
             KEY_CLASSINT, KEY_CLASSVIT, KEY_CLASSMAINARMS, KEY_CLASSSUBARMS, KEY_CLASSHEAD, KEY_CLASSBODY};
     private static String[] RaceColumns = new String[]{KEY_RACEID, KEY_RACENAME, KEY_RACEFIRE, KEY_RACEWATER,
@@ -90,6 +119,19 @@ public class GameDbAdapter {
     private static String[] EventColumns = new String[]{KEY_EVENTID, KEY_EVENTTURN, KEY_EVENTQUEST, KEY_EVENTMEMBER,
             KEY_EVENTGOLD, KEY_EVENTITEM, KEY_EVENTIMAGE, KEY_EVENTTEXT};
 
+    private static String[] PlayerMainColumns = new String[]{
+            KEY_PLAYERID, KEY_USERNAME, KEY_USEREXP, KEY_USERLEVEL,
+            KEY_USERAP, KEY_USERTURN, KEY_USERGOLD, KEY_USERGEM_RED,
+            KEY_USERGEM_GREEN, KEY_USERGEM_BLUE};
+    private static String[] PlayerMemberColumns = new String[]{
+            KEY_MEMBERID, KEY_USERNAME, KEY_MEMBERNAME, KEY_MEMBERENGNAME, KEY_MEMBERSEX,
+            KEY_MEMBERAGE, KEY_MEMBERRACE, KEY_MEMBERCLASS, KEY_MEMBERMERCY,
+            KEY_MEMBERIMAGENAME, KEY_MEMBERICONID, KEY_MEMBERPROFILE, KEY_MEMBERDIALOG1,
+            KEY_MEMBERLEVEL, KEY_MEMBEREXP, KEY_MEMBERHP, KEY_MEMBERMP, KEY_MEMBERAP,
+            KEY_MEMBERSTR, KEY_MEMBERDEX, KEY_MEMBERINT, KEY_MEMBERVIT, KEY_MEMBERRENOWN,
+            KEY_MEMBERFOOD, KEY_MEMBERITEM1, KEY_MEMBERITEM2, KEY_MEMBERITEM3, KEY_MEMBERARM1,
+            KEY_MEMBERARM2, KEY_QUESTID
+    };
 
     private static final String TAG = "GameDbAdapter";
 
@@ -100,12 +142,14 @@ public class GameDbAdapter {
      * Database creation sql statement
      */
     private static final String DATABASE_NAME = "data.db";
-    public static final String MEMBER_TABLE = "member";
+    public static final String DB_MEMBER_TABLE = "member";
     public static final String CLASS_TABLE = "class";
     public static final String RACE_TABLE = "race";
     public static final String QUEST_TABLE = "quest";
     public static final String EVENT_TABLE = "event";
-    private static final int DATABASE_VERSION = 5;
+    public static final String USERMAIN_TABLE = "player_main";
+    public static final String USERMEMBER_TABLE = "player_member";
+    private static final int DATABASE_VERSION = 1;
     private final Context mCtx;
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
@@ -118,14 +162,17 @@ public class GameDbAdapter {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            createMemberTable(db, MEMBER_TABLE, MemberColumns);
+            createMemberTable(db, DB_MEMBER_TABLE, MemberColumns);
             createMemberTable(db, CLASS_TABLE, ClassColumns);
             createMemberTable(db, RACE_TABLE, RaceColumns);
             createMemberTable(db, QUEST_TABLE, QuestColumns);
             createMemberTable(db, EVENT_TABLE, EventColumns);
+
+            createPlayerTable(db, USERMAIN_TABLE, PlayerMainColumns);
+            createPlayerTable(db, USERMEMBER_TABLE, PlayerMemberColumns);
         }
 
-        private void createMemberTable(SQLiteDatabase db, String tableName, String[] columns) {
+        private String createTable(String tableName, String[] columns) {
             //create table
             String TableStr = "create table " + tableName + "(_id integer primary key autoincrement, ";
             for (int i = 0; i < columns.length; i++) {
@@ -136,8 +183,11 @@ public class GameDbAdapter {
                     TableStr += ");";
                 }
             }
-            db.execSQL(TableStr);
+            return TableStr;
+        }
 
+        private void createMemberTable(SQLiteDatabase db, String tableName, String[] columns) {
+            db.execSQL(createTable(tableName, columns));
             //insert data
             Workbook workbook = null;
 //            Sheet sheet = null;
@@ -192,11 +242,15 @@ public class GameDbAdapter {
             }
         }
 
+        private void createPlayerTable(SQLiteDatabase db, String tableName, String[] columns) {
+            db.execSQL(createTable(tableName, columns));
+        }
+
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 //            Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion
 //                    + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS " + MEMBER_TABLE);
+            db.execSQL("DROP TABLE IF EXISTS " + DB_MEMBER_TABLE);
             db.execSQL("DROP TABLE IF EXISTS " + CLASS_TABLE);
             db.execSQL("DROP TABLE IF EXISTS " + RACE_TABLE);
             db.execSQL("DROP TABLE IF EXISTS " + QUEST_TABLE);
@@ -220,31 +274,6 @@ public class GameDbAdapter {
     }
 
     //member
-    public long createDATA(String TableName, String[] columnData) {
-        String[] columns = null;
-        columns = getColumns(TableName);
-        /*if(TableName.equals(MEMBER_TABLE))
-            columns = MemberColumns;
-        else if(TableName.equals(CLASS_TABLE))
-            columns = ClassColumns;
-        else if(TableName.equals(RACE_TABLE))
-            columns = RaceColumns;
-        else if(TableName.equals(QUEST_TABLE))
-            columns = QuestColumns;*/
-
-        ContentValues initialValues = new ContentValues();
-        for (int i = 0; i < columns.length; i++) {
-            initialValues.put(columns[i], columnData[i]);
-        }
-
-        return mDb.insert(TableName, null, initialValues);
-    }
-
-    public boolean deleteROW(String TableName, long rowId) {
-        Log.i("Delete called", "value__" + rowId);
-        return mDb.delete(TableName, KEY_ROWID + "=" + rowId, null) > 0;
-    }
-
     public Cursor fetchAllDATA(String TableName, String[] columns) {
         return mDb.query(TableName, columns, null, null, null, null, null);
     }
@@ -259,9 +288,14 @@ public class GameDbAdapter {
     }
 
     public Cursor getCursor(String tableName, String selectKey, String selectName) throws SQLException {
-//        Cursor mCursor = mDb.query(MEMBER_TABLE, null, KEY_MEMBERID+ " = '" + memberID+"'",
+//        Cursor mCursor = mDb.query(DB_MEMBER_TABLE, null, KEY_MEMBERID+ " = '" + memberID+"'",
 //                null, null, null, null, null);
-        Cursor mCursor = mDb.rawQuery("SELECT * FROM " + tableName + " WHERE " + selectKey + " ='" + selectName + "'", null);
+        Cursor mCursor;
+        if (selectName == null) {
+            mCursor = mDb.rawQuery("SELECT * FROM " + tableName, null);
+        } else {
+            mCursor = mDb.rawQuery("SELECT * FROM " + tableName + " WHERE " + selectKey + " ='" + selectName + "'", null);
+        }
         if (mCursor != null) {
             mCursor.moveToFirst();
         }
@@ -269,8 +303,8 @@ public class GameDbAdapter {
         return mCursor;
     }
 
-    private String[] getColumns(String TableName) {
-        if (TableName.equals(MEMBER_TABLE))
+    public String[] getColumns(String TableName) {
+        if (TableName.equals(DB_MEMBER_TABLE))
             return MemberColumns;
         else if (TableName.equals(CLASS_TABLE))
             return ClassColumns;
@@ -280,6 +314,10 @@ public class GameDbAdapter {
             return QuestColumns;
         else if (TableName.equals(EVENT_TABLE))
             return EventColumns;
+        else if (TableName.equals(USERMAIN_TABLE))
+            return PlayerMainColumns;
+        else if (TableName.equals(USERMEMBER_TABLE))
+            return PlayerMemberColumns;
         return null;
     }
 
@@ -287,7 +325,12 @@ public class GameDbAdapter {
         return getColumns(TableName).length;
     }
 
-    public boolean updateROW(String TableName, String[] columnData, long rowId) {
+    public int getRowCount(String TableName, String selectKey, String selectName) {
+        Cursor c = getCursor(TableName, selectKey, selectName);
+        return c.getCount();
+    }
+
+    public boolean updateData(String TableName, String[] columnData, long rowId) {
         String[] columns = getColumns(TableName);
 
         ContentValues args = new ContentValues();
@@ -297,5 +340,58 @@ public class GameDbAdapter {
         return mDb.update(TableName, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
 
+    public void updateData(String TableName, long rowId, String data, int columnNum) {
+        String[] columns = getColumns(TableName);
+        columns[columnNum] = data;
+        updateData(TableName, columns, rowId);
+    }
+
+    /**
+     *
+     * @param TableName
+     * @param rowId -1 이면 모든 ROW 제거
+     * @return
+     */
+    public boolean deleteROW(String TableName, long rowId, String username) {
+        Log.i("Delete called", "value__" + rowId);
+        String whereClause = null;
+        if(rowId != -1){
+            whereClause = KEY_ROWID + "=" + rowId;
+        } else if(username != null){
+            whereClause = KEY_USERNAME + "= '" + username+"'";
+        }
+        return mDb.delete(TableName, whereClause, null) > 0;
+    }
+
+    public long insertDATA(String TableName, String[] columnData) {
+        String[] columns = null;
+        columns = getColumns(TableName);
+
+        ContentValues initialValues = new ContentValues();
+        for (int i = 0; i < columns.length; i++) {
+            initialValues.put(columns[i], columnData[i]);
+        }
+
+        long row_id = -1;
+        try {
+            mDb.beginTransaction();
+            row_id = mDb.insert(TableName, null, initialValues);
+            mDb.setTransactionSuccessful();
+        } catch (SQLException e) {
+            row_id = -1;
+        } finally {
+            mDb.endTransaction();
+        }
+
+        return row_id;
+    }
+
+    /*public String getLastRowID(String TableName){
+        String query = "SELECT "+KEY_ROWID+" from "+TableName+" order by "+KEY_ROWID+" DESC limit 1";
+        Cursor c = mDb.rawQuery(query);
+        if (c != null && c.moveToFirst()) {
+            lastId = c.getLong(0); //The 0 is the column index, we only have 1 column, so the index is 0
+        }
+    }*/
 
 }

@@ -1,33 +1,15 @@
 package com.epriest.game.guildfantasy.main;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Point;
 import android.view.MotionEvent;
 
-import com.epriest.game.CanvasGL.graphics.CanvasUtil;
-import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
-import com.epriest.game.CanvasGL.util.GameUtil;
-import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
-import com.epriest.game.guildfantasy.main.enty.EventEnty;
-import com.epriest.game.guildfantasy.main.enty.MapEnty;
-import com.epriest.game.guildfantasy.main.enty.PartyEnty;
-import com.epriest.game.guildfantasy.main.enty.PlayerEnty;
-import com.epriest.game.guildfantasy.main.enty.QuestEnty;
+import com.epriest.game.guildfantasy.main.enty.UserEnty;
 import com.epriest.game.guildfantasy.main.play.DataManager;
 import com.epriest.game.guildfantasy.main.play.GameDbAdapter;
 import com.epriest.game.guildfantasy.main.play.TurnManager;
-import com.epriest.game.guildfantasy.util.INN;
 import com.epriest.game.guildfantasy.util.PPreference;
-import com.google.gson.Gson;
-
-import java.util.ArrayList;
-
-import static com.epriest.game.CanvasGL.graphics.CanvasUtil.drawClip;
 
 /**
  * Created by darka on 2017-03-26.
@@ -40,7 +22,7 @@ public class Game_Main {
     public GameDbAdapter dbAdapter;
 //    public Scene_Main sceneMain;
 
-    public PlayerEnty playerEnty;
+    public UserEnty userEnty;
 //    public EventEnty eventEnty;
 //    public QuestEnty selectQuestEnty;
 //    public ArrayList<PartyEnty> inTownPartyList;
@@ -75,11 +57,11 @@ public class Game_Main {
     }
 
     public void Init() {
-//        playerEnty = checkPlayerData();
-        if (playerEnty == null) {
+//        userEnty = checkPlayerData();
+        if (userEnty == null) {
             // 프롤로그를 실행하고 플레이어를 작성
 //            startProlog1();
-            playerEnty = DataManager.setStartGamePlayerData(appClass.getBaseContext(), dbAdapter);
+            userEnty = DataManager.createUserData(dbAdapter, "홍길동");
         }
 
         canvasW = appClass.getGameCanvasWidth();
@@ -97,7 +79,7 @@ public class Game_Main {
 //        menuButtonList = setMenuIcon(canvasW, canvasH);
     }
 
-    private PlayerEnty checkPlayerData() {
+    private UserEnty checkPlayerData() {
         return new PPreference(appClass.getBaseContext()).readPlayer("player");
     }
 
@@ -108,7 +90,7 @@ public class Game_Main {
         appClass.stateMode = mode;
         selectCardNum = -1;
 
-        new PPreference(appClass.getBaseContext()).writePlayer("player", playerEnty);
+        new PPreference(appClass.getBaseContext()).writePlayer("player", userEnty);
     }
 
     public void mainButtonAct(int state, int mode, int num) {
@@ -118,16 +100,16 @@ public class Game_Main {
         appClass.stateMode = mode;
         selectCardNum = num;
 
-        new PPreference(appClass.getBaseContext()).writePlayer("player", playerEnty);
+        new PPreference(appClass.getBaseContext()).writePlayer("player", userEnty);
     }
 
     public boolean onTouchEvent(MotionEvent event) {
-        /*if (appClass.gameState == INN.GAME_HOME && playerEnty.isStartTurnAlert) {
+        /*if (appClass.gameState == INN.GAME_HOME && userEnty.isStartTurnAlert) {
             if (GameUtil.equalsTouch(appClass.touch, alertBtn.drawX, alertBtn.drawY, alertBtn.clipW, alertBtn.clipH)) {
                 if (appClass.touch.action == MotionEvent.ACTION_UP) {
                     alertBtn.clickState = ButtonEnty.ButtonClickOff;
-                    playerEnty.isStartTurnAlert = false;
-//                    playerEnty = DataManager.setChangeEvent(dbAdapter, playerEnty);
+                    userEnty.isStartTurnAlert = false;
+//                    userEnty = DataManager.setChangeEvent(dbAdapter, userEnty);
 
                     return true;
                 } else {
@@ -195,7 +177,7 @@ public class Game_Main {
                     else if (mBtn.name.equals("Town") && appClass.gameState != INN.GAME_TOWN)
                         mainButtonAct(INN.GAME_TOWN, 0);
                     else if (mBtn.name.equals("Quest") && appClass.gameState != INN.GAME_QUEST_SELECT) {
-                        if (playerEnty.QUESTLIST.size() > 0)
+                        if (userEnty.QUESTLIST.size() > 0)
                             mainButtonAct(INN.GAME_QUEST_SELECT, 0);
                     } else if (mBtn.name.equals("Setting") && appClass.gameState != INN.GAME_OPTION)
                         mainButtonAct(INN.GAME_OPTION, 0);
@@ -331,7 +313,7 @@ public class Game_Main {
 //        }
 
         // turn alert dialog
-//        if (appClass.gameState == INN.GAME_HOME && playerEnty.isStartTurnAlert)
+//        if (appClass.gameState == INN.GAME_HOME && userEnty.isStartTurnAlert)
 //            drawTurnStartAlert(mCanvas);
     }
 
@@ -391,23 +373,23 @@ public class Game_Main {
         int drawX = (appClass.getGameCanvasWidth() - 120) / 5;
         paint.setColor(Color.argb(255, 50, 50, 50));
         paint.setTextSize(20);
-        CanvasUtil.drawString(mCanvas, playerEnty.Name + "(Lv " + playerEnty.LEVEL + ")", paint, 10, drawY);
+        CanvasUtil.drawString(mCanvas, userEnty.Name + "(Lv " + userEnty.LEVEL + ")", paint, 10, drawY);
 //        CanvasUtil.drawClip(img_mainBtn, mCanvas, mBtn.clipX, clipY,
 //                mBtn.clipW, mBtn.clipH, drawX * 1, drawY);
         CanvasUtil.drawClip(img_mainBtn, mCanvas, memberIcon.clipX, memberIcon.clipY,
                 memberIcon.clipW, memberIcon.clipH, memberIcon.drawX, memberIcon.drawY);
-        CanvasUtil.drawString(mCanvas, Integer.toString(playerEnty.MEMBERLIST.size()), paint,
+        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.MEMBERLIST.size()), paint,
                 memberIcon.drawX + memberIcon.clipW + 5, memberIcon.drawY + 3);
         CanvasUtil.drawClip(img_mainBtn, mCanvas, partyIcon.clipX, partyIcon.clipY,
                 partyIcon.clipW, partyIcon.clipH, partyIcon.drawX, partyIcon.drawY);
-        CanvasUtil.drawString(mCanvas, Integer.toString(playerEnty.PARTYLIST.size()), paint,
+        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.PARTYLIST.size()), paint,
                 partyIcon.drawX + partyIcon.clipW + 5, partyIcon.drawY + 3);
         CanvasUtil.drawClip(img_mainBtn, mCanvas, goldIcon.clipX, goldIcon.clipY,
                 goldIcon.clipW, goldIcon.clipH, goldIcon.drawX, goldIcon.drawY);
-        CanvasUtil.drawString(mCanvas, Integer.toString(playerEnty.GOLD), paint,
+        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.GOLD), paint,
                 goldIcon.drawX + goldIcon.clipW + 5, goldIcon.drawY + 3);
-        CanvasUtil.drawString(mCanvas, "AP " + playerEnty.AP, paint, drawX * 4, drawY);
-        CanvasUtil.drawString(mCanvas, "Turn " + playerEnty.TURN, paint, appClass.getGameCanvasWidth() - 180, drawY);
+        CanvasUtil.drawString(mCanvas, "AP " + userEnty.AP, paint, drawX * 4, drawY);
+        CanvasUtil.drawString(mCanvas, "Turn " + userEnty.TURN, paint, appClass.getGameCanvasWidth() - 180, drawY);
     }*/
 
     /*private void drawTurnStartAlert(Canvas mCanvas) {
@@ -427,11 +409,11 @@ public class Game_Main {
         paint.setTextSize(20);
         int strX = (appClass.getGameCanvasWidth() - 400) / 2 + 30;
         int strY = (appClass.getGameCanvasHeight() - 300) / 2;
-        CanvasUtil.drawString(mCanvas, playerEnty.TURN + " 턴", paint, strX, strY);
+        CanvasUtil.drawString(mCanvas, userEnty.TURN + " 턴", paint, strX, strY);
         CanvasUtil.drawString(mCanvas, "완료된 퀘스트 수 - ", paint, strX, strY + 30);
-        CanvasUtil.drawString(mCanvas, "길드 수입 - " + playerEnty.eventEnty.Gold + "Gold", paint, strX, strY + 80);
+        CanvasUtil.drawString(mCanvas, "길드 수입 - " + userEnty.eventEnty.Gold + "Gold", paint, strX, strY + 80);
 //        CanvasUtil.drawString(mCanvas, "충전된 AP - " + turnManager.turnEnty.AP + "point", paint, strX, strY + 130);
-        CanvasUtil.drawString(mCanvas, "새로운 퀘스트 수 - " + playerEnty.eventEnty.QuestIDList.size(), paint, strX, strY + 180);
+        CanvasUtil.drawString(mCanvas, "새로운 퀘스트 수 - " + userEnty.eventEnty.QuestIDList.size(), paint, strX, strY + 180);
     }*/
 
     /*public void drawMenuBar(Canvas mCanvas) {
@@ -451,23 +433,23 @@ public class Game_Main {
         int drawX = (appClass.getGameCanvasWidth() - 120) / 5;
         paint.setColor(Color.argb(255, 50, 50, 50));
         paint.setTextSize(20);
-        CanvasUtil.drawString(mCanvas, playerEnty.Name + "(Lv " + playerEnty.LEVEL + ")", paint, 10, drawY);
+        CanvasUtil.drawString(mCanvas, userEnty.Name + "(Lv " + userEnty.LEVEL + ")", paint, 10, drawY);
 //        CanvasUtil.drawClip(img_mainBtn, mCanvas, mBtn.clipX, clipY,
 //                mBtn.clipW, mBtn.clipH, drawX * 1, drawY);
         CanvasUtil.drawClip(img_mainBtn, mCanvas, memberIcon.clipX, memberIcon.clipY,
                 memberIcon.clipW, memberIcon.clipH, memberIcon.drawX, memberIcon.drawY);
-        CanvasUtil.drawString(mCanvas, Integer.toString(playerEnty.MEMBERLIST.size()), paint,
+        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.MEMBERLIST.size()), paint,
                 memberIcon.drawX + memberIcon.clipW + 5, memberIcon.drawY + 3);
         CanvasUtil.drawClip(img_mainBtn, mCanvas, partyIcon.clipX, partyIcon.clipY,
                 partyIcon.clipW, partyIcon.clipH, partyIcon.drawX, partyIcon.drawY);
-        CanvasUtil.drawString(mCanvas, Integer.toString(playerEnty.PARTYLIST.size()), paint,
+        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.PARTYLIST.size()), paint,
                 partyIcon.drawX + partyIcon.clipW + 5, partyIcon.drawY + 3);
         CanvasUtil.drawClip(img_mainBtn, mCanvas, goldIcon.clipX, goldIcon.clipY,
                 goldIcon.clipW, goldIcon.clipH, goldIcon.drawX, goldIcon.drawY);
-        CanvasUtil.drawString(mCanvas, Integer.toString(playerEnty.GOLD), paint,
+        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.GOLD), paint,
                 goldIcon.drawX + goldIcon.clipW + 5, goldIcon.drawY + 3);
-        CanvasUtil.drawString(mCanvas, "AP " + playerEnty.AP, paint, drawX * 4, drawY);
-        CanvasUtil.drawString(mCanvas, "Turn " + playerEnty.TURN, paint, appClass.getGameCanvasWidth() - 180, drawY);
+        CanvasUtil.drawString(mCanvas, "AP " + userEnty.AP, paint, drawX * 4, drawY);
+        CanvasUtil.drawString(mCanvas, "Turn " + userEnty.TURN, paint, appClass.getGameCanvasWidth() - 180, drawY);
 
     }*/
 /*

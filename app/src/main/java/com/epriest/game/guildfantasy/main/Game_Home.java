@@ -54,11 +54,11 @@ public class Game_Home extends Game {
 
     @Override
     public void gStart() {
-//        playerEnty = checkPlayerData();
-//        if(playerEnty == null){
+//        userEnty = checkPlayerData();
+//        if(userEnty == null){
 //            // 프롤로그를 실행하고 플레이어를 작성
 ////            startProlog1();
-//            playerEnty = setTestPlayerData();
+//            userEnty = setTestPlayerData();
 //        }
 //        menuButtonList = new ArrayList();
 
@@ -244,12 +244,12 @@ public class Game_Home extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-        if (gameMain.playerEnty.isStartTurnAlert) {
+        if (gameMain.userEnty.isStartTurnAlert) {
             if (GameUtil.equalsTouch(gameMain.appClass.touch, alertBtn.drawX, alertBtn.drawY, alertBtn.clipW, alertBtn.clipH)) {
                 if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                     alertBtn.clickState = ButtonEnty.ButtonClickOff;
-                    gameMain.playerEnty.isStartTurnAlert = false;
-//                    playerEnty = DataManager.setChangeEvent(dbAdapter, playerEnty);
+                    gameMain.userEnty.isStartTurnAlert = false;
+//                    userEnty = DataManager.setChangeEvent(dbAdapter, userEnty);
 
                     return;
                 } else {

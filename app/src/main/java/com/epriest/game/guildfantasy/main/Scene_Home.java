@@ -112,7 +112,7 @@ public class Scene_Home extends Scene {
             drawMenuButton(mCanvas);
 //        }
 
-        if (gameHome.gameMain.appClass.gameState == INN.GAME_HOME && gameHome.gameMain.playerEnty.isStartTurnAlert)
+        if (gameHome.gameMain.appClass.gameState == INN.GAME_HOME && gameHome.gameMain.userEnty.isStartTurnAlert)
             drawTurnStartAlert(mCanvas);
 
 //        gameHome.gameMain.drawMain(mCanvas, true);
@@ -196,11 +196,11 @@ public class Scene_Home extends Scene {
         paint.setTextSize(20);
         int strX = (gameHome.gameMain.appClass.getGameCanvasWidth() - 400) / 2 + 30;
         int strY = (gameHome.gameMain.appClass.getGameCanvasHeight() - 300) / 2;
-        CanvasUtil.drawString(mCanvas, gameHome.gameMain.playerEnty.TURN + " 턴", paint, strX, strY);
+        CanvasUtil.drawString(mCanvas, gameHome.gameMain.userEnty.TURN + " 턴", paint, strX, strY);
         CanvasUtil.drawString(mCanvas, "완료된 퀘스트 수 - ", paint, strX, strY + 30);
-        CanvasUtil.drawString(mCanvas, "길드 수입 - " + gameHome.gameMain.playerEnty.eventEnty.Gold + "Gold", paint, strX, strY + 80);
+        CanvasUtil.drawString(mCanvas, "길드 수입 - " + gameHome.gameMain.userEnty.eventEnty.Gold + "Gold", paint, strX, strY + 80);
 //        CanvasUtil.drawString(mCanvas, "충전된 AP - " + turnManager.turnEnty.AP + "point", paint, strX, strY + 130);
-        CanvasUtil.drawString(mCanvas, "새로운 퀘스트 수 - " + gameHome.gameMain.playerEnty.eventEnty.QuestIDList.size(), paint, strX, strY + 180);
+        CanvasUtil.drawString(mCanvas, "새로운 퀘스트 수 - " + gameHome.gameMain.userEnty.eventEnty.QuestIDList.size(), paint, strX, strY + 180);
     }
 
     private void drawManager(Canvas mCanvas) {

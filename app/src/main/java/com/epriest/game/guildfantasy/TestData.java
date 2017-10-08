@@ -1,24 +1,13 @@
 package com.epriest.game.guildfantasy;
 
-import android.content.Context;
-
-import com.epriest.game.guildfantasy.main.enty.EquipEnty;
-import com.epriest.game.guildfantasy.main.enty.MemberEnty;
-import com.epriest.game.guildfantasy.main.enty.PlayerEnty;
-import com.epriest.game.guildfantasy.main.enty.QuestEnty;
-import com.epriest.game.guildfantasy.main.enty.StatusEnty;
-import com.epriest.game.guildfantasy.util.PPreference;
-
-import java.util.ArrayList;
-
 /**
  * Created by darka on 2017-03-30.
  */
 
 public class TestData {
 
-    /*public static PlayerEnty setTestPlayerData(Context context){
-        PlayerEnty enty = new PlayerEnty();
+    /*public static UserEnty setTestPlayerData(Context context){
+        UserEnty enty = new UserEnty();
         enty.Name = "가방짱";
         enty.LEVEL = 1;
         enty.GOLD = 100;

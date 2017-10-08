@@ -13,7 +13,6 @@ import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 import com.epriest.game.guildfantasy.main.play.DataManager;
 
-import static com.epriest.game.CanvasGL.graphics.CanvasUtil.drawClip;
 import static com.epriest.game.CanvasGL.graphics.CanvasUtil.drawString;
 import static com.epriest.game.CanvasGL.graphics.CanvasUtil.recycleBitmap;
 
@@ -200,9 +199,9 @@ public class Scene_Party extends Scene {
     }
 
     private MemberEnty findMemberEnty(String inputId) {
-        for (MemberEnty enty : gameParty.gameMain.playerEnty.MEMBERLIST) {
-            if (enty.charId.equals(inputId)) {
-                return enty;
+        for (String  Id : gameParty.gameMain.userEnty.PARTY_MEMBERID_LIST) {
+            if (Id.equals(inputId)) {
+                return DataManager.getMemberEntyFromDBMember(gameParty.gameMain.dbAdapter, Id);
             }
         }
         return null;

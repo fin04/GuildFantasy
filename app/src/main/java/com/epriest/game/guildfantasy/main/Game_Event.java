@@ -19,8 +19,8 @@ public class Game_Event extends Game {
 
     @Override
     public void gStart() {
-        gameMain.playerEnty.eventEnty.changeView = true;
-        gameMain.playerEnty.eventEnty.currentViewNum = 0;
+        gameMain.userEnty.eventEnty.changeView = true;
+        gameMain.userEnty.eventEnty.currentViewNum = 0;
     }
 
     @Override
@@ -37,10 +37,10 @@ public class Game_Event extends Game {
     public void gOnTouchEvent(MotionEvent event) {
         if (gameMain.onTouchEvent(event))
             return;
-        if (event.getAction() == MotionEvent.ACTION_UP && gameMain.playerEnty.eventEnty.changeView == false) {
-            if (gameMain.playerEnty.eventEnty.currentViewNum < gameMain.playerEnty.eventEnty.ImageList.size()-1) {
-                gameMain.playerEnty.eventEnty.changeView = true;
-                gameMain.playerEnty.eventEnty.currentViewNum++;
+        if (event.getAction() == MotionEvent.ACTION_UP && gameMain.userEnty.eventEnty.changeView == false) {
+            if (gameMain.userEnty.eventEnty.currentViewNum < gameMain.userEnty.eventEnty.ImageList.size()-1) {
+                gameMain.userEnty.eventEnty.changeView = true;
+                gameMain.userEnty.eventEnty.currentViewNum++;
             }else{
                 gameMain.mainButtonAct(INN.GAME_HOME, 0);
             }

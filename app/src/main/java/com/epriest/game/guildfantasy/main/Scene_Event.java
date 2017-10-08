@@ -36,18 +36,18 @@ public class Scene_Event extends Scene {
     }
 
     private void loadEventImage(int num) {
-        int size = gameEvent.gameMain.playerEnty.eventEnty.ImageList.size();
+        int size = gameEvent.gameMain.userEnty.eventEnty.ImageList.size();
         if(size >= num) {
-            String imagePath = gameEvent.gameMain.playerEnty.eventEnty.ImageList.get(num);
+            String imagePath = gameEvent.gameMain.userEnty.eventEnty.ImageList.get(num);
             CanvasUtil.recycleBitmap(eventBitmap);
             eventBitmap = GLUtil.loadAssetsBitmap(gameEvent.gameMain.appClass.getBaseContext(), "" +
                     "event/" + imagePath, null);
         }
-        size = gameEvent.gameMain.playerEnty.eventEnty.TextList.size();
+        size = gameEvent.gameMain.userEnty.eventEnty.TextList.size();
         if(size >= num){
-            textList = TextUtil.setMultiLineText(gameEvent.gameMain.playerEnty.eventEnty.TextList.get(num), 25, 600);
+            textList = TextUtil.setMultiLineText(gameEvent.gameMain.userEnty.eventEnty.TextList.get(num), 25, 600);
         }
-        gameEvent.gameMain.playerEnty.eventEnty.changeView = false;
+        gameEvent.gameMain.userEnty.eventEnty.changeView = false;
     }
 
     @Override
@@ -62,8 +62,8 @@ public class Scene_Event extends Scene {
 
     @Override
     public void draw(Canvas mCanvas) {
-        if(gameEvent.gameMain.playerEnty.eventEnty.changeView)
-            loadEventImage(gameEvent.gameMain.playerEnty.eventEnty.currentViewNum);
+        if(gameEvent.gameMain.userEnty.eventEnty.changeView)
+            loadEventImage(gameEvent.gameMain.userEnty.eventEnty.currentViewNum);
         CanvasUtil.drawBgBitmap(eventBitmap, mCanvas);
         int paperX = 30;
         int paperY = 50;

@@ -11,6 +11,7 @@ import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
+import com.epriest.game.guildfantasy.main.play.DataManager;
 import com.epriest.game.guildfantasy.util.INN;
 
 import java.util.ArrayList;
@@ -53,7 +54,7 @@ public class View_Member {
     public int selectMember;
 
     public ArrayList<ButtonEnty> classButtonList;
-
+    public ArrayList<MemberEnty> memberList;
     private Game_Main gameMain;
 
     public View_Member(Game_Main gameMain) {
@@ -70,7 +71,7 @@ public class View_Member {
                 prevScrollY = scrollY;
         }
         scrollY = prevScrollY + (int)(gameMain.appClass.touch.oriY - gameMain.appClass.touch.axisY);
-        int maxScrollY = (gameMain.playerEnty.MEMBERLIST.size()/4+1) * 200 - gameMain.appClass.getGameCanvasHeight() + 100;
+        int maxScrollY = (gameMain.userEnty.MEMBERLIST.size()/4+1) * 200 - gameMain.appClass.getGameCanvasHeight() + 100;
         if(scrollY < 0)
             scrollY = 0;
         else if(scrollY > maxScrollY)
@@ -146,9 +147,9 @@ public class View_Member {
             cH = aa/7;
         }
 
-
-        for(int i=0; i< gameMain.playerEnty.MEMBERLIST.size() ; i++) {
-            MemberEnty enty = gameMain.playerEnty.MEMBERLIST.get(i);
+        memberList = DataManager.getAllUserMemberList(gameMain.dbAdapter, gameMain.userEnty.Name);
+        for(int i=0; i< memberList.size() ; i++) {
+            MemberEnty enty = memberList.get(i);
             int sheetLeft = (card.getWidth()+5)*(i%cardRow);
             int sheetTop = (card.getHeight()+5)*(i/cardRow) - scrollY;
 

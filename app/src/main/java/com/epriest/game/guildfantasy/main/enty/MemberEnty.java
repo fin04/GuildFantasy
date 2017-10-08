@@ -6,8 +6,8 @@ package com.epriest.game.guildfantasy.main.enty;
 
 public class MemberEnty {
 
-    public String memebrId;
-    public String charId;
+    public String memberId;
+    public String db_memberID;
     public String name;
     public String engname;
     public String sex;
@@ -15,13 +15,15 @@ public class MemberEnty {
     public String mercy;
     public String image;
     public int iconid;
-    public String _class;
+    public String memberclass;
     public String race;
     public String profile;
     public String dialog1;
 
     public StatusEnty status;
     public EquipEnty equip;
+
+    public String questID;
 
     public String skill_1;
 

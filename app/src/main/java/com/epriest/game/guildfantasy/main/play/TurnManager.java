@@ -29,29 +29,29 @@ public class TurnManager {
     }
 
     public void turnCycle(int turn) {
-        game_main.playerEnty.TURN += turn;
+        game_main.userEnty.TURN += turn;
 //        turnEnty = new TurnEnty();
 
         // 실행중인 퀘스트 진행
-        if (game_main.playerEnty.QUESTLIST.size() > 0)
+        if (game_main.userEnty.QUESTLIST.size() > 0)
             QuestLife();
 
         // 사용중인 멤버의 진행
-        if (game_main.playerEnty.MEMBERLIST.size() > 0)
+        if (game_main.userEnty.PARTY_MEMBERID_LIST.size() > 0)
             MemberLife();
 
         //db에서 turn data 가져옴
-        game_main.playerEnty = DataManager.setChangeEvent(game_main.dbAdapter, game_main.playerEnty);
-        game_main.playerEnty.GOLD += game_main.playerEnty.eventEnty.Gold;
+        game_main.userEnty = DataManager.setChangeEvent(game_main.dbAdapter, game_main.userEnty);
+        game_main.userEnty.GOLD += game_main.userEnty.eventEnty.Gold;
 
-//        PlayEvent(game_main.playerEnty.TURN);
-//        turnEnty.AP = getAP(game_main.playerEnty.LEVEL, game_main.playerEnty.TURN);
-//        turnEnty.GOLD = getGold(game_main.playerEnty.MEMBERLIST.size(), game_main.playerEnty.TURN);
+//        PlayEvent(game_main.userEnty.TURN);
+//        turnEnty.AP = getAP(game_main.userEnty.LEVEL, game_main.userEnty.TURN);
+//        turnEnty.GOLD = getGold(game_main.userEnty.MEMBERLIST.size(), game_main.userEnty.TURN);
 
         AddQuest();
-        game_main.playerEnty.isStartTurnAlert = true;
-        game_main.playerEnty.eventEnty.changeView = true;
-        if(game_main.playerEnty.eventEnty.ImageList.size() > 0)
+        game_main.userEnty.isStartTurnAlert = true;
+        game_main.userEnty.eventEnty.changeView = true;
+        if(game_main.userEnty.eventEnty.ImageList.size() > 0)
             game_main.mainButtonAct(INN.GAME_EVENT, 0);
     }
 

@@ -7,6 +7,7 @@ public class StatusEnty {
 	public int RENOWN;
 	public int LOVE;
 
+	public int AP;
 	public int HP;
 	public int MP;
 
