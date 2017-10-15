@@ -26,7 +26,7 @@ public class Game_Party extends Game {
     public ArrayList<ButtonEnty> PartyNumButtonList = new ArrayList<>();
     public ArrayList<ButtonEnty> CardButtonList = new ArrayList<>();
     public ArrayList<MemberEnty> PartyCardList = new ArrayList<>();
-    public ArrayList<Bitmap> ImgCardList = new ArrayList<>();
+    public ArrayList<Bitmap> CardImgList = new ArrayList<>();
 //    public PartyEnty currentParty = new PartyEnty();
     public ButtonEnty backBtn;
 //    public ButtonEnty startBtn;
@@ -69,7 +69,7 @@ public class Game_Party extends Game {
 //        img_memberFrame = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member_frame.png", null);
         img_questPaper = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/guildpaper.png", null);
 
-        setCardListFromSelectParty();
+        setCardListFromSelectParty(this.selectPartyNum);
 
         mMenuTabBarY = gameMain.canvasH - gameMain.statusBarH;
 
@@ -119,23 +119,20 @@ public class Game_Party extends Game {
 
     }
 
-    private void setCardListFromSelectParty(){
-        ArrayList<MemberEnty> tempCardList = new ArrayList<>();
-        ArrayList<Bitmap> tempImgCardList = new ArrayList<>();;
-        for(int i=selectPartyNum*4; i< selectPartyNum*4+4; i++){
-            if(gameMain.userEnty.PARTY_MEMBERID_LIST.get(i) == null) {
-                tempImgCardList.add(null);
-                tempCardList.add(null);
+    private void setCardListFromSelectParty(int selectParty) {
+        this.selectPartyNum = selectParty;
+        for (int i = 0; i < 4; i++) {
+            int num = (selectParty * 4) + i;
+            if (this.gameMain.userEnty.PARTY_MEMBERID_LIST.get(num) == null) {
+                this.CardImgList.add(i, null);
+                this.PartyCardList.add(i, null);
             } else {
-                MemberEnty enty = DataManager.getUserMemberFromData(gameMain.dbAdapter, gameMain.userEnty.PARTY_MEMBERID_LIST.get(i));
-                tempImgCardList.add(GLUtil.loadAssetsBitmap(gameMain.appClass, "member/" + enty.image, null));
-                tempCardList.add(enty);
+                MemberEnty enty = DataManager.getUserMemberFromData(this.gameMain.dbAdapter, (String) this.gameMain.userEnty.PARTY_MEMBERID_LIST.get(num));
+                this.CardImgList.add(i, GLUtil.loadAssetsBitmap(this.gameMain.appClass, "member/" + enty.image, null));
+                this.PartyCardList.add(i, enty);
             }
         }
-        ImgCardList.clear();
-        PartyCardList.clear();
-        PartyCardList = tempCardList;
-        ImgCardList = tempImgCardList;
+
     }
 
     @Override
@@ -170,8 +167,7 @@ public class Game_Party extends Game {
                 btn.clickState = ButtonEnty.ButtonClickOn;
                 if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                     btn.clickState = ButtonEnty.ButtonClickOff;
-                    selectPartyNum = i;
-                    setCardListFromSelectParty();
+                    setCardListFromSelectParty(i);
 //                    currentParty = gameMain.userEnty.PARTYLIST.get(selectPartyNum);
                 }
                 return;

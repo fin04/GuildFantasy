@@ -82,8 +82,8 @@ public class Game_Member extends Game {
                 if (GameUtil.equalsTouch(gameMain.appClass.touch, cx, cy, cardW, cardH)) {
                     gameMain.userEnty.PARTY_MEMBERID_LIST.set(gameMain.selectCardNum, memberList.get(i).memberId);
                     gameMain.mainButtonAct(INN.GAME_INN, 0);
+                    return;
                 }
-                return;
             }
         }
     }

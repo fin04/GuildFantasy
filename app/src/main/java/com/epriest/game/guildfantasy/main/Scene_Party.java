@@ -75,9 +75,9 @@ public class Scene_Party extends Scene {
     @Override
     public void recycleScene() {
 //        CanvasUtil.recycleBitmap(mos_detail);
-        for (int i = 0; i < gameParty.ImgCardList.size(); i++) {
-            if (gameParty.ImgCardList.get(i) != null)
-                recycleBitmap(gameParty.ImgCardList.get(i));
+        for (int i = 0; i < gameParty.CardImgList.size(); i++) {
+            if (gameParty.CardImgList.get(i) != null)
+                recycleBitmap(gameParty.CardImgList.get(i));
         }
         CanvasUtil.recycleBitmap(gameParty.img_questPaper);
 //        gameParty.viewMember.recycleScene();
@@ -141,8 +141,8 @@ public class Scene_Party extends Scene {
             CanvasUtil.drawClip(gameParty.img_membercard, mCanvas, 163, clipY,
                     47, 47, mBtn.drawX + (163 - 47) / 2, cardY + (253 - 47 - 25) / 2);
 
-            if (gameParty.ImgCardList.get(i) != null)
-                drawMemberCard(mCanvas, gameParty.selectPartyNum * 4 + i, mBtn.drawX, mBtn.drawY);
+            if (gameParty.CardImgList.size() > 0 &&  gameParty.CardImgList.get(i) != null)
+                drawMemberCard(mCanvas, i, mBtn.drawX, mBtn.drawY);
         }
 
 
@@ -157,14 +157,14 @@ public class Scene_Party extends Scene {
     }
 
 
-    private void drawMemberCard(Canvas mCanvas, int i, int cx, int cy) {
+    private void drawMemberCard(Canvas mCanvas, int cardNum, int cx, int cy) {
         int cardW = 212;
         int cardH = 280;
         int cardTextBoxW = 140;
         int cardTextBoxH = 90;
         int cardTextBoxY = cardH - cardTextBoxH - 15;
         //draw Character
-        CanvasUtil.drawClip(gameParty.ImgCardList.get(i), mCanvas, (gameParty.ImgCardList.get(i).getWidth() - cardW) / 2, 80,
+        CanvasUtil.drawClip(gameParty.CardImgList.get(cardNum), mCanvas, (gameParty.CardImgList.get(cardNum).getWidth() - cardW) / 2, 80,
                 cardW - 10, cardH - 10, cx + 5, cy + 5);
         //draw cardNameBG
         CanvasUtil.drawClip(gameParty.img_membercard, mCanvas, 176, 283,
@@ -173,8 +173,8 @@ public class Scene_Party extends Scene {
         CanvasUtil.drawClip(gameParty.img_membercard, mCanvas, 35, 283,
                 cardTextBoxW, cardTextBoxH, cx + 35, cy + cardTextBoxY);
 
-        CanvasUtil.drawString(mCanvas, gameParty.PartyCardList.get(i).name, 20, Color.WHITE, Paint.Align.CENTER, cx + cardW / 2, cy + 7);
-        CanvasUtil.drawString(mCanvas, "LV." + Integer.toString(gameParty.PartyCardList.get(i).status.LEVEL),
+        CanvasUtil.drawString(mCanvas, gameParty.PartyCardList.get(cardNum).name, 20, Color.WHITE, Paint.Align.CENTER, cx + cardW / 2, cy + 7);
+        CanvasUtil.drawString(mCanvas, "LV." + Integer.toString(gameParty.PartyCardList.get(cardNum).status.LEVEL),
                 20, Color.DKGRAY, Paint.Align.LEFT, cx + 15, cy + 3);
     }
 
