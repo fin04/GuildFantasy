@@ -21,6 +21,7 @@ import com.epriest.game.guildfantasy.main.Game_Party;
 import com.epriest.game.guildfantasy.main.Game_Member;
 import com.epriest.game.guildfantasy.main.Game_Quest;
 import com.epriest.game.guildfantasy.main.Game_Temple;
+import com.epriest.game.guildfantasy.main.Game_Title;
 import com.epriest.game.guildfantasy.main.Scene_Event;
 import com.epriest.game.guildfantasy.main.Scene_Guild;
 import com.epriest.game.guildfantasy.main.Scene_Home;
@@ -40,6 +41,7 @@ import com.epriest.game.guildfantasy.util.INN;
 public class MainGLView extends GLView {
 
     private Game_Main gameMain;
+    private Game_Title gameTitle;
     private Game_Home gameHome;
     private Game_Member gameMember;
     private Game_Temple gameTemple;
@@ -89,6 +91,7 @@ public class MainGLView extends GLView {
     @Override
     public void cUpdateLogic() {
         if (appClass.isGameInit) {
+            gameTitle = null;
             gameHome = null;
             gameQuest = null;
             gameMember = null;
@@ -101,7 +104,18 @@ public class MainGLView extends GLView {
 
         switch (appClass.gameState) {
             case INN.GAME_INTRO:
-                appClass.isGameInit = false;
+//                appClass.isGameInit = false;
+                if (appClass.isGameInit) {
+                    if (gameMain == null) {
+                        gameMain = new Game_Main(appClass.getBaseContext(), dbAdapter);
+                        gameMain.Init();
+                    }
+
+                    gameTitle = new Game_Title(gameMain);
+                    gameTitle.Start();
+                    appClass.isGameInit = false;
+                }
+                gameTitle.gUpdate();
                 break;
 /*            case Game_Main.GAME_MAIN:
                 if (appClass.isGameInit) {
@@ -112,11 +126,6 @@ public class MainGLView extends GLView {
                 break;*/
             case INN.GAME_HOME:
                 if (appClass.isGameInit) {
-                    if (gameMain == null) {
-                        gameMain = new Game_Main(appClass.getBaseContext(), dbAdapter);
-                        gameMain.Init();
-                    }
-
                     gameHome = new Game_Home(gameMain);
                     gameHome.Start();
                     appClass.isGameInit = false;
@@ -181,7 +190,7 @@ public class MainGLView extends GLView {
             }
             switch (appClass.gameState) {
                 case INN.GAME_INTRO:
-                    mScene = new Scene_Title();
+                    mScene = new Scene_Title(gameTitle);
                     mScene.initScene(appClass);
                     appClass.isSceneInit = false;
                     break;
@@ -303,11 +312,7 @@ public class MainGLView extends GLView {
         switch (appClass.gameState) {
 
             case INN.GAME_INTRO:
-                if (appClass.touch.action != MotionEvent.ACTION_UP)
-                    return;
-                appClass.gameState = INN.GAME_HOME;
-                appClass.isGameInit = true;
-                appClass.isSceneInit = true;
+                gameTitle.gOnTouchEvent(event);
                 break;
 //            case Game_Main.GAME_MAIN:
 //                appClass.gameState = Game_Main.GAME_HOME;
