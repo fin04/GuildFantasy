@@ -9,6 +9,7 @@ import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.ImageEnty;
+import com.epriest.game.guildfantasy.main.play.DataManager;
 import com.epriest.game.guildfantasy.util.INN;
 
 /**
@@ -16,6 +17,9 @@ import com.epriest.game.guildfantasy.util.INN;
  */
 
 public class Game_Title extends Game {
+
+    public static final int STARTGAME_NEWPLAYER = 1;
+    public static final int STARTGAME_LOADPLAYER = 2;
 
     public Game_Main gameMain;
     public ApplicationClass appClass;
@@ -28,7 +32,7 @@ public class Game_Title extends Game {
     public ButtonEnty btn_Load;
 
 
-    public int flag;
+//    public int flag;
 
     public Game_Title(Game_Main gameMain) {
         this.gameMain = gameMain;
@@ -84,11 +88,12 @@ public class Game_Title extends Game {
 
     }
 
-    public int getFlag(){
-        return flag;
-    }
-
-    public void goAction(){
+    public void startGame(int flag){
+        if (gameMain.userEnty == null) {
+            // 프롤로그를 실행하고 플레이어를 작성
+//            startProlog1();
+            gameMain.userEnty = DataManager.createUserData(gameMain.dbAdapter, "홍길동", flag);
+        }
         gameMain.mainButtonAct(INN.GAME_HOME, 0, -1);
     }
 
@@ -99,8 +104,7 @@ public class Game_Title extends Game {
             btn_New.clickState = ButtonEnty.ButtonClickOn;
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 btn_New.clickState = ButtonEnty.ButtonClickOff;
-                flag = 1;
-
+                startGame(STARTGAME_NEWPLAYER);
             }
             return;
         }
@@ -109,7 +113,7 @@ public class Game_Title extends Game {
             btn_Load.clickState = ButtonEnty.ButtonClickOn;
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 btn_Load.clickState = ButtonEnty.ButtonClickOff;
-                flag = 2;
+                startGame(STARTGAME_LOADPLAYER);
             }
             return;
         }

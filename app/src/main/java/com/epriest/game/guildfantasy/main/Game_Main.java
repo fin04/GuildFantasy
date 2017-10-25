@@ -58,11 +58,11 @@ public class Game_Main {
 
     public void Init() {
 //        userEnty = checkPlayerData();
-        if (userEnty == null) {
+        /*if (userEnty == null) {
             // 프롤로그를 실행하고 플레이어를 작성
 //            startProlog1();
             userEnty = DataManager.createUserData(dbAdapter, "홍길동");
-        }
+        }*/
 
         canvasW = appClass.getGameCanvasWidth();
         canvasH = appClass.getGameCanvasHeight();

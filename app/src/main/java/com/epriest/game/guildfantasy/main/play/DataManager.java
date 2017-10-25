@@ -2,6 +2,7 @@ package com.epriest.game.guildfantasy.main.play;
 
 import android.database.Cursor;
 
+import com.epriest.game.guildfantasy.main.Game_Title;
 import com.epriest.game.guildfantasy.main.enty.EquipEnty;
 import com.epriest.game.guildfantasy.main.enty.EventEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
@@ -105,11 +106,36 @@ public class DataManager {
      * @return
      */
     public static UserEnty createUserData(GameDbAdapter dbAdapter,
-                                          String playerName) {
+                                          String playerName, int flag) {
 
         UserEnty enty = new UserEnty();
 
-        int playerNameCount = dbAdapter.getRowCount(
+        switch(flag){
+            case Game_Title.STARTGAME_NEWPLAYER:
+                enty.Name = playerName;
+                enty.EXP = 0;
+                enty.LEVEL = 1;
+                enty.AP = 2;
+                enty.GOLD = 100;
+                enty.TURN = 1;
+                enty.GEM_RED = 1;
+                enty.GEM_GREEN = 1;
+                enty.GEM_BLUE = 1;
+                insertUserData(dbAdapter, enty.Name, Integer.toString(enty.EXP), Integer.toString(enty.LEVEL),
+                        Integer.toString(enty.AP), Integer.toString(enty.TURN), Integer.toString(enty.GOLD),
+                        Integer.toString(enty.GEM_RED), Integer.toString(enty.GEM_GREEN), Integer.toString(enty.GEM_BLUE));
+                //해당 유저의 모든 멤버데이터 삭제 (리셋)
+                dbAdapter.deleteROW(GameDbAdapter.USERMEMBER_TABLE, -1, enty.Name);
+
+                //이벤트는 턴 시작 처음에 실행되기때문에 여기에만 적용
+                enty.eventEnty = getEventDataList(dbAdapter, 1);
+                break;
+            case Game_Title.STARTGAME_LOADPLAYER:
+                enty = getUserFromData(dbAdapter, playerName);
+                break;
+        }
+
+        /*int playerNameCount = dbAdapter.getRowCount(
                 GameDbAdapter.USERMAIN_TABLE, GameDbAdapter.KEY_USERNAME, playerName);
         if (playerNameCount == 0) {
             enty.Name = playerName;
@@ -130,10 +156,10 @@ public class DataManager {
             enty = getUserFromData(dbAdapter, playerName);
         }
 
-        //해당 유저의 모든 멤버데이터 삭제 (리셋)
-        dbAdapter.deleteROW(GameDbAdapter.USERMEMBER_TABLE, -1, enty.Name);
-
-        enty.eventEnty = getEventDataList(dbAdapter, enty.TURN);
+        if(flag == Game_Title.STARTGAME_NEWPLAYER) {
+            //해당 유저의 모든 멤버데이터 삭제 (리셋)
+            dbAdapter.deleteROW(GameDbAdapter.USERMEMBER_TABLE, -1, enty.Name);
+        }*/
 
         ArrayList<MemberEnty> entyList = getMemberDataListFromMemebrList(dbAdapter, enty.eventEnty.MemberIDList);
         for(MemberEnty memEnty : entyList) {
@@ -302,7 +328,7 @@ public class DataManager {
         memEnty.profile = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERPROFILE));
         memEnty.dialog1 = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERDIALOG1));
         memEnty.questID = "";
-        
+
         memEnty.status = new StatusEnty();
         Cursor classCursor = getClassCursor(dbAdapter, memEnty.memberclass);
         memEnty.status.STR = classCursor.getInt(classCursor.getColumnIndex(GameDbAdapter.KEY_CLASSSTR));
