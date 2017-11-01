@@ -78,9 +78,7 @@ public class DataManager {
     }
 
     /**
-     * uset table에서 user 정보를 불러옴
-     * @param dbAdapter
-     * @param playerName
+     * user table에서 user 정보를 불러옴
      * @return
      */
     public static UserEnty getUserFromData(GameDbAdapter dbAdapter, String playerName) {
@@ -96,13 +94,18 @@ public class DataManager {
         enty.GEM_GREEN = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USERGEM_GREEN)));
         enty.GEM_BLUE = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USERGEM_BLUE)));
         cursor.close();
+
+        ArrayList<MemberEnty> mList = getAllUserMemberList(dbAdapter, playerName);
+        enty.eventEnty = new EventEnty();
+        enty.eventEnty.MemberIDList = new ArrayList<>();
+        for(MemberEnty mEnty : mList){
+            enty.eventEnty.MemberIDList.add(mEnty.memberId);
+        }
         return enty;
     }
 
     /**
      * 새로운 user data를 생성함.
-     * @param dbAdapter
-     * @param playerName
      * @return
      */
     public static UserEnty createUserData(GameDbAdapter dbAdapter,
@@ -161,7 +164,7 @@ public class DataManager {
             dbAdapter.deleteROW(GameDbAdapter.USERMEMBER_TABLE, -1, enty.Name);
         }*/
 
-        ArrayList<MemberEnty> entyList = getMemberDataListFromMemebrList(dbAdapter, enty.eventEnty.MemberIDList);
+        ArrayList<MemberEnty> entyList = addMemberListFromMemberDB(dbAdapter, enty.eventEnty.MemberIDList);
         for(MemberEnty memEnty : entyList) {
             insertUserMemberToData(dbAdapter, memEnty, enty.Name);
         }
@@ -178,10 +181,7 @@ public class DataManager {
     }
 
     /**
-     * db에 user의 member를 삽입
-     * @param dbAdapter
-     * @param enty
-     * @param userName
+     * db에 user의 crew를 삽입
      * @return
      */
     public static long insertUserMemberToData(GameDbAdapter dbAdapter, MemberEnty enty, String userName){
@@ -197,9 +197,7 @@ public class DataManager {
     }
 
     /**
-     * db에서 user의 member를 불러옴
-     * @param dbAdapter
-     * @param memberID
+     * db에서 user의 crew를 불러옴
      * @return
      */
     public static MemberEnty getUserMemberFromData(GameDbAdapter dbAdapter, String memberID) {
@@ -242,7 +240,7 @@ public class DataManager {
 //            insertUserMemberToData(dbAdapter, getMemberEntyFromDBMember(dbAdapter, memberID), userEnty.Name);
 //        }
 //        userEnty.MEMBERLIST.addAll(getMemberDataList(dbAdapter, userEnty.eventEnty.MemberIDList));
-        ArrayList<MemberEnty> entyList = getMemberDataListFromMemebrList(dbAdapter, userEnty.eventEnty.MemberIDList);
+        ArrayList<MemberEnty> entyList = addMemberListFromMemberDB(dbAdapter, userEnty.eventEnty.MemberIDList);
         for(MemberEnty enty : entyList) {
             insertUserMemberToData(dbAdapter, enty, userEnty.Name);
         }
@@ -306,8 +304,6 @@ public class DataManager {
 
     /**
      * db의 member table에서 member정보를 불러옴
-     * @param dbAdapter
-     * @param memberID
      * @return
      */
     public static MemberEnty getMemberEntyFromDBMember(GameDbAdapter dbAdapter, String memberID){
@@ -357,11 +353,9 @@ public class DataManager {
 
     /**
      * db의 member table에서 member 리스트를 불러옴
-     * @param dbAdapter
-     * @param eventMemberId
      * @return
      */
-    public static ArrayList<MemberEnty> getMemberDataListFromMemebrList(GameDbAdapter dbAdapter, ArrayList<String> eventMemberId) {
+    public static ArrayList<MemberEnty> addMemberListFromMemberDB(GameDbAdapter dbAdapter, ArrayList<String> eventMemberId) {
         ArrayList<MemberEnty> entyList = new ArrayList<>();
         for (String memberID : eventMemberId) {
             entyList.add(getMemberEntyFromDBMember(dbAdapter, memberID));
