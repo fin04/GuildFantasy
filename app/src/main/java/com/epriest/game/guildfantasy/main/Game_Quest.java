@@ -65,9 +65,9 @@ public class Game_Quest extends Game {
 //                    selectQuestId = Integer.parseInt(enty.id);
 //                    gameMain.selectQuestEnty = enty;
                     if(enty.actPartyNum > 0){
-                        gameMain.mainButtonAct(INN.GAME_INN, INN.MODE_PARTY_INFO);
+                        gameMain.mainButtonAct(INN.GAME_MEMBER, INN.MODE_PARTY_INFO);
                     }else {
-                        gameMain.mainButtonAct(INN.GAME_INN, INN.MODE_PARTY_SELECT);
+                        gameMain.mainButtonAct(INN.GAME_MEMBER, INN.MODE_PARTY_SELECT);
 
                     }
                 }

@@ -311,7 +311,7 @@ public class DataManager {
         MemberEnty memEnty = new MemberEnty();
         Cursor memberCursor = getDBMemberCursor(dbAdapter, id);
         memEnty.db_memberID = id;
-        memEnty.memberId = memberID.split("-")[1];
+        memEnty.memberId = memberID;
         memEnty.name = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERNAME));
         memEnty.engname = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERENGNAME));
         memEnty.sex = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERSEX));

@@ -162,7 +162,7 @@ public class Game_Home extends Game {
                 alertBtn.clipY = 173;
                 break;
 
-            case INN.GAME_INN:
+            case INN.GAME_MEMBER:
                 ButtonEnty mBtn1 = new ButtonEnty();
                 mBtn1.num = 0;
                 mBtn1.name = "start";
@@ -301,17 +301,17 @@ public class Game_Home extends Game {
                     mBtn.clickState = ButtonEnty.ButtonClickOff;
 
                     if (mBtn.name.equals(INN.menuIconName[0]))
-                        gameMain.mainButtonAct(INN.GAME_INN, 0);
+                        gameMain.mainButtonAct(INN.GAME_MEMBER, 0);
                     else if (mBtn.name.equals(INN.menuIconName[1]))
-                        gameMain.mainButtonAct(INN.GAME_BAR, INN.MODE_MEMBER_RECRUIT);
+                        gameMain.mainButtonAct(INN.GAME_RECRUIT, INN.MODE_MEMBER_RECRUIT);
                     else if (mBtn.name.equals(INN.menuIconName[2]))
-                        gameMain.mainButtonAct(INN.GAME_TEMPLE, 0);
+                        gameMain.mainButtonAct(INN.GAME_SKILL, 0);
                     else if (mBtn.name.equals(INN.menuIconName[3]))
-                        gameMain.mainButtonAct(INN.GAME_SHOP, 0);
+                        gameMain.mainButtonAct(INN.GAME_ITEM, 0);
                     else if (mBtn.name.equals(INN.menuIconName[4]))
-                        gameMain.mainButtonAct(INN.GAME_GUILD, 0);
+                        gameMain.mainButtonAct(INN.GAME_QUEST, 0);
                     else if (mBtn.name.equals(INN.menuIconName[5]))
-                        gameMain.mainButtonAct(INN.GAME_GATE, 0);
+                        gameMain.mainButtonAct(INN.GAME_MOVE, 0);
                     else if (mBtn.name.equals("Menu"))
                         gameMain.mainButtonAct(INN.GAME_OPTION, 0);
                 }

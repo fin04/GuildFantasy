@@ -12,6 +12,19 @@
 [유저메뉴][BAR][Covenant]--일정 보상을 주는 조건으로 계약. 계약금 소모. 퀘스트 완료시 얻은 것의 50~80% 보상
 [유저메뉴][BAR][Bondage]--속박, 노예/하인 계약, 노예는 주기적으로 세금. 하인은 임금.
 
+[유저메뉴][BAR][Summon][RED]--적색재료-불계열-파괴
+[유저메뉴][BAR][Summon][GREEN]--녹색재료-생명계열-치유
+[유저메뉴][BAR][Summon][BLUE]-청색재료-물계열-인내
+[유저메뉴][BAR][Summon][WHITE]-백색재료-철계열-강인함
+[유저메뉴][BAR][Summon][BLACK]-흑색재료-흙계열-생명
+
+[유저메뉴][BAR][Covenant][FREELANCER]-자유계약-기사,모험가,마법사,사제
+[유저메뉴][BAR][Covenant][MERCENARY]-용병-전사,수인
+
+[유저메뉴][BAR][Bondage][SLAVE]-노예
+[유저메뉴][BAR][Bondage][SERVANT]-하수인
+
+
 
 [유저메뉴][INN]--멤버관리
 [유저메뉴][INN][Upgrade]--승급
@@ -32,3 +45,10 @@
 
 
 [유저메뉴][TEMPLE]--육성
+
+
+
+
+
+
+

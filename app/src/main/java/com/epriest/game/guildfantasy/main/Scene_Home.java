@@ -142,17 +142,23 @@ public class Scene_Home extends Scene {
                 else
                     clipY += mBtn.clipH;
             }
+            //Button Image
             CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, clipX, clipY,
                     mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
 
             int btnNameX = mBtn.drawX+(mBtn.clipW-180)/2;
             int btnNameY = mBtn.drawY+(mBtn.clipH-50)/2;
-            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 320, mBtn.iconImgNum*50,
+            //Button Title
+            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 220, mBtn.iconImgNum*50,
                     180, 50, btnNameX, btnNameY);
             btnNameX= mBtn.drawX+(mBtn.clipW-130);
             btnNameY = mBtn.drawY;
-            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 500, mBtn.iconImgNum*50,
+            //Button Subtitle
+            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 400, mBtn.iconImgNum*50,
                     130, 50, btnNameX, btnNameY);
+            //Button Subtitle HanGul
+//            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 531, mBtn.iconImgNum*50,
+//                    130, 50, btnNameX, btnNameY);
 //            CanvasUtil.drawClip(menu_icon, mCanvas, null, (iconNum%5)*mBtn.w, (iconNum/5)*mBtn.h,
 //                    mBtn.w, mBtn.h, mBtn.x+(btnArea-mBtn.w)/2, mBtn.y);
         }

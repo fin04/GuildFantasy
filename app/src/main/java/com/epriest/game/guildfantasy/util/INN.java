@@ -7,12 +7,12 @@ package com.epriest.game.guildfantasy.util;
 public interface INN {
     public final static int GAME_INTRO = 0;
     public final static int GAME_HOME = 1;
-    public final static int GAME_INN = 2;
-    public final static int GAME_BAR = 3;
-    public final static int GAME_TEMPLE = 4;
-    public final static int GAME_SHOP = 5;
-    public final static int GAME_GUILD = 6;
-    public final static int GAME_GATE = 7;
+    public final static int GAME_MEMBER = 2;
+    public final static int GAME_RECRUIT = 3;
+    public final static int GAME_SKILL = 4;
+    public final static int GAME_ITEM = 5;
+    public final static int GAME_QUEST = 6;
+    public final static int GAME_MOVE = 7;
     public final static int GAME_EVENT = 8;
 //    public final static int GAME_MEMBER = 9;
     public final static int GAME_OPTION = 10;

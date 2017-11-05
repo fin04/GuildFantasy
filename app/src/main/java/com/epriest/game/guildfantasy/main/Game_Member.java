@@ -20,7 +20,7 @@ public class Game_Member extends Game {
 
     public Game_Main gameMain;
     public View_Member viewMember;
-    public int viewMode;
+//    public int viewMode;
 
     public Bitmap img_memberSheet;
     public Bitmap img_membercard;
@@ -34,9 +34,9 @@ public class Game_Member extends Game {
     public int cardTextBoxW, cardTextBoxH;
     public int scrollY, prevScrollY;
 
-    public Game_Member(Game_Main gameMain, int viewMode) {
+    public Game_Member(Game_Main gameMain) {
         this.gameMain = gameMain;
-        this.viewMode = viewMode;
+//        this.viewMode = viewMode;
     }
 
 
@@ -81,7 +81,7 @@ public class Game_Member extends Game {
                 int cy = 300 + i / cardRowNum * (cardH + 30);
                 if (GameUtil.equalsTouch(gameMain.appClass.touch, cx, cy, cardW, cardH)) {
                     gameMain.userEnty.PARTY_MEMBERID_LIST.set(gameMain.selectCardNum, memberList.get(i).memberId);
-                    gameMain.mainButtonAct(INN.GAME_INN, 0);
+                    gameMain.mainButtonAct(INN.GAME_MEMBER, 0);
                     return;
                 }
             }
