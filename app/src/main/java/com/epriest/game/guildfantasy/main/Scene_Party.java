@@ -199,11 +199,11 @@ public class Scene_Party extends Scene {
     }
 
     private MemberEnty findMemberEnty(String inputId) {
-        for (String  Id : gameParty.gameMain.userEnty.PARTY_MEMBERID_LIST) {
+       /* for (String  Id : gameParty.gameMain.userEnty.PARTY_MEMBERID_LIST) {
             if (Id.equals(inputId)) {
-                return DataManager.getMemberEntyFromDBMember(gameParty.gameMain.dbAdapter, Id);
+                return DataManager.getMemberEntyFromMemberDB(gameParty.gameMain.dbAdapter, Id);
             }
-        }
+        }*/
         return null;
     }
 

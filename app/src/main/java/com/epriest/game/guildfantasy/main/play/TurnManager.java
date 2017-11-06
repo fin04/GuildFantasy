@@ -37,7 +37,7 @@ public class TurnManager {
             QuestLife();
 
         // 사용중인 멤버의 진행
-        if (game_main.userEnty.PARTY_MEMBERID_LIST.size() > 0)
+        if (game_main.userEnty.MEMBERLIST.size() > 0)
             MemberLife();
 
         //db에서 turn data 가져옴

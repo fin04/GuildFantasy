@@ -172,6 +172,10 @@ public class MainGLView extends GLView {
                 gameQuest.gUpdate();
                 break;
         }
+        //메뉴 바뀔때 Game 클래스를 생성하지 않고 바로 Scene으로 넘어가 error가 떨어지지 않도록 한번 더 Logic을 태움.
+        if (appClass.isGameInit) {
+            cUpdateLogic();
+        }
         // appClass.game.gameState();
     }
 

@@ -40,4 +40,11 @@ public interface INN {
             "River", "Swamp","Sea","Icefield", "Icehill",
             "Glacier","", "Village","Town","Castle",
             "Fort","Mine","Ruin","Nest",""};
+
+    public final static int USER_START_EXP = 0;
+    public final static int USER_START_LV = 1;
+    public final static int USER_START_AP = 2;
+    public final static int USER_START_GOLD = 100;
+    public final static int USER_START_TURN = 1;
+    public final static int USER_START_GEM = 1;
 }

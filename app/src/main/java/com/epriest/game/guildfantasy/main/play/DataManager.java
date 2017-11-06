@@ -9,6 +9,7 @@ import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 import com.epriest.game.guildfantasy.main.enty.UserEnty;
 import com.epriest.game.guildfantasy.main.enty.QuestEnty;
 import com.epriest.game.guildfantasy.main.enty.StatusEnty;
+import com.epriest.game.guildfantasy.util.INN;
 
 import java.util.ArrayList;
 
@@ -18,15 +19,30 @@ import java.util.ArrayList;
 
 public class DataManager {
 
+    /**
+     * User의 cursor를 찾음
+     * @param playerName
+     * @return
+     */
     public static Cursor getUserMainCursor(GameDbAdapter dbAdapter, String playerName) {
         return dbAdapter.getCursor(GameDbAdapter.USERMAIN_TABLE, GameDbAdapter.KEY_USERNAME, playerName);
     }
 
-    public static Cursor getUserMemberCursor(GameDbAdapter dbAdapter, String memberID) {
-        return dbAdapter.getCursor(GameDbAdapter.USERMEMBER_TABLE, GameDbAdapter.KEY_MEMBERID, memberID);
+    /**
+     * memberID로 guild 소속의 멤버 cursor를 찾음
+     * @param memberID
+     * @return
+     */
+    public static Cursor getGuildMemberCursor(GameDbAdapter dbAdapter, String memberID) {
+        return dbAdapter.getCursor(GameDbAdapter.GUILD_MEMBER_TABLE, GameDbAdapter.KEY_MEMBERID, memberID);
     }
 
-    public static Cursor getEventTurnCursor(GameDbAdapter dbAdapter, String turn) {
+    /**
+     * 해당 turn의 이벤트 cursor를 찾음
+     * @param turn
+     * @return
+     */
+    public static Cursor getEventCursorOfTurn(GameDbAdapter dbAdapter, String turn) {
         return dbAdapter.getCursor(GameDbAdapter.EVENT_TABLE, GameDbAdapter.KEY_EVENTTURN, turn);
     }
 
@@ -34,24 +50,49 @@ public class DataManager {
         return dbAdapter.getCursor(GameDbAdapter.EVENT_TABLE, GameDbAdapter.KEY_EVENTTURN, turn);
     }*/
 
+    /**
+     * questID로 퀘스트 cursor를 찾음
+     * @param questID
+     * @return
+     */
     public static Cursor getQuestCursor(GameDbAdapter dbAdapter, String questID) {
         return dbAdapter.getCursor(GameDbAdapter.QUEST_TABLE, GameDbAdapter.KEY_QUESTID, questID);
     }
 
+    /**
+     * memberID로 DB에서 멤버 cursor를 찾음
+     * @param memberID
+     * @return
+     */
     public static Cursor getDBMemberCursor(GameDbAdapter dbAdapter, String memberID) {
         return dbAdapter.getCursor(GameDbAdapter.DB_MEMBER_TABLE, GameDbAdapter.KEY_MEMBERID, memberID);
     }
 
+    /**
+     * DB에서 해당 직업의 cursor를 찾음
+     * @param className
+     * @return
+     */
     public static Cursor getClassCursor(GameDbAdapter dbAdapter, String className) {
         return dbAdapter.getCursor(GameDbAdapter.CLASS_TABLE, GameDbAdapter.KEY_CLASSNAME, className);
     }
 
+    /**
+     * DB에서 해당 종족의 cursor를 찾음
+     * @param raceName
+     * @return
+     */
     public static Cursor getRaceCursor(GameDbAdapter dbAdapter, String raceName) {
         return dbAdapter.getCursor(GameDbAdapter.RACE_TABLE, GameDbAdapter.KEY_RACENAME, raceName);
     }
 
-    public static int getUserMemberSize(GameDbAdapter dbAdapter, String userName) {
-        return dbAdapter.getRowCount(GameDbAdapter.USERMEMBER_TABLE, GameDbAdapter.KEY_USERNAME, userName);
+    /**
+     * 유저 길드의 전체 멤버 수를 반환
+     * @param userName
+     * @return
+     */
+    public static int getGuildMemberSize(GameDbAdapter dbAdapter, String userName) {
+        return dbAdapter.getRowCount(GameDbAdapter.GUILD_MEMBER_TABLE, GameDbAdapter.KEY_USERNAME, userName);
     }
 
     /**
@@ -78,12 +119,12 @@ public class DataManager {
     }
 
     /**
-     * user table에서 user 정보를 불러옴
+     * DB에서 user 정보를 불러옴
      * @return
      */
-    public static UserEnty getUserFromData(GameDbAdapter dbAdapter, String playerName) {
+    public static UserEnty getUserEntyFromUserDB(GameDbAdapter dbAdapter, String userName) {
         UserEnty enty = new UserEnty();
-        Cursor cursor = getUserMainCursor(dbAdapter, playerName);
+        Cursor cursor = getUserMainCursor(dbAdapter, userName);
         enty.Name = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USERNAME));
         enty.EXP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USEREXP)));
         enty.LEVEL = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USERLEVEL)));
@@ -95,12 +136,13 @@ public class DataManager {
         enty.GEM_BLUE = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USERGEM_BLUE)));
         cursor.close();
 
-        ArrayList<MemberEnty> mList = getAllUserMemberList(dbAdapter, playerName);
-        enty.eventEnty = new EventEnty();
-        enty.eventEnty.MemberIDList = new ArrayList<>();
-        for(MemberEnty mEnty : mList){
-            enty.eventEnty.MemberIDList.add(mEnty.memberId);
-        }
+        //길드의 멤버 List를 userEnty에 삽입
+        enty.MEMBERLIST= getGuildMemberList(dbAdapter, userName);
+//        enty.eventEnty = new EventEnty();
+//        enty.eventEnty.MemberIDList = new ArrayList<>();
+//        for(MemberEnty mEnty : mList){
+//            enty.eventEnty.MemberIDList.add(mEnty.memberId);
+//        }
         return enty;
     }
 
@@ -116,76 +158,48 @@ public class DataManager {
         switch(flag){
             case Game_Title.STARTGAME_NEWPLAYER:
                 enty.Name = playerName;
-                enty.EXP = 0;
-                enty.LEVEL = 1;
-                enty.AP = 2;
-                enty.GOLD = 100;
-                enty.TURN = 1;
-                enty.GEM_RED = 1;
-                enty.GEM_GREEN = 1;
-                enty.GEM_BLUE = 1;
+                enty.EXP = INN.USER_START_EXP;
+                enty.LEVEL = INN.USER_START_LV;
+                enty.AP = INN.USER_START_AP;
+                enty.GOLD = INN.USER_START_GOLD;
+                enty.TURN = INN.USER_START_TURN;
+                enty.GEM_RED = INN.USER_START_GEM;
+                enty.GEM_GREEN = INN.USER_START_GEM;
+                enty.GEM_BLUE = INN.USER_START_GEM;
                 insertUserData(dbAdapter, enty.Name, Integer.toString(enty.EXP), Integer.toString(enty.LEVEL),
                         Integer.toString(enty.AP), Integer.toString(enty.TURN), Integer.toString(enty.GOLD),
                         Integer.toString(enty.GEM_RED), Integer.toString(enty.GEM_GREEN), Integer.toString(enty.GEM_BLUE));
                 //해당 유저의 모든 멤버데이터 삭제 (리셋)
-                dbAdapter.deleteROW(GameDbAdapter.USERMEMBER_TABLE, -1, enty.Name);
+                dbAdapter.deleteROW(GameDbAdapter.GUILD_MEMBER_TABLE, -1, enty.Name);
 
                 //이벤트는 턴 시작 처음에 실행되기때문에 여기에만 적용
-                enty.eventEnty = getEventDataList(dbAdapter, 1);
+                enty.eventEnty = getEventDataList(dbAdapter, enty.TURN);
                 break;
             case Game_Title.STARTGAME_LOADPLAYER:
-                enty = getUserFromData(dbAdapter, playerName);
+                enty = getUserEntyFromUserDB(dbAdapter, playerName);
                 break;
         }
 
-        /*int playerNameCount = dbAdapter.getRowCount(
-                GameDbAdapter.USERMAIN_TABLE, GameDbAdapter.KEY_USERNAME, playerName);
-        if (playerNameCount == 0) {
-            enty.Name = playerName;
-            enty.EXP = 0;
-            enty.LEVEL = 1;
-            enty.AP = 2;
-            enty.GOLD = 100;
-            enty.TURN = 1;
-            enty.GEM_RED = 1;
-            enty.GEM_GREEN = 1;
-            enty.GEM_BLUE = 1;
-
-            //DB insert
-            insertUserData(dbAdapter, enty.Name, Integer.toString(enty.EXP), Integer.toString(enty.LEVEL),
-                    Integer.toString(enty.AP), Integer.toString(enty.TURN), Integer.toString(enty.GOLD),
-                    Integer.toString(enty.GEM_RED), Integer.toString(enty.GEM_GREEN), Integer.toString(enty.GEM_BLUE));
-        } else {
-            enty = getUserFromData(dbAdapter, playerName);
-        }
-
-        if(flag == Game_Title.STARTGAME_NEWPLAYER) {
-            //해당 유저의 모든 멤버데이터 삭제 (리셋)
-            dbAdapter.deleteROW(GameDbAdapter.USERMEMBER_TABLE, -1, enty.Name);
-        }*/
-
-        ArrayList<MemberEnty> entyList = addMemberListFromMemberDB(dbAdapter, enty.eventEnty.MemberIDList);
+        ArrayList<MemberEnty> entyList = setMemberListFromMemberDB(dbAdapter, enty.eventEnty.MemberIDList);
         for(MemberEnty memEnty : entyList) {
-            insertUserMemberToData(dbAdapter, memEnty, enty.Name);
+            insertMemberToDB(dbAdapter, memEnty, enty.Name);
         }
-
-//        enty.MEMBERLIST = getMemberDataList(dbAdapter, enty.eventEnty.MemberIDList);
 
         enty.QUESTLIST = getQuestDataList(dbAdapter, enty.eventEnty.QuestIDList);
-        enty.PARTY_MEMBERID_LIST = new ArrayList<>();
-        for (int i = 0; i < 16; i++) {
-            enty.PARTY_MEMBERID_LIST.add(null);
-        }
+//        enty.PARTY_MEMBERID_LIST = new ArrayList<>();
+//        for (int i = 0; i < 16; i++) {
+//            enty.PARTY_MEMBERID_LIST.add(null);
+//        }
 
         return enty;
     }
 
     /**
-     * db에 user의 crew를 삽입
+     * DB에 member를 삽입
      * @return
      */
-    public static long insertUserMemberToData(GameDbAdapter dbAdapter, MemberEnty enty, String userName){
-        String TableName = GameDbAdapter.USERMEMBER_TABLE;
+    public static long insertMemberToDB(GameDbAdapter dbAdapter, MemberEnty enty, String userName){
+        String TableName = GameDbAdapter.GUILD_MEMBER_TABLE;
         String[] columns = {enty.memberId, userName, enty.name, enty.engname, enty.sex, enty.age, enty.race, enty.memberclass, enty.mercy, enty.image,
                 Integer.toString(enty.iconid), enty.profile, enty.dialog1, Integer.toString(enty.status.LEVEL), Integer.toString(enty.status.EXP),
                 Integer.toString(enty.status.HP), Integer.toString(enty.status.MP), Integer.toString(enty.status.AP),
@@ -197,12 +211,12 @@ public class DataManager {
     }
 
     /**
-     * db에서 user의 crew를 불러옴
+     * DB에서 member enty를 불러옴
      * @return
      */
-    public static MemberEnty getUserMemberFromData(GameDbAdapter dbAdapter, String memberID) {
+    public static MemberEnty getMemberEntyFromDB(GameDbAdapter dbAdapter, String memberID) {
         MemberEnty enty = new MemberEnty();
-        Cursor cursor = getUserMemberCursor(dbAdapter, memberID);
+        Cursor cursor = getGuildMemberCursor(dbAdapter, memberID);
         enty.status = new StatusEnty();
         enty.equip = new EquipEnty();
         enty.name = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERNAME));
@@ -234,15 +248,20 @@ public class DataManager {
         return enty;
     }
 
+    /**
+     * 새로운 Event의 멤버와 퀘스트 List를 불러옴
+     * @param userEnty
+     * @return
+     */
     public static UserEnty setChangeEvent(GameDbAdapter dbAdapter, UserEnty userEnty) {
         userEnty.eventEnty = getEventDataList(dbAdapter, userEnty.TURN);
 //        for(String memberID : userEnty.eventEnty.MemberIDList){
-//            insertUserMemberToData(dbAdapter, getMemberEntyFromDBMember(dbAdapter, memberID), userEnty.Name);
+//            insertUserMemberToData(dbAdapter, getMemberEntyFromMemberDB(dbAdapter, memberID), userEnty.Name);
 //        }
 //        userEnty.MEMBERLIST.addAll(getMemberDataList(dbAdapter, userEnty.eventEnty.MemberIDList));
-        ArrayList<MemberEnty> entyList = addMemberListFromMemberDB(dbAdapter, userEnty.eventEnty.MemberIDList);
+        ArrayList<MemberEnty> entyList = setMemberListFromMemberDB(dbAdapter, userEnty.eventEnty.MemberIDList);
         for(MemberEnty enty : entyList) {
-            insertUserMemberToData(dbAdapter, enty, userEnty.Name);
+            insertMemberToDB(dbAdapter, enty, userEnty.Name);
         }
         userEnty.QUESTLIST = getQuestDataList(dbAdapter, userEnty.eventEnty.QuestIDList);
         return userEnty;
@@ -250,13 +269,12 @@ public class DataManager {
 
     /**
      * db에서 turn에 해당하는 event를 불러옴
-     * @param dbAdapter
      * @param turn
      * @return
      */
     public static EventEnty getEventDataList(GameDbAdapter dbAdapter, int turn) {
         EventEnty eventEnty = new EventEnty();
-        Cursor eventCursor = getEventTurnCursor(dbAdapter, Integer.toString(turn));
+        Cursor eventCursor = getEventCursorOfTurn(dbAdapter, Integer.toString(turn));
         eventEnty.MemberIDList = new ArrayList<>();
         eventEnty.QuestIDList = new ArrayList<>();
         String gold = "";
@@ -303,10 +321,10 @@ public class DataManager {
     }
 
     /**
-     * db의 member table에서 member정보를 불러옴
+     * db의 member table에서 멤버 정보를 불러옴
      * @return
      */
-    public static MemberEnty getMemberEntyFromDBMember(GameDbAdapter dbAdapter, String memberID){
+    public static MemberEnty getMemberEntyFromMemberDB(GameDbAdapter dbAdapter, String memberID){
         String id = memberID.split("-")[0];
         MemberEnty memEnty = new MemberEnty();
         Cursor memberCursor = getDBMemberCursor(dbAdapter, id);
@@ -352,27 +370,26 @@ public class DataManager {
     }
 
     /**
-     * db의 member table에서 member 리스트를 불러옴
+     * memberID List의 모든 멤버를 DB에서 찾아 MemberEnty List로 변환
      * @return
      */
-    public static ArrayList<MemberEnty> addMemberListFromMemberDB(GameDbAdapter dbAdapter, ArrayList<String> eventMemberId) {
+    public static ArrayList<MemberEnty> setMemberListFromMemberDB(GameDbAdapter dbAdapter, ArrayList<String> memberIdList) {
         ArrayList<MemberEnty> entyList = new ArrayList<>();
-        for (String memberID : eventMemberId) {
-            entyList.add(getMemberEntyFromDBMember(dbAdapter, memberID));
+        for (String memberID : memberIdList) {
+            entyList.add(getMemberEntyFromMemberDB(dbAdapter, memberID));
         }
         return entyList;
     }
 
     /**
-     * user의 모든 member 리스트를 불러옴
-     * @param dbAdapter
+     * user 길드의 모든 멤버의 리스트를 불러옴
      * @param username
      * @return
      */
-    public static ArrayList<MemberEnty> getAllUserMemberList(GameDbAdapter dbAdapter, String username) {
+    public static ArrayList<MemberEnty> getGuildMemberList(GameDbAdapter dbAdapter, String username) {
         ArrayList<MemberEnty> entyList = new ArrayList<>();
-//        int userMemberSize = DataManager.getUserMemberSize(dbAdapter, username);
-        Cursor cursor = dbAdapter.getCursor(GameDbAdapter.USERMEMBER_TABLE, GameDbAdapter.KEY_USERNAME, username);
+//        int userMemberSize = DataManager.getGuildMemberSize(dbAdapter, username);
+        Cursor cursor = dbAdapter.getCursor(GameDbAdapter.GUILD_MEMBER_TABLE, GameDbAdapter.KEY_USERNAME, username);
         if(cursor!=null) {
             cursor.moveToFirst();
             do {

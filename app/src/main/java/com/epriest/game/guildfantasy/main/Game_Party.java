@@ -121,17 +121,17 @@ public class Game_Party extends Game {
 
     private void setCardListFromSelectParty(int selectParty) {
         this.selectPartyNum = selectParty;
-        for (int i = 0; i < 4; i++) {
+        /*for (int i = 0; i < 4; i++) {
             int num = (selectParty * 4) + i;
             if (this.gameMain.userEnty.PARTY_MEMBERID_LIST.get(num) == null) {
                 this.CardImgList.add(i, null);
                 this.PartyCardList.add(i, null);
             } else {
-                MemberEnty enty = DataManager.getUserMemberFromData(this.gameMain.dbAdapter, (String) this.gameMain.userEnty.PARTY_MEMBERID_LIST.get(num));
+                MemberEnty enty = DataManager.getMemberEntyFromDB(this.gameMain.dbAdapter, (String) this.gameMain.userEnty.PARTY_MEMBERID_LIST.get(num));
                 this.CardImgList.add(i, GLUtil.loadAssetsBitmap(this.gameMain.appClass, "member/" + enty.image, null));
                 this.PartyCardList.add(i, enty);
             }
-        }
+        }*/
 
     }
 

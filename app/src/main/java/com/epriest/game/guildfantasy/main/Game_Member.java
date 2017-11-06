@@ -42,7 +42,7 @@ public class Game_Member extends Game {
 
     @Override
     public void gStart() {
-        memberList = DataManager.getAllUserMemberList(gameMain.dbAdapter, gameMain.userEnty.Name);
+        memberList = DataManager.getGuildMemberList(gameMain.dbAdapter, gameMain.userEnty.Name);
         img_memberSheet = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member_sheet.png", null);
         img_membercard = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/membercard.png", null);
         bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member.jpg", null);
@@ -80,8 +80,8 @@ public class Game_Member extends Game {
                 int cx = 20 + i % cardRowNum * (cardW + 10);
                 int cy = 300 + i / cardRowNum * (cardH + 30);
                 if (GameUtil.equalsTouch(gameMain.appClass.touch, cx, cy, cardW, cardH)) {
-                    gameMain.userEnty.PARTY_MEMBERID_LIST.set(gameMain.selectCardNum, memberList.get(i).memberId);
-                    gameMain.mainButtonAct(INN.GAME_MEMBER, 0);
+//                    gameMain.userEnty.PARTY_MEMBERID_LIST.set(gameMain.selectCardNum, memberList.get(i).memberId);
+//                    gameMain.mainButtonAct(INN.GAME_MEMBER, 0);
                     return;
                 }
             }

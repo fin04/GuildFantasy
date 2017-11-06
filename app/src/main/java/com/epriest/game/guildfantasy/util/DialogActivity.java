@@ -9,7 +9,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.guildfantasy.R;
 
 /**
@@ -45,11 +47,16 @@ public class DialogActivity extends Activity implements View.OnClickListener{
             case R.id.button_ok:
                 EditText et_name = (EditText)findViewById(R.id.editText_username);
                 String name = et_name.getText().toString();
+                if (name.length() < 3) {
+                    Toast.makeText(this, "이름을 세글자 이상으로 적어주세요.", Toast.LENGTH_SHORT).show();
+                    return;
+                } else
+                    ((ApplicationClass) getApplicationContext()).newName = name;
 
                 break;
             case R.id.button_no:
-                this.finish();
                 break;
         }
+        this.finish();
     }
 }

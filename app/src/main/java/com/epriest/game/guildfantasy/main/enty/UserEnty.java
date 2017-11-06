@@ -19,7 +19,7 @@ public class UserEnty {
     public boolean isStartTurnAlert;
     public EventEnty eventEnty;
     public ArrayList<QuestEnty> QUESTLIST;
-//    public ArrayList<MemberEnty> MEMBERLIST;
-    public ArrayList<String> PARTY_MEMBERID_LIST;
+    public ArrayList<MemberEnty> MEMBERLIST;
+//    public ArrayList<String> PARTY_MEMBERID_LIST;
 //    public ArrayList<PartyEnty> PARTYLIST;
 }

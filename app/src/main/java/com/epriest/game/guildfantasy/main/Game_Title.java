@@ -1,5 +1,6 @@
 package com.epriest.game.guildfantasy.main;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.MotionEvent;
 
@@ -10,6 +11,7 @@ import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.ImageEnty;
 import com.epriest.game.guildfantasy.main.play.DataManager;
+import com.epriest.game.guildfantasy.util.DialogActivity;
 import com.epriest.game.guildfantasy.util.INN;
 
 /**
@@ -85,14 +87,18 @@ public class Game_Title extends Game {
 
     @Override
     public void gUpdate() {
-
+        if (appClass.newName != null) {
+            startGame(STARTGAME_NEWPLAYER);
+        }
     }
 
     public void startGame(int flag){
         if (gameMain.userEnty == null) {
             // 프롤로그를 실행하고 플레이어를 작성
 //            startProlog1();
-            gameMain.userEnty = DataManager.createUserData(gameMain.dbAdapter, "홍길동", flag);
+            String name = appClass.newName;
+            appClass.newName = null;
+            gameMain.userEnty = DataManager.createUserData(gameMain.dbAdapter, name, flag);
         }
         gameMain.mainButtonAct(INN.GAME_HOME, 0, -1);
     }
@@ -104,7 +110,11 @@ public class Game_Title extends Game {
             btn_New.clickState = ButtonEnty.ButtonClickOn;
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 btn_New.clickState = ButtonEnty.ButtonClickOff;
-                startGame(STARTGAME_NEWPLAYER);
+                Intent intent = new Intent(appClass, DialogActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                appClass.startActivity(intent);
+
+//                startGame(STARTGAME_NEWPLAYER);
             }
             return;
         }

@@ -148,7 +148,7 @@ public class GameDbAdapter {
     public static final String QUEST_TABLE = "quest";
     public static final String EVENT_TABLE = "event";
     public static final String USERMAIN_TABLE = "player_main";
-    public static final String USERMEMBER_TABLE = "player_member";
+    public static final String GUILD_MEMBER_TABLE = "player_member";
     private static final int DATABASE_VERSION = 1;
     private final Context mCtx;
 
@@ -169,7 +169,7 @@ public class GameDbAdapter {
             createMemberTable(db, EVENT_TABLE, EventColumns);
 
             createPlayerTable(db, USERMAIN_TABLE, PlayerMainColumns);
-            createPlayerTable(db, USERMEMBER_TABLE, PlayerMemberColumns);
+            createPlayerTable(db, GUILD_MEMBER_TABLE, PlayerMemberColumns);
         }
 
         private String createTable(String tableName, String[] columns) {
@@ -316,7 +316,7 @@ public class GameDbAdapter {
             return EventColumns;
         else if (TableName.equals(USERMAIN_TABLE))
             return PlayerMainColumns;
-        else if (TableName.equals(USERMEMBER_TABLE))
+        else if (TableName.equals(GUILD_MEMBER_TABLE))
             return PlayerMemberColumns;
         return null;
     }
