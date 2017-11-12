@@ -16,8 +16,10 @@
             android:id="@+id/text_popuptitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_horizontal_margin"
+            android:textColor="@android:color/white"
             android:textSize="@android:dimen/app_icon_size" />
 
         <EditText
@@ -35,7 +37,17 @@
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_horizontal_margin"
-            android:text="" />
+            android:text=""
+            android:textColor="@color/colorPrimaryDark" />
+
+        <TextView
+            android:id="@+id/text_popupcomment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="@dimen/activity_horizontal_margin" />
 
     </LinearLayout>
 

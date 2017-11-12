@@ -106,23 +106,38 @@ public class GameDbAdapter {
     public static final String KEY_MEMBERARM1 = "member_arm1";
     public static final String KEY_MEMBERARM2 = "member_arm2";
 
-    private static String[] MemberColumns = new String[]{KEY_MEMBERID, KEY_MEMBERNAME, KEY_MEMBERENGNAME, KEY_MEMBERSEX,
+    private static String[] MemberColumns = new String[]{
+            KEY_MEMBERID, KEY_MEMBERNAME, KEY_MEMBERENGNAME, KEY_MEMBERSEX,
             KEY_MEMBERAGE, KEY_MEMBERRACE, KEY_MEMBERCLASS, KEY_MEMBERMERCY, KEY_MEMBERIMAGENAME, KEY_MEMBERICONID,
-            KEY_MEMBERPROFILE, KEY_MEMBERDIALOG1};
-    private static String[] ClassColumns = new String[]{KEY_CLASSID, KEY_CLASSNAME, KEY_CLASSSTR, KEY_CLASSDEX,
-            KEY_CLASSINT, KEY_CLASSVIT, KEY_CLASSMAINARMS, KEY_CLASSSUBARMS, KEY_CLASSHEAD, KEY_CLASSBODY};
-    private static String[] RaceColumns = new String[]{KEY_RACEID, KEY_RACENAME, KEY_RACEFIRE, KEY_RACEWATER,
-            KEY_RACEWIND, KEY_RACEEARTH, KEY_RACELIGHTNING, KEY_RACEHP, KEY_RACEMP};
-    private static String[] QuestColumns = new String[]{KEY_QUESTID, KEY_QUESTTITLE, KEY_QUESTTYPE, KEY_QUESTMAP,
+            KEY_MEMBERPROFILE, KEY_MEMBERDIALOG1
+    };
+
+    private static String[] ClassColumns = new String[]{
+            KEY_CLASSID, KEY_CLASSNAME, KEY_CLASSSTR, KEY_CLASSDEX,
+            KEY_CLASSINT, KEY_CLASSVIT, KEY_CLASSMAINARMS, KEY_CLASSSUBARMS, KEY_CLASSHEAD, KEY_CLASSBODY
+    };
+
+    private static String[] RaceColumns = new String[]{
+            KEY_RACEID, KEY_RACENAME, KEY_RACEFIRE, KEY_RACEWATER,
+            KEY_RACEWIND, KEY_RACEEARTH, KEY_RACELIGHTNING, KEY_RACEHP, KEY_RACEMP
+    };
+
+    private static String[] QuestColumns = new String[]{
+            KEY_QUESTID, KEY_QUESTTITLE, KEY_QUESTTYPE, KEY_QUESTMAP,
             KEY_QUESTMONSTER1, KEY_QUESTMONSTER2, KEY_QUESTDIFFICULT, KEY_QUESTMONSTERLV, KEY_QUESTNEEDMEMBER,
-            KEY_QUESTREWARD_GOLD, KEY_QUESTREWARD_EXP, KEY_QUESTIMAGENAME, KEY_QUESTTEXT};
-    private static String[] EventColumns = new String[]{KEY_EVENTID, KEY_EVENTTURN, KEY_EVENTQUEST, KEY_EVENTMEMBER,
-            KEY_EVENTGOLD, KEY_EVENTITEM, KEY_EVENTIMAGE, KEY_EVENTTEXT};
+            KEY_QUESTREWARD_GOLD, KEY_QUESTREWARD_EXP, KEY_QUESTIMAGENAME, KEY_QUESTTEXT
+    };
+
+    private static String[] EventColumns = new String[]{
+            KEY_EVENTID, KEY_EVENTTURN, KEY_EVENTQUEST, KEY_EVENTMEMBER,
+            KEY_EVENTGOLD, KEY_EVENTITEM, KEY_EVENTIMAGE, KEY_EVENTTEXT
+    };
 
     private static String[] PlayerMainColumns = new String[]{
             KEY_PLAYERID, KEY_USERNAME, KEY_USEREXP, KEY_USERLEVEL,
             KEY_USERAP, KEY_USERTURN, KEY_USERGOLD, KEY_USERGEM_RED,
             KEY_USERGEM_GREEN, KEY_USERGEM_BLUE};
+
     private static String[] PlayerMemberColumns = new String[]{
             KEY_MEMBERID, KEY_USERNAME, KEY_MEMBERNAME, KEY_MEMBERENGNAME, KEY_MEMBERSEX,
             KEY_MEMBERAGE, KEY_MEMBERRACE, KEY_MEMBERCLASS, KEY_MEMBERMERCY,
@@ -131,6 +146,12 @@ public class GameDbAdapter {
             KEY_MEMBERSTR, KEY_MEMBERDEX, KEY_MEMBERINT, KEY_MEMBERVIT, KEY_MEMBERRENOWN,
             KEY_MEMBERFOOD, KEY_MEMBERITEM1, KEY_MEMBERITEM2, KEY_MEMBERITEM3, KEY_MEMBERARM1,
             KEY_MEMBERARM2, KEY_QUESTID
+    };
+
+    private static String[] PlayerQuestColumns = new String[]{
+            KEY_QUESTID, KEY_USERNAME, KEY_QUESTTITLE, KEY_QUESTTYPE, KEY_QUESTMAP,
+            KEY_QUESTMONSTER1, KEY_QUESTMONSTER2, KEY_QUESTDIFFICULT, KEY_QUESTMONSTERLV, KEY_QUESTNEEDMEMBER,
+            KEY_QUESTREWARD_GOLD, KEY_QUESTREWARD_EXP, KEY_QUESTIMAGENAME, KEY_QUESTTEXT
     };
 
     private static final String TAG = "GameDbAdapter";
@@ -147,8 +168,10 @@ public class GameDbAdapter {
     public static final String RACE_TABLE = "race";
     public static final String QUEST_TABLE = "quest";
     public static final String EVENT_TABLE = "event";
-    public static final String USERMAIN_TABLE = "player_main";
-    public static final String GUILD_MEMBER_TABLE = "player_member";
+    public static final String PLAYER_MAIN_TABLE = "player_main";
+    public static final String PLAYER_MEMBER_TABLE = "player_member";
+    public static final String PLAYER_QUEST_TABLE = "player_quest";
+
     private static final int DATABASE_VERSION = 1;
     private final Context mCtx;
 
@@ -168,8 +191,9 @@ public class GameDbAdapter {
             createMemberTable(db, QUEST_TABLE, QuestColumns);
             createMemberTable(db, EVENT_TABLE, EventColumns);
 
-            createPlayerTable(db, USERMAIN_TABLE, PlayerMainColumns);
-            createPlayerTable(db, GUILD_MEMBER_TABLE, PlayerMemberColumns);
+            createPlayerTable(db, PLAYER_MAIN_TABLE, PlayerMainColumns);
+            createPlayerTable(db, PLAYER_MEMBER_TABLE, PlayerMemberColumns);
+            createPlayerTable(db, PLAYER_QUEST_TABLE, PlayerQuestColumns);
         }
 
         private String createTable(String tableName, String[] columns) {
@@ -314,9 +338,9 @@ public class GameDbAdapter {
             return QuestColumns;
         else if (TableName.equals(EVENT_TABLE))
             return EventColumns;
-        else if (TableName.equals(USERMAIN_TABLE))
+        else if (TableName.equals(PLAYER_MAIN_TABLE))
             return PlayerMainColumns;
-        else if (TableName.equals(GUILD_MEMBER_TABLE))
+        else if (TableName.equals(PLAYER_MEMBER_TABLE))
             return PlayerMemberColumns;
         return null;
     }

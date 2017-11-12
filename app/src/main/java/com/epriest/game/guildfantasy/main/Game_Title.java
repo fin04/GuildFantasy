@@ -1,8 +1,10 @@
 package com.epriest.game.guildfantasy.main;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
@@ -53,13 +55,13 @@ public class Game_Title extends Game {
         int titleY = 250;
         titleImg0.w = titleImg0.bitmap.getWidth();
         titleImg0.h = titleImg0.bitmap.getHeight();
-        titleImg0.x = appClass.getGameCanvasWidth()/2 - titleImg0.w/2;
+        titleImg0.x = appClass.getGameCanvasWidth() / 2 - titleImg0.w / 2;
         titleImg0.y = titleY;
 
         titleImg1.w = titleImg1.bitmap.getWidth();
         titleImg1.h = titleImg1.bitmap.getHeight();
-        titleImg1.x = appClass.getGameCanvasWidth()/2 - titleImg1.w/2;
-        titleImg1.y = titleY+titleImg0.h+15;
+        titleImg1.x = appClass.getGameCanvasWidth() / 2 - titleImg1.w / 2;
+        titleImg1.y = titleY + titleImg0.h + 15;
 
         btn_New = new ButtonEnty();
         btn_Load = new ButtonEnty();
@@ -68,16 +70,16 @@ public class Game_Title extends Game {
         btn_Load.bitmap = GLUtil.loadAssetsBitmap(appClass, "title_load0.png", null);
         btn_Load.bitmap_clk = GLUtil.loadAssetsBitmap(appClass, "title_load1.png", null);
 
-        int btnY = appClass.getGameCanvasHeight()/2 +100;
+        int btnY = appClass.getGameCanvasHeight() / 2 + 100;
         btn_New.drawW = btn_New.bitmap.getWidth();
         btn_New.drawH = btn_New.bitmap.getHeight();
-        btn_New.drawX = appClass.getGameCanvasWidth()/2 - btn_New.bitmap.getWidth()/2;
+        btn_New.drawX = appClass.getGameCanvasWidth() / 2 - btn_New.bitmap.getWidth() / 2;
         btn_New.drawY = btnY;
 
         btn_Load.drawW = btn_Load.bitmap.getWidth();
         btn_Load.drawH = btn_Load.bitmap.getHeight();
-        btn_Load.drawX = appClass.getGameCanvasWidth()/2 - btn_Load.bitmap.getWidth()/2;
-        btn_Load.drawY = btnY+btn_New.bitmap.getHeight()+50;
+        btn_Load.drawX = appClass.getGameCanvasWidth() / 2 - btn_Load.bitmap.getWidth() / 2;
+        btn_Load.drawY = btnY + btn_New.bitmap.getHeight() + 50;
     }
 
     @Override
@@ -88,16 +90,16 @@ public class Game_Title extends Game {
     @Override
     public void gUpdate() {
         if (appClass.newName != null) {
-            startGame(STARTGAME_NEWPLAYER);
+            String name = appClass.newName;
+            appClass.newName = null;
+            startGame(STARTGAME_NEWPLAYER, name);
         }
     }
 
-    public void startGame(int flag){
+    public void startGame(int flag, String name) {
         if (gameMain.userEnty == null) {
             // 프롤로그를 실행하고 플레이어를 작성
 //            startProlog1();
-            String name = appClass.newName;
-            appClass.newName = null;
             gameMain.userEnty = DataManager.createUserData(gameMain.dbAdapter, name, flag);
         }
         gameMain.mainButtonAct(INN.GAME_HOME, 0, -1);
@@ -110,11 +112,14 @@ public class Game_Title extends Game {
             btn_New.clickState = ButtonEnty.ButtonClickOn;
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 btn_New.clickState = ButtonEnty.ButtonClickOff;
-                Intent intent = new Intent(appClass, DialogActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                appClass.startActivity(intent);
-
-//                startGame(STARTGAME_NEWPLAYER);
+                Cursor userCursor = DataManager.getUserMainCursor(gameMain.dbAdapter, null);
+                if (userCursor.getCount() < 3) {
+                    Intent intent = new Intent(appClass, DialogActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    appClass.startActivity(intent);
+                } else {
+                    Toast.makeText(appClass, "생성 가능한 유저 수가 넘었습니다.", Toast.LENGTH_SHORT).show();
+                }
             }
             return;
         }
@@ -123,7 +128,12 @@ public class Game_Title extends Game {
             btn_Load.clickState = ButtonEnty.ButtonClickOn;
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 btn_Load.clickState = ButtonEnty.ButtonClickOff;
-                startGame(STARTGAME_LOADPLAYER);
+                Cursor userCursor = DataManager.getUserMainCursor(gameMain.dbAdapter, null);
+                if (userCursor.getCount() == 0) {
+                    Toast.makeText(appClass, "불러올 유저가 없습니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    startGame(STARTGAME_LOADPLAYER, "홍길동");
+                }
             }
             return;
         }

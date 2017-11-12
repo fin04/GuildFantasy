@@ -8,7 +8,6 @@ import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 import com.epriest.game.guildfantasy.main.play.DataManager;
-import com.epriest.game.guildfantasy.util.INN;
 
 import java.util.ArrayList;
 
@@ -42,7 +41,7 @@ public class Game_Member extends Game {
 
     @Override
     public void gStart() {
-        memberList = DataManager.getGuildMemberList(gameMain.dbAdapter, gameMain.userEnty.Name);
+        memberList = DataManager.getUserMemberListFromUserDB(gameMain.dbAdapter, gameMain.userEnty.Name);
         img_memberSheet = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member_sheet.png", null);
         img_membercard = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/membercard.png", null);
         bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member.jpg", null);
