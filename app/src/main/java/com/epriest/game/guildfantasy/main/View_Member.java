@@ -147,7 +147,7 @@ public class View_Member {
             cH = aa/7;
         }
 
-        memberList = DataManager.getUserMemberListFromUserDB(gameMain.dbAdapter, gameMain.userEnty.Name);
+        memberList = DataManager.getUserMemberList(gameMain.dbAdapter, gameMain.userEnty.Name);
         for(int i=0; i< memberList.size() ; i++) {
             MemberEnty enty = memberList.get(i);
             int sheetLeft = (card.getWidth()+5)*(i%cardRow);

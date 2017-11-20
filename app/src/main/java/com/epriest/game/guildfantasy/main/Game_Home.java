@@ -124,10 +124,9 @@ public class Game_Home extends Game {
                 optionBtn.drawX = canvasW - optionBtn.clipW - 15;
                 optionBtn.drawY = mMenuTabBarY + (gameMain.statusBarH - optionBtn.clipH) / 2;
 
-
                 menIcon = new ButtonEnty();
                 menIcon.name = "Men";
-                menIcon.drawX = (gameMain.appClass.getGameCanvasWidth() - 120) / 5;
+                menIcon.drawX = (gameMain.appClass.getGameCanvasWidth() - 120) / 5 + 260;
                 menIcon.drawY = 5;
                 menIcon.clipW = 24;
                 menIcon.clipH = 34;
@@ -136,7 +135,7 @@ public class Game_Home extends Game {
 
                 feedIcon = new ButtonEnty();
                 feedIcon.name = "Feed";
-                feedIcon.drawX = (gameMain.appClass.getGameCanvasWidth() - 120) / 5 + 80;
+                feedIcon.drawX = (gameMain.appClass.getGameCanvasWidth() - 120) / 5 + 360;
                 feedIcon.drawY = 5;
                 feedIcon.clipW = 32;
                 feedIcon.clipH = 32;

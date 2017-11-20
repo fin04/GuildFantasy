@@ -125,29 +125,38 @@ public class DataManager {
                 insertUserInfo(dbAdapter, enty.Name, Integer.toString(enty.EXP), Integer.toString(enty.LEVEL),
                         Integer.toString(enty.AP), Integer.toString(enty.TURN), Integer.toString(enty.GOLD),
                         Integer.toString(enty.GEM_RED), Integer.toString(enty.GEM_GREEN), Integer.toString(enty.GEM_BLUE));
-                //해당 유저의 모든 멤버데이터 삭제 (리셋)
-                dbAdapter.deleteROW(GameDbAdapter.PLAYER_MEMBER_TABLE, -1, enty.Name);
 
-                //이벤트는 턴 시작 처음에 실행되기때문에 여기에만 적용
-                enty.eventEnty = getEventData(dbAdapter, enty.TURN);
-                ArrayList<MemberEnty> entyList = getMemberDataList(dbAdapter, enty.eventEnty.MemberIDList);
-                for(MemberEnty memEnty : entyList) {
-                    insertUserMember(dbAdapter, memEnty, enty.Name);
-                }
+                // 0turn에 해당하는 이벤트, 멤버, 퀘스트 가져옴
+                enty = setChangeEvent(dbAdapter, enty);
                 break;
             case Game_Title.STARTGAME_LOADPLAYER:
                 enty = getUserInfo(dbAdapter, playerName);
                 enty.MEMBERLIST = getUserMemberList(dbAdapter, playerName);
+                enty.QUESTLIST = getUserQuestList(dbAdapter, playerName);
                 break;
         }
 
-        enty.QUESTLIST = getQuestDataList(dbAdapter, enty.eventEnty.QuestIDList);
+
 //        enty.PARTY_MEMBERID_LIST = new ArrayList<>();
 //        for (int i = 0; i < 16; i++) {
 //            enty.PARTY_MEMBERID_LIST.add(null);
 //        }
 
         return enty;
+    }
+
+    /**
+     * 지정된 user data를 모두 삭제함
+     * @return
+     */
+    public static boolean deleteUserData(GameDbAdapter dbAdapter, String playerName) {
+        boolean delUser = dbAdapter.deleteROW(GameDbAdapter.PLAYER_MAIN_TABLE, -1, playerName);
+        boolean delMember = dbAdapter.deleteROW(GameDbAdapter.PLAYER_MEMBER_TABLE, -1, playerName);
+        boolean delQuest = dbAdapter.deleteROW(GameDbAdapter.PLAYER_QUEST_TABLE, -1, playerName);
+        if(!delUser || !delMember || !delQuest)
+            return false;
+        else
+            return true;
     }
 
     /**
@@ -158,7 +167,7 @@ public class DataManager {
                                       String Ap, String Turn, String Gold,
                                       String GemRed, String GemGreen, String GemBlue) {
         String TableName = GameDbAdapter.PLAYER_MAIN_TABLE;
-        String UserID = ""; //추후 google, facebook과 연동 가능
+        String UserID = "0"; //추후 google, facebook과 연동 가능
         String[] columns = {UserID, playerName, Exp, Level, Ap, Turn, Gold, GemRed, GemGreen, GemBlue};
         dbAdapter.insertDATA(TableName, columns);
     }
@@ -214,7 +223,7 @@ public class DataManager {
         cursor.close();
 
         //길드의 멤버 List를 userEnty에 삽입
-        enty.MEMBERLIST= getUserMemberList(dbAdapter, userName);
+//        enty.MEMBERLIST= getUserMemberList(dbAdapter, userName);
 //        enty.eventEnty = new EventEnty();
 //        enty.eventEnty.MemberIDList = new ArrayList<>();
 //        for(MemberEnty mEnty : mList){
@@ -273,32 +282,8 @@ public class DataManager {
         if(cursor!=null) {
             cursor.moveToFirst();
             do {
-                MemberEnty memEnty = new MemberEnty();
-                memEnty.memberId = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERID));
-                memEnty.name = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERNAME));
-                memEnty.engname = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERENGNAME));
-                memEnty.sex = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERSEX));
-                memEnty.age = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERAGE));
-                memEnty.race = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERRACE));
-                memEnty.memberclass = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERCLASS));
-                memEnty.mercy = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERMERCY));
-                memEnty.image = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERIMAGENAME));
-                memEnty.iconid = cursor.getInt(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERICONID));
-                memEnty.profile = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERPROFILE));
-                memEnty.dialog1 = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERDIALOG1));
-
-                memEnty.status = new StatusEnty();
-                Cursor classCursor = getClassCursor(dbAdapter, memEnty.memberclass);
-                memEnty.status.STR = classCursor.getInt(classCursor.getColumnIndex(GameDbAdapter.KEY_CLASSSTR));
-                memEnty.status.DEX = classCursor.getInt(classCursor.getColumnIndex(GameDbAdapter.KEY_CLASSDEX));
-                memEnty.status.INT = classCursor.getInt(classCursor.getColumnIndex(GameDbAdapter.KEY_CLASSINT));
-                memEnty.status.VIT = classCursor.getInt(classCursor.getColumnIndex(GameDbAdapter.KEY_CLASSVIT));
-                classCursor.close();;
-
-                Cursor raceCursor = getRaceCursor(dbAdapter, memEnty.race);
-                memEnty.status.HP = raceCursor.getInt(raceCursor.getColumnIndex(GameDbAdapter.KEY_RACEHP));
-                memEnty.status.MP = raceCursor.getInt(raceCursor.getColumnIndex(GameDbAdapter.KEY_RACEMP));
-                raceCursor.close();
+                MemberEnty memEnty = getUserMemberEnty(dbAdapter, cursor.getString(
+                        cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERID)));
                 entyList.add(memEnty);
             } while (cursor.moveToNext()) ;
             cursor.close();
@@ -325,7 +310,6 @@ public class DataManager {
                 enty.monster1 = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTMONSTER1));
                 enty.monster2 = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTMONSTER2));
                 enty.monsterLV = questCursor.getInt(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTMONSTERLV));
-                questCursor.close();
                 entyList.add(enty);
             } while (questCursor.moveToNext()) ;
             questCursor.close();
@@ -485,18 +469,24 @@ public class DataManager {
      */
     public static UserEnty setChangeEvent(GameDbAdapter dbAdapter, UserEnty userEnty) {
         userEnty.eventEnty = getEventData(dbAdapter, userEnty.TURN);
-//        for(String memberID : userEnty.eventEnty.MemberIDList){
-//            insertUserMemberToData(dbAdapter, getMemberEntyFromMemberDB(dbAdapter, memberID), userEnty.Name);
-//        }
-//        userEnty.MEMBERLIST.addAll(getMemberDataList(dbAdapter, userEnty.eventEnty.MemberIDList));
-        ArrayList<MemberEnty> entyList = getMemberDataList(dbAdapter, userEnty.eventEnty.MemberIDList);
-        for(MemberEnty enty : entyList) {
+
+        userEnty.MEMBERLIST = getMemberDataList(dbAdapter, userEnty.eventEnty.MemberIDList);
+        for(MemberEnty enty : userEnty.MEMBERLIST) {
             insertUserMember(dbAdapter, enty, userEnty.Name);
         }
         userEnty.QUESTLIST = getQuestDataList(dbAdapter, userEnty.eventEnty.QuestIDList);
+        for(QuestEnty enty : userEnty.QUESTLIST){
+            insertUserQuest(dbAdapter, enty, userEnty.Name);
+        }
         return userEnty;
     }
 
+    /**
+     * user의 table을 모두 삭제한다.
+     */
+    public static boolean deleteUserTable(GameDbAdapter dbAdapter, String table, String playerName){
+        return dbAdapter.deleteROW(table, -1, playerName);
+    }
 
 
 

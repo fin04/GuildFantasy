@@ -12,6 +12,7 @@ import com.epriest.game.CanvasGL.util.Scene;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.ClipImageEnty;
 import com.epriest.game.guildfantasy.main.enty.ImageEnty;
+import com.epriest.game.guildfantasy.main.enty.UserEnty;
 import com.epriest.game.guildfantasy.util.INN;
 
 import java.util.ArrayList;
@@ -106,16 +107,16 @@ public class Scene_Home extends Scene {
 
         drawBG(mCanvas);
         //manager mode
-        drawManager(mCanvas);
+//        drawManager(mCanvas);
 
 //        if (viewMenuButton) {
-            drawMenuButton(mCanvas);
+        drawMenuButton(mCanvas);
 //        }
 
         if (gameHome.gameMain.appClass.gameState == INN.GAME_HOME && gameHome.gameMain.userEnty.isStartTurnAlert)
             drawTurnStartAlert(mCanvas);
 
-//        gameHome.gameMain.drawMain(mCanvas, true);
+        drawStatusTab(mCanvas);
     }
 
     private void drawBG(Canvas mCanvas) {
@@ -127,7 +128,7 @@ public class Scene_Home extends Scene {
         int barNum = gameHome.gameMain.appClass.getGameCanvasWidth() / gameHome.gameMain.statusBarW;
         for (int i = 0; i <= barNum; i++) {
             CanvasUtil.drawClip(gameHome.img_menuBar, mCanvas, 0, 0, gameHome.gameMain.statusBarW, gameHome.gameMain.statusBarH,
-                    gameHome.gameMain.statusBarW*i, gameHome.mMenuTabBarY);
+                    gameHome.gameMain.statusBarW * i, gameHome.mMenuTabBarY);
         }
     }
 
@@ -146,15 +147,15 @@ public class Scene_Home extends Scene {
             CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, clipX, clipY,
                     mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
 
-            int btnNameX = mBtn.drawX+(mBtn.clipW-180)/2;
-            int btnNameY = mBtn.drawY+(mBtn.clipH-50)/2;
+            int btnNameX = mBtn.drawX + (mBtn.clipW - 180) / 2;
+            int btnNameY = mBtn.drawY + (mBtn.clipH - 50) / 2;
             //Button Title
-            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 220, mBtn.iconImgNum*50,
+            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 220, mBtn.iconImgNum * 50,
                     180, 50, btnNameX, btnNameY);
-            btnNameX= mBtn.drawX+(mBtn.clipW-130);
+            btnNameX = mBtn.drawX + (mBtn.clipW - 130);
             btnNameY = mBtn.drawY;
             //Button Subtitle
-            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 400, mBtn.iconImgNum*50,
+            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 400, mBtn.iconImgNum * 50,
                     130, 50, btnNameX, btnNameY);
             //Button Subtitle HanGul
 //            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 531, mBtn.iconImgNum*50,
@@ -171,7 +172,7 @@ public class Scene_Home extends Scene {
                 gameHome.optionBtn.clipW, gameHome.optionBtn.clipH, gameHome.optionBtn.drawX, gameHome.optionBtn.drawY);
 
         CanvasUtil.drawClip(gameHome.img_menuBar, mCanvas, 121, 107,
-                82, 23, gameHome.optionBtn.drawX + (gameHome.optionBtn.clipW-82)/2, gameHome.optionBtn.drawY + (gameHome.optionBtn.clipH-23)/2);
+                82, 23, gameHome.optionBtn.drawX + (gameHome.optionBtn.clipW - 82) / 2, gameHome.optionBtn.drawY + (gameHome.optionBtn.clipH - 23) / 2);
 //
 //        switch (gameHome.gameMain.appClass.gameState) {
 //            case INN.GAME_HOME:
@@ -207,6 +208,45 @@ public class Scene_Home extends Scene {
         CanvasUtil.drawString(mCanvas, "길드 수입 - " + gameHome.gameMain.userEnty.eventEnty.Gold + "Gold", paint, strX, strY + 80);
 //        CanvasUtil.drawString(mCanvas, "충전된 AP - " + turnManager.turnEnty.AP + "point", paint, strX, strY + 130);
         CanvasUtil.drawString(mCanvas, "새로운 퀘스트 수 - " + gameHome.gameMain.userEnty.eventEnty.QuestIDList.size(), paint, strX, strY + 180);
+    }
+
+    /**
+     * draw user status
+     */
+    private void drawStatusTab(Canvas mCanvas){
+        int canvasWidth = gameHome.gameMain.appClass.getGameCanvasWidth();
+        UserEnty userEnty = gameHome.gameMain.userEnty;
+        Paint paint = new Paint();
+        int drawY = gameHome.mMenuTabBarY+gameHome.gameMain.statusBarH/2-10;
+        int drawX = (canvasWidth - 120) / 5 + 60;
+        paint.setColor(Color.argb(255, 50, 50, 50));
+        paint.setTextSize(20);
+
+        // Name Lv
+        CanvasUtil.drawString(mCanvas, userEnty.Name + "(Lv " + userEnty.LEVEL + ")", paint, 10, drawY);
+
+        // AP
+        CanvasUtil.drawString(mCanvas, "AP " + userEnty.AP, paint, drawX, drawY);
+
+        // Gold
+        CanvasUtil.drawClip(gameHome.img_mainBtn, mCanvas, gameHome.goldIcon.clipX, gameHome.goldIcon.clipY,
+                gameHome.goldIcon.clipW, gameHome.goldIcon.clipH, gameHome.goldIcon.drawX, drawY);
+        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.GOLD), paint,
+                gameHome.goldIcon.drawX + gameHome.goldIcon.clipW + 5, drawY + 3);
+
+        // Member
+        CanvasUtil.drawClip(gameHome.img_mainBtn, mCanvas, gameHome.menIcon.clipX, gameHome.menIcon.clipY,
+                gameHome.menIcon.clipW, gameHome.menIcon.clipH, gameHome.menIcon.drawX, drawY);
+        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.MEMBERLIST.size()), paint,
+                gameHome.menIcon.drawX + gameHome.menIcon.clipW + 5, drawY + 3);
+
+//        CanvasUtil.drawClip(gameHome.img_mainBtn, mCanvas, partyIcon.clipX, partyIcon.clipY,
+//                partyIcon.clipW, partyIcon.clipH, partyIcon.drawX, partyIcon.drawY);
+//        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.PARTYLIST.size()), paint,
+//                partyIcon.drawX + partyIcon.clipW + 5, partyIcon.drawY + 3);
+
+        //Turn
+        CanvasUtil.drawString(mCanvas, "Turn " + userEnty.TURN, paint, canvasWidth - 180, drawY);
     }
 
     private void drawManager(Canvas mCanvas) {

@@ -113,7 +113,7 @@ public class Game_Title extends Game {
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 btn_New.clickState = ButtonEnty.ButtonClickOff;
                 Cursor userCursor = DataManager.getUserMainCursor(gameMain.dbAdapter, null);
-                if (userCursor.getCount() < 3) {
+                if (userCursor.getCount() < INN.CREATE_PLAYER_LIMITED) {
                     Intent intent = new Intent(appClass, DialogActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     appClass.startActivity(intent);
@@ -132,7 +132,7 @@ public class Game_Title extends Game {
                 if (userCursor.getCount() == 0) {
                     Toast.makeText(appClass, "불러올 유저가 없습니다.", Toast.LENGTH_SHORT).show();
                 } else {
-                    startGame(STARTGAME_LOADPLAYER, "홍길동");
+                    startGame(STARTGAME_LOADPLAYER, "aaa");
                 }
             }
             return;

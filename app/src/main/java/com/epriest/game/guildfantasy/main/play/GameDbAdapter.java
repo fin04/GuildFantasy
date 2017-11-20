@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.epriest.game.guildfantasy.util.StringUtils;
+
 import java.io.InputStream;
 
 import jxl.Sheet;
@@ -342,6 +344,8 @@ public class GameDbAdapter {
             return PlayerMainColumns;
         else if (TableName.equals(PLAYER_MEMBER_TABLE))
             return PlayerMemberColumns;
+        else if (TableName.equals(PLAYER_QUEST_TABLE))
+            return PlayerQuestColumns;
         return null;
     }
 
@@ -393,7 +397,7 @@ public class GameDbAdapter {
 
         ContentValues initialValues = new ContentValues();
         for (int i = 0; i < columns.length; i++) {
-            initialValues.put(columns[i], columnData[i]);
+            initialValues.put(columns[i], StringUtils.nullToEmpty(columnData[i]));
         }
 
         long row_id = -1;

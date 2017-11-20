@@ -41,7 +41,7 @@ public class Game_Member extends Game {
 
     @Override
     public void gStart() {
-        memberList = DataManager.getUserMemberListFromUserDB(gameMain.dbAdapter, gameMain.userEnty.Name);
+        memberList = DataManager.getUserMemberList(gameMain.dbAdapter, gameMain.userEnty.Name);
         img_memberSheet = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member_sheet.png", null);
         img_membercard = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/membercard.png", null);
         bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member.jpg", null);

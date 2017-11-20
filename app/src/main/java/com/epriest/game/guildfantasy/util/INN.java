@@ -47,4 +47,6 @@ public interface INN {
     public final static int USER_START_GOLD = 100;
     public final static int USER_START_TURN = 1;
     public final static int USER_START_GEM = 1;
+
+    public final static int CREATE_PLAYER_LIMITED = 100;
 }

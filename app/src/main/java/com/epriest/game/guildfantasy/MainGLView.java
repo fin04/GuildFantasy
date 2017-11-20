@@ -244,7 +244,7 @@ public class MainGLView extends GLView {
         }
 
 //		drawGuideLine(mCanvas);
-        drawFps(mCanvas);
+//        drawFps(mCanvas);
 //        drawTouchPoint(mCanvas);
 
         return mCanvasBitmap;

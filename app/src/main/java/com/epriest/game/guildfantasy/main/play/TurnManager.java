@@ -32,15 +32,19 @@ public class TurnManager {
         game_main.userEnty.TURN += turn;
 //        turnEnty = new TurnEnty();
 
-        // 실행중인 퀘스트 진행
-        if (game_main.userEnty.QUESTLIST.size() > 0)
+        // 완료된 퀘스트는 보상처리, 미완료된 퀘스트는 실패 알림을 띄운다.
+        // 모든 퀘스트를 제거한다.
+        if (game_main.userEnty.QUESTLIST.size() > 0) {
             QuestLife();
+            DataManager.deleteUserTable(game_main.dbAdapter, GameDbAdapter.PLAYER_QUEST_TABLE,
+                    game_main.userEnty.Name);
+        }
 
         // 사용중인 멤버의 진행
         if (game_main.userEnty.MEMBERLIST.size() > 0)
             MemberLife();
 
-        //db에서 turn data 가져옴
+        //db에서 turn에 해당되는 이벤트와 멤버, 퀘스트를 가져온다
         game_main.userEnty = DataManager.setChangeEvent(game_main.dbAdapter, game_main.userEnty);
         game_main.userEnty.GOLD += game_main.userEnty.eventEnty.Gold;
 
