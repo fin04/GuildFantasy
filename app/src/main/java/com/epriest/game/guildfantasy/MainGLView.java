@@ -359,6 +359,7 @@ public class MainGLView extends GLView {
                         dialog.cancel();
                     }
                 }).create().show();*/
+                gameMain.recycleScene();
                 android.os.Process.killProcess(android.os.Process.myPid());
                 break;
             default:

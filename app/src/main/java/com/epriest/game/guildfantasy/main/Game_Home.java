@@ -26,27 +26,13 @@ public class Game_Home extends Game {
     public int maxChar = 18;
     public boolean isNext;
 
-    public ArrayList<ButtonEnty> menuButtonList;
-
     public int mMainScreenY;
     public int mMainScreenHeight;
-    public int mMenuTabBarY;
 
-    public ButtonEnty alertBtn;
-
-    public ButtonEnty optionBtn;
-    public ButtonEnty menIcon;
-    public ButtonEnty feedIcon;
-    public ButtonEnty goldIcon;
 
     public Bitmap bg;
-    public Bitmap img_char_01;
+//    public Bitmap img_char_01;
 //    private Bitmap img_card;
-
-    public Bitmap img_mainBtn;
-    public Bitmap img_homeBtn;
-    public Bitmap img_menuBar;
-    public Bitmap alertBox;
 
     public Game_Home(Game_Main gameMain) {
         this.gameMain = gameMain;
@@ -63,45 +49,18 @@ public class Game_Home extends Game {
 //        menuButtonList = new ArrayList();
 
         bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/town.jpg", null);
-        img_char_01 = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/char_01.jpg", null);
 //        img_card = GLUtil.loadAssetsBitmap(appClass, "main/membercard.png", null);
 
-        img_homeBtn = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/home_btn.png", null);
-        img_mainBtn = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/main_btn.png", null);
-        img_menuBar = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/statusbar.png", null);
-        alertBox = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/alertbox.png", null);
 
         mMainScreenY = 0;
-        mMenuTabBarY = gameMain.canvasH-300-gameMain.statusBarH;
-        menuButtonList = setMenuIcon(gameMain.canvasW, gameMain.canvasH);
+        setIcon(gameMain.canvasW, gameMain.canvasH);
 
     }
 
-    private ArrayList<ButtonEnty> setMenuIcon(int canvasW, int canvasH) {
+    private ArrayList<ButtonEnty> setIcon(int canvasW, int canvasH) {
         ArrayList<ButtonEnty> menuButtonList = new ArrayList<>();
         switch (gameMain.appClass.gameState) {
             default:
-                for (int i = 0; i < INN.menuIconName.length; i++) {
-                    ButtonEnty mBtn = new ButtonEnty();
-                    mBtn.num = i;
-                    mBtn.name = INN.menuIconName[i];
-                    mBtn.iconImgNum = INN.menuIconNum[i];
-//                    mBtn.clipW = 96;
-//                    mBtn.clipH = 84;
-//                    mBtn.clipX = 0;
-//                    mBtn.clipY = 0;
-                    mBtn.clipW = 220;
-                    mBtn.clipH = 150;
-                    mBtn.clipX = 0;
-                    mBtn.clipY = 0;
-//                    mBtn.drawX = canvasW - 110 - (4 - i) * (mBtn.clipW + 10);
-//                    mBtn.drawY = canvasH - mBtn.clipH - 10;
-
-                    mBtn.drawX = 20 + ((mBtn.clipW + 5) * (i%3));
-                    mBtn.drawY = mMenuTabBarY + gameMain.statusBarH + mBtn.clipH*(i / 3);
-                    menuButtonList.add(mBtn);
-                }
-
 /*                //play button
                 ButtonEnty mBtn = new ButtonEnty();
 //                mBtn.num = menuIconName.length - 2;
@@ -115,50 +74,8 @@ public class Game_Home extends Game {
                 mBtn.drawY = canvasH - (mBtn.clipH + 5);
                 menuButtonList.add(mBtn);*/
 
-                optionBtn = new ButtonEnty();
-                optionBtn.clipW = 103;
-                optionBtn.clipH = 52;
-                optionBtn.clipX = 121;
-                optionBtn.clipY = 0;
-                optionBtn.name = "Back";
-                optionBtn.drawX = canvasW - optionBtn.clipW - 15;
-                optionBtn.drawY = mMenuTabBarY + (gameMain.statusBarH - optionBtn.clipH) / 2;
 
-                menIcon = new ButtonEnty();
-                menIcon.name = "Men";
-                menIcon.drawX = (gameMain.appClass.getGameCanvasWidth() - 120) / 5 + 260;
-                menIcon.drawY = 5;
-                menIcon.clipW = 24;
-                menIcon.clipH = 34;
-                menIcon.clipX = 136;
-                menIcon.clipY = 92;
 
-                feedIcon = new ButtonEnty();
-                feedIcon.name = "Feed";
-                feedIcon.drawX = (gameMain.appClass.getGameCanvasWidth() - 120) / 5 + 360;
-                feedIcon.drawY = 5;
-                feedIcon.clipW = 32;
-                feedIcon.clipH = 32;
-                feedIcon.clipX = 100;
-                feedIcon.clipY = 92;
-
-                goldIcon = new ButtonEnty();
-                goldIcon.name = "Gold";
-                goldIcon.drawX = (gameMain.appClass.getGameCanvasWidth() - 120) / 5 + 160;
-                goldIcon.drawY = 5;
-                goldIcon.clipW = 36;
-                goldIcon.clipH = 27;
-                goldIcon.clipX = 101;
-                goldIcon.clipY = 126;
-
-                alertBtn = new ButtonEnty();
-                alertBtn.name = "Alert";
-                alertBtn.drawX = (gameMain.appClass.getGameCanvasWidth() - alertBox.getWidth()) / 2 + alertBox.getWidth() - 100;
-                alertBtn.drawY = (gameMain.appClass.getGameCanvasHeight() - alertBox.getHeight()) / 2 + alertBox.getHeight() - 100;
-                alertBtn.clipW = 90;
-                alertBtn.clipH = 90;
-                alertBtn.clipX = 231;
-                alertBtn.clipY = 173;
                 break;
 
             case INN.GAME_MEMBER:
@@ -243,94 +160,7 @@ public class Game_Home extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-        if (gameMain.userEnty.isStartTurnAlert) {
-            if (GameUtil.equalsTouch(gameMain.appClass.touch, alertBtn.drawX, alertBtn.drawY, alertBtn.clipW, alertBtn.clipH)) {
-                if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
-                    alertBtn.clickState = ButtonEnty.ButtonClickOff;
-                    gameMain.userEnty.isStartTurnAlert = false;
-//                    userEnty = DataManager.setChangeEvent(dbAdapter, userEnty);
-
-                    return;
-                } else {
-                    alertBtn.clickState = ButtonEnty.ButtonClickOn;
-                }
-            } else
-                alertBtn.clickState = ButtonEnty.ButtonClickOn;
-            return;
-        }
-
-        int turnBtnNum = menuButtonList.size() - 1;
-        if (GameUtil.equalsTouch(gameMain.appClass.touch, menuButtonList.get(turnBtnNum).drawX, menuButtonList.get(turnBtnNum).drawY,
-                menuButtonList.get(turnBtnNum).clipW, menuButtonList.get(turnBtnNum).clipH)) {
-            if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
-                menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOff;
-                switch (gameMain.appClass.gameState) {
-                    case INN.GAME_HOME:
-                        gameMain.turnManager.turnCycle(1);
-                        break;
-                }
-            } else {
-                menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOn;
-            }
-            return;
-        } else {
-            menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOff;
-        }
-
-        if (GameUtil.equalsTouch(gameMain.appClass.touch, optionBtn.drawX, optionBtn.drawY, optionBtn.clipW, optionBtn.clipH)) {
-            if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
-                optionBtn.clickState = ButtonEnty.ButtonClickOff;
-                Toast.makeText(gameMain.appClass, "menu", Toast.LENGTH_SHORT).show();
-            } else {
-                optionBtn.clickState = ButtonEnty.ButtonClickOn;
-            }
-            return;
-        } else {
-            optionBtn.clickState = ButtonEnty.ButtonClickOff;
-        }
-
-
-        if (gameMain.appClass.gameState != INN.GAME_HOME)
-            return;
-
-        for (ButtonEnty mBtn : menuButtonList) {
-            if (GameUtil.equalsTouch(gameMain.appClass.touch, mBtn.drawX, mBtn.drawY, mBtn.clipW, mBtn.clipH)) {
-                mBtn.clickState = ButtonEnty.ButtonClickOn;
-                if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
-                    mBtn.clickState = ButtonEnty.ButtonClickOff;
-
-                    if (mBtn.name.equals(INN.menuIconName[0]))
-                        gameMain.mainButtonAct(INN.GAME_MEMBER, 0);
-                    else if (mBtn.name.equals(INN.menuIconName[1]))
-                        gameMain.mainButtonAct(INN.GAME_RECRUIT, INN.MODE_MEMBER_RECRUIT);
-                    else if (mBtn.name.equals(INN.menuIconName[2]))
-                        gameMain.mainButtonAct(INN.GAME_SKILL, 0);
-                    else if (mBtn.name.equals(INN.menuIconName[3]))
-                        gameMain.mainButtonAct(INN.GAME_ITEM, 0);
-                    else if (mBtn.name.equals(INN.menuIconName[4]))
-                        gameMain.mainButtonAct(INN.GAME_QUEST, 0);
-                    else if (mBtn.name.equals(INN.menuIconName[5]))
-                        gameMain.mainButtonAct(INN.GAME_MOVE, 0);
-                    else if (mBtn.name.equals("Menu"))
-                        gameMain.mainButtonAct(INN.GAME_OPTION, 0);
-                }
-                return;
-            } else {
-                mBtn.clickState = ButtonEnty.ButtonClickOff;
-            }
-        }
-
-        /*for(ButtonEnty mBtn : menuButtonList){
-            if(GameUtil.equalsTouch(appClass.touch, mBtn.x, mBtn.y, mBtn.w, mBtn.h)){
-                mBtn.clickState = ButtonEnty.ButtonClickOn;
-                if(appClass.touch.Action == MotionEvent.ACTION_UP) {
-                    mBtn.clickState = ButtonEnty.ButtonClickOff;
-                    Toast.makeText(appClass.getBaseContext(), mBtn.name, Toast.LENGTH_SHORT).show();
-                }
-            }else{
-                mBtn.clickState = ButtonEnty.ButtonClickOff;
-            }
-        }*/
-
+        gameMain.onTouchMenuIcon();
     }
 }
+
