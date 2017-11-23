@@ -37,6 +37,8 @@ public class Scene_Title extends Scene {
         CanvasUtil.recycleBitmap(game_title.btn_New.bitmap_clk);
         CanvasUtil.recycleBitmap(game_title.btn_Load.bitmap);
         CanvasUtil.recycleBitmap(game_title.btn_Load.bitmap_clk);
+        CanvasUtil.recycleBitmap(game_title.btn_Name);
+        CanvasUtil.recycleBitmap(game_title.btn_Name_clk);
     }
 
     @Override
@@ -89,5 +91,18 @@ public class Scene_Title extends Scene {
         else if(game_title.btn_Load.clickState == ButtonEnty.ButtonClickOn)
             CanvasUtil.drawBitmap(game_title.btn_Load.bitmap_clk, mCanvas,
                     game_title.btn_Load.drawX, game_title.btn_Load.drawY);
+
+        for(ButtonEnty enty : game_title.btn_NameList){
+            if(enty.clickState == ButtonEnty.ButtonClickOff)
+                CanvasUtil.drawBitmap(game_title.btn_Name, mCanvas,
+                        enty.drawX, enty.drawY);
+            else if(enty.clickState == ButtonEnty.ButtonClickOn)
+                CanvasUtil.drawBitmap(game_title.btn_Name_clk, mCanvas,
+                        enty.drawX, enty.drawY);
+
+            CanvasUtil.drawString(mCanvas, enty.name, 45,
+                    Color.argb(255,180,180,220), Paint.Align.LEFT,
+                    enty.drawX+10, enty.drawY+5);
+        }
     }
 }

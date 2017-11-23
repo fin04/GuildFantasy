@@ -46,14 +46,15 @@ public class TurnManager {
 
         //db에서 turn에 해당되는 이벤트와 멤버, 퀘스트를 가져온다
         game_main.userEnty = DataManager.setChangeEvent(game_main.dbAdapter, game_main.userEnty);
-        game_main.userEnty.GOLD += game_main.userEnty.eventEnty.Gold;
+
 
 //        PlayEvent(game_main.userEnty.TURN);
 //        turnEnty.AP = getAP(game_main.userEnty.LEVEL, game_main.userEnty.TURN);
 //        turnEnty.GOLD = getGold(game_main.userEnty.MEMBERLIST.size(), game_main.userEnty.TURN);
 
         AddQuest();
-        game_main.userEnty.isStartTurnAlert = true;
+        game_main.showAlertType = INN.ALERT_TYPE_TURNSTART;
+//        game_main.userEnty.isStartTurnAlert = true;
         game_main.userEnty.eventEnty.changeView = true;
         if(game_main.userEnty.eventEnty.ImageList.size() > 0)
             game_main.mainButtonAct(INN.GAME_EVENT, 0);

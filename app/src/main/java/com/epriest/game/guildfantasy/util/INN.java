@@ -48,5 +48,10 @@ public interface INN {
     public final static int USER_START_TURN = 1;
     public final static int USER_START_GEM = 1;
 
-    public final static int CREATE_PLAYER_LIMITED = 100;
+    public final static int CREATE_PLAYER_LIMITED = 3;
+
+    public final static int ALERT_TYPE_NONE = 0;
+    public final static int ALERT_TYPE_TURNSTART = 1;
+    public final static int ALERT_TYPE_EMPTYGOLD = 2;
+    public final static int ALERT_TYPE_GETNEWMEMBER = 3;
 }

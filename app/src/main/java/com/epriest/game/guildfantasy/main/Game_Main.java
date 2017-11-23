@@ -39,6 +39,7 @@ public class Game_Main {
 
     public UserEnty userEnty;
 
+    public int showAlertType;
     public ButtonEnty alertBtn;
     public ArrayList<ButtonEnty> menuButtonList;
 
@@ -54,7 +55,7 @@ public class Game_Main {
     public ButtonEnty feedIcon;
     public ButtonEnty goldIcon;
 
-//    public int mMainScreenY;
+    //    public int mMainScreenY;
 //    public int mMainScreenHeight;
     public int mMenuTabBarY;
 
@@ -117,12 +118,12 @@ public class Game_Main {
         return false;
     }
 
-    public void loadManager(){
+    public void loadManager() {
         managerImg = new ImageEnty();
         managerImg.bitmap = GLUtil.loadAssetsBitmap(appClass, "main/manager_0.png", null);
     }
 
-    public void setManager(){
+    public void setManager() {
         managerImg.animFrame = new ArrayList<>();
         managerImg.animMaxFrame = 100;
 
@@ -159,16 +160,16 @@ public class Game_Main {
         managerImg.animClipList.add(clipEnty3);
     }
 
-    public void loadMenuIcon(){
+    public void loadMenuIcon() {
         img_homeBtn = GLUtil.loadAssetsBitmap(appClass, "main/home_btn.png", null);
         img_mainBtn = GLUtil.loadAssetsBitmap(appClass, "main/main_btn.png", null);
         img_menuBar = GLUtil.loadAssetsBitmap(appClass, "main/statusbar.png", null);
         alertBox = GLUtil.loadAssetsBitmap(appClass, "main/alertbox.png", null);
     }
 
-    public void setMenuIcon(){
+    public void setMenuIcon() {
         menuButtonList = new ArrayList<>();
-        mMenuTabBarY = canvasH-300-statusBarH;
+        mMenuTabBarY = canvasH - 300 - statusBarH;
         for (int i = 0; i < INN.menuIconName.length; i++) {
             ButtonEnty mBtn = new ButtonEnty();
             mBtn.num = i;
@@ -185,8 +186,8 @@ public class Game_Main {
 //                    mBtn.drawX = canvasW - 110 - (4 - i) * (mBtn.clipW + 10);
 //                    mBtn.drawY = canvasH - mBtn.clipH - 10;
 
-            mBtn.drawX = 20 + ((mBtn.clipW + 5) * (i%3));
-            mBtn.drawY = mMenuTabBarY + statusBarH + mBtn.clipH*(i / 3);
+            mBtn.drawX = 20 + ((mBtn.clipW + 5) * (i % 3));
+            mBtn.drawY = mMenuTabBarY + statusBarH + mBtn.clipH * (i / 3);
             menuButtonList.add(mBtn);
         }
 
@@ -238,14 +239,20 @@ public class Game_Main {
         goldIcon.clipY = 126;
     }
 
-    public void onTouchMenuIcon(){
-        if (userEnty.isStartTurnAlert) {
+    public void onTouchMenuIcon() {
+        if (showAlertType > INN.ALERT_TYPE_NONE) {
             if (GameUtil.equalsTouch(appClass.touch,
                     alertBtn.drawX, alertBtn.drawY, alertBtn.clipW, alertBtn.clipH)) {
                 if (appClass.touch.action == MotionEvent.ACTION_UP) {
                     alertBtn.clickState = ButtonEnty.ButtonClickOff;
-                    userEnty.isStartTurnAlert = false;
-//                    userEnty = DataManager.setChangeEvent(dbAdapter, userEnty);
+//                    userEnty.isStartTurnAlert = false;
+                    showAlertType = INN.ALERT_TYPE_NONE;
+                    switch (showAlertType) {
+                        case INN.ALERT_TYPE_TURNSTART:
+                            userEnty.GOLD += userEnty.eventEnty.Gold;
+                            break;
+                    }
+
 
                     return;
                 } else {
@@ -330,9 +337,9 @@ public class Game_Main {
 
     }
 
-    public void drawMenu(Canvas mCanvas){
+    public void drawMenu(Canvas mCanvas) {
         drawMenuButton(mCanvas);
-        if (appClass.gameState == INN.GAME_HOME && userEnty.isStartTurnAlert)
+        if (appClass.gameState == INN.GAME_HOME && showAlertType>INN.ALERT_TYPE_NONE)
             drawTurnStartAlert(mCanvas);
 
         drawStatusTab(mCanvas);
@@ -396,9 +403,13 @@ public class Game_Main {
 //        }
     }
 
-    private void drawTurnStartAlert(Canvas mCanvas) {
-        CanvasUtil.drawBitmap(alertBox, mCanvas, (appClass.getGameCanvasWidth() - alertBox.getWidth()) / 2
-                , (appClass.getGameCanvasHeight() - alertBox.getHeight()) / 2);
+    public void drawAlert(Canvas mCanvas, String title, String text) {
+        int alertY = (canvasH - alertBox.getHeight()) / 2;
+        // alert bg
+        CanvasUtil.drawBitmap(alertBox, mCanvas, (canvasW - alertBox.getWidth()) / 2
+                , alertY);
+
+        // alert button
         int alertBtnClipX = alertBtn.clipX;
         if (alertBtn.clickState == ButtonEnty.ButtonClickOn) {
             alertBtnClipX += alertBtn.clipW;
@@ -406,28 +417,44 @@ public class Game_Main {
         drawClip(img_mainBtn, mCanvas,
                 alertBtnClipX, alertBtn.clipY,
                 alertBtn.clipW, alertBtn.clipH, alertBtn.drawX, alertBtn.drawY);
+
+        // title
         Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setTextAlign(Paint.Align.CENTER);
         paint.setColor(Color.BLACK);
-//        paint.setAntiAlias(true);
-        paint.setTextSize(20);
-        int strX = (appClass.getGameCanvasWidth() - 400) / 2 + 30;
-        int strY = (appClass.getGameCanvasHeight() - 300) / 2;
-        CanvasUtil.drawString(mCanvas, userEnty.TURN + " 턴", paint, strX, strY);
-        CanvasUtil.drawString(mCanvas, "완료된 퀘스트 수 - ", paint, strX, strY + 30);
-        CanvasUtil.drawString(mCanvas, "길드 수입 - " + userEnty.eventEnty.Gold + "Gold",
-                paint, strX, strY + 80);
-//        CanvasUtil.drawString(mCanvas, "충전된 AP - " + turnManager.turnEnty.AP + "point", paint, strX, strY + 130);
-        CanvasUtil.drawString(mCanvas, "새로운 퀘스트 수 - " + userEnty.eventEnty.QuestIDList.size(),
-                paint, strX, strY + 180);
+        paint.setTextSize(30);
+        CanvasUtil.drawString(mCanvas, title, paint, canvasW / 2, alertY + 20);
+
+        // text
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setColor(Color.DKGRAY);
+        paint.setTextSize(25);
+        CanvasUtil.drawString(mCanvas, text, paint, canvasW / 2 - 150, alertY + 70);
+    }
+
+    private void drawTurnStartAlert(Canvas mCanvas) {
+        StringBuilder sb = new StringBuilder("Turn : ");
+        sb.append(userEnty.TURN);
+        sb.append("\n");
+        sb.append("Clear Quest : ");
+        sb.append("\n");
+        sb.append("Income : ");
+        sb.append(userEnty.eventEnty.Gold + "Gold");
+        sb.append("\n");
+        sb.append("New Quest : ");
+        sb.append(userEnty.eventEnty.QuestIDList.size());
+
+        drawAlert(mCanvas, userEnty.TURN + " Turn", sb.toString());
     }
 
     /**
      * draw user status
      */
-    private void drawStatusTab(Canvas mCanvas){
+    private void drawStatusTab(Canvas mCanvas) {
         int canvasWidth = appClass.getGameCanvasWidth();
         Paint paint = new Paint();
-        int drawY = mMenuTabBarY+statusBarH/2-10;
+        int drawY = mMenuTabBarY + statusBarH / 2 - 10;
         int drawX = (canvasWidth - 120) / 5 + 60;
         paint.setColor(Color.argb(255, 50, 50, 50));
         paint.setTextSize(20);

@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
+import com.epriest.game.guildfantasy.util.INN;
 
 
 /**
@@ -29,7 +30,10 @@ public class Scene_Recruit extends Scene {
     @Override
     public void recycleScene() {
         CanvasUtil.recycleBitmap(gameRecruit.bg);
-        CanvasUtil.recycleBitmap(gameRecruit.img_recruitBtn);
+        CanvasUtil.recycleBitmap(gameRecruit.img_value);
+        CanvasUtil.recycleBitmap(gameRecruit.summonBtn.bitmap);
+        CanvasUtil.recycleBitmap(gameRecruit.covenantBtn.bitmap);
+        CanvasUtil.recycleBitmap(gameRecruit.bondageBtn.bitmap);
     }
 
     @Override
@@ -44,6 +48,9 @@ public class Scene_Recruit extends Scene {
         gameRecruit.gameMain.drawMenu(mCanvas);
 
         drawBtn(mCanvas);
+
+        if(gameRecruit.gameMain.showAlertType == INN.ALERT_TYPE_EMPTYGOLD)
+            gameRecruit.gameMain.drawAlert(mCanvas, "", "Gold가 없습니다.");
     }
 
     private void drawBG(Canvas mCanvas) {
@@ -61,17 +68,22 @@ public class Scene_Recruit extends Scene {
     }
 
     private void drawBtn(Canvas mCanvas) {
-        CanvasUtil.drawClip(gameRecruit.img_recruitBtn, mCanvas, 0,0,
-                gameRecruit.summonBtn.clipW, gameRecruit.summonBtn.clipH,
-                gameRecruit.summonBtn.drawX, gameRecruit.summonBtn.drawY);
-
-        CanvasUtil.drawClip(gameRecruit.img_recruitBtn, mCanvas, 0,40,
-                gameRecruit.bondageBtn.clipW, gameRecruit.bondageBtn.clipH,
-                gameRecruit.bondageBtn.drawX, gameRecruit.bondageBtn.drawY);
-
-        CanvasUtil.drawClip(gameRecruit.img_recruitBtn, mCanvas, 0,80,
-                gameRecruit.covenantBtn.clipW, gameRecruit.covenantBtn.clipH,
-                gameRecruit.covenantBtn.drawX, gameRecruit.covenantBtn.drawY);
+        CanvasUtil.drawBitmap(gameRecruit.summonBtn.bitmap, mCanvas, gameRecruit.summonBtn.drawX, gameRecruit.summonBtn.drawY);
+        CanvasUtil.drawBitmap(gameRecruit.covenantBtn.bitmap, mCanvas, gameRecruit.covenantBtn.drawX, gameRecruit.covenantBtn.drawY);
+        CanvasUtil.drawBitmap(gameRecruit.bondageBtn.bitmap, mCanvas, gameRecruit.bondageBtn.drawX, gameRecruit.bondageBtn.drawY);
+//        CanvasUtil.drawClip(gameRecruit.img_recruitBtn, mCanvas, 0,0,
+//                gameRecruit.summonBtn.clipW, gameRecruit.summonBtn.clipH,
+//                gameRecruit.summonBtn.drawX, gameRecruit.summonBtn.drawY);
+//
+//        CanvasUtil.drawClip(gameRecruit.img_recruitBtn, mCanvas, 0,40,
+//                gameRecruit.bondageBtn.clipW, gameRecruit.bondageBtn.clipH,
+//                gameRecruit.bondageBtn.drawX, gameRecruit.bondageBtn.drawY);
+//
+//        CanvasUtil.drawClip(gameRecruit.img_recruitBtn, mCanvas, 0,80,
+//                gameRecruit.covenantBtn.clipW, gameRecruit.covenantBtn.clipH,
+//                gameRecruit.covenantBtn.drawX, gameRecruit.covenantBtn.drawY);
     }
 }
+
+
 

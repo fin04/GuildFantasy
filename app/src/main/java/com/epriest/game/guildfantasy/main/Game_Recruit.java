@@ -10,6 +10,7 @@ import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.CanvasGL.util.TouchData;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
+import com.epriest.game.guildfantasy.util.INN;
 
 /**
  * Created by darka on 2017-11-06.
@@ -17,7 +18,7 @@ import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 
 public class Game_Recruit extends Game {
 
-    public Bitmap img_recruitBtn;
+    public Bitmap img_value;
     public Bitmap bg;
 
     public Game_Main gameMain;
@@ -34,34 +35,37 @@ public class Game_Recruit extends Game {
     @Override
     public void gStart() {
         bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member.jpg", null);
-        img_recruitBtn = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/recruit_btn.png", null);
+        img_value = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/banner_value.jpg", null);
+        summonBtn = new ButtonEnty();
+        summonBtn.bitmap = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/banner_summon.png", null);
+        bondageBtn = new ButtonEnty();
+        bondageBtn.bitmap = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/banner_bondage.png", null);
+        covenantBtn = new ButtonEnty();
+        covenantBtn.bitmap = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/banner_covenant.png", null);
         setButton();
     }
 
     private void setButton() {
-        int btnW = 250;
-        int btnH = 40;
+        int btnW = summonBtn.bitmap.getWidth();
+        int btnH = summonBtn.bitmap.getHeight();
         int canvasW = gameMain.canvasW;
         int canvasH = gameMain.canvasH;
         int btnX = canvasW / 2 - btnW / 2;
 
-        summonBtn = new ButtonEnty();
         summonBtn.drawX = btnX;
-        summonBtn.drawY = 400;
+        summonBtn.drawY = 100;
         summonBtn.clipW = btnW;
         summonBtn.clipH = btnH;
         summonBtn.name = "summon";
 
-        bondageBtn = new ButtonEnty();
         bondageBtn.drawX = btnX;
-        bondageBtn.drawY = 500;
+        bondageBtn.drawY = btnH+130;
         bondageBtn.clipW = btnW;
         bondageBtn.clipH = btnH;
         bondageBtn.name = "bondage";
 
-        covenantBtn = new ButtonEnty();
         covenantBtn.drawX = btnX;
-        covenantBtn.drawY = 600;
+        covenantBtn.drawY = btnH*2+160;
         covenantBtn.clipW = btnW;
         covenantBtn.clipH = btnH;
         covenantBtn.name = "covenant";
@@ -75,6 +79,18 @@ public class Game_Recruit extends Game {
     @Override
     public void gUpdate() {
 
+    }
+
+    private void activeNewCard(String type) {
+        if (type.equals("covenant")) {
+            if (gameMain.userEnty.GOLD < 10) {
+                gameMain.showAlertType = INN.ALERT_TYPE_EMPTYGOLD;
+//                Toast.makeText(gameMain.appClass, "Gold가 없습니다.", Toast.LENGTH_SHORT).show();
+            } else {
+                gameMain.userEnty.GOLD -= 10;
+                gameMain.showAlertType = INN.ALERT_TYPE_GETNEWMEMBER;
+            }
+        }
     }
 
     @Override
@@ -112,12 +128,7 @@ public class Game_Recruit extends Game {
                 covenantBtn.drawX, covenantBtn.drawY, covenantBtn.clipW, covenantBtn.clipH)) {
             if (touch.action == MotionEvent.ACTION_UP) {
                 covenantBtn.clickState = ButtonEnty.ButtonClickOff;
-                if (gameMain.userEnty.GOLD < 10) {
-                    Toast.makeText(gameMain.appClass, "Gold가 없습니다.", Toast.LENGTH_SHORT).show();
-                } else {
-                    gameMain.userEnty.GOLD -= 10;
-//                   새로운 캐릭터를 띄운다
-                }
+                activeNewCard(covenantBtn.name);
 
                 return;
             } else {
