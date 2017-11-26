@@ -31,6 +31,7 @@ public class GameDbAdapter {
     public static final String KEY_MEMBERMERCY = "member_mercy";
     public static final String KEY_MEMBERIMAGENAME = "member_imagename";
     public static final String KEY_MEMBERICONID = "member_iconid";
+    public static final String KEY_MEMBERGRADE = "member_grade";
     public static final String KEY_MEMBERPROFILE = "member_profile";
     public static final String KEY_MEMBERDIALOG1 = "member_dialog1";
 
@@ -111,7 +112,7 @@ public class GameDbAdapter {
     private static String[] MemberColumns = new String[]{
             KEY_MEMBERID, KEY_MEMBERNAME, KEY_MEMBERENGNAME, KEY_MEMBERSEX,
             KEY_MEMBERAGE, KEY_MEMBERRACE, KEY_MEMBERCLASS, KEY_MEMBERMERCY, KEY_MEMBERIMAGENAME, KEY_MEMBERICONID,
-            KEY_MEMBERPROFILE, KEY_MEMBERDIALOG1
+            KEY_MEMBERGRADE, KEY_MEMBERPROFILE, KEY_MEMBERDIALOG1
     };
 
     private static String[] ClassColumns = new String[]{

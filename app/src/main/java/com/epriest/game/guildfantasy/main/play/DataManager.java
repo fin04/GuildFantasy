@@ -77,6 +77,15 @@ public class DataManager {
     }
 
     /**
+     * grade로 DB에서 멤버 cursor를 찾음
+     * @param grade
+     * @return
+     */
+    public static Cursor getGradeDBMemberCursor(GameDbAdapter dbAdapter, String grade){
+        return dbAdapter.getCursor(GameDbAdapter.DB_MEMBER_TABLE, GameDbAdapter.KEY_MEMBERGRADE, grade);
+    }
+
+    /**
      * DB에서 해당 직업의 cursor를 찾음
      * @param className
      * @return
@@ -430,6 +439,22 @@ public class DataManager {
         return entyList;
     }
 
+    /**
+     * grade에 해당하는 모든 멤버를 DB에서 찾아 List로 변환
+     * @param grade
+     * @return
+     */
+    public static ArrayList<MemberEnty> getGradeMemberDataList(GameDbAdapter dbAdapter, String grade){
+        ArrayList<MemberEnty> entyList = new ArrayList<>();
+        Cursor cursor = getGradeDBMemberCursor(dbAdapter, grade);
+        do {
+            MemberEnty memEnty = getMemberData(dbAdapter, cursor.getString(
+                    cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERID)));
+            entyList.add(memEnty);
+        } while (cursor.moveToNext()) ;
+        cursor.close();
+        return entyList;
+    }
 
     public static QuestEnty getQuestData(GameDbAdapter dbAdapter, String questID) {
         Cursor questCursor = getDBQuestCursor(dbAdapter, questID);

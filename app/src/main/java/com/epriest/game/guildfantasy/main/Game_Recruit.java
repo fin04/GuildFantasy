@@ -10,7 +10,11 @@ import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.CanvasGL.util.TouchData;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
+import com.epriest.game.guildfantasy.main.enty.MemberEnty;
+import com.epriest.game.guildfantasy.main.play.DataManager;
 import com.epriest.game.guildfantasy.util.INN;
+
+import java.util.ArrayList;
 
 /**
  * Created by darka on 2017-11-06.
@@ -88,6 +92,10 @@ public class Game_Recruit extends Game {
 //                Toast.makeText(gameMain.appClass, "Gold가 없습니다.", Toast.LENGTH_SHORT).show();
             } else {
                 gameMain.userEnty.GOLD -= 10;
+                ArrayList<MemberEnty> entyList = DataManager.getGradeMemberDataList(gameMain.dbAdapter, "1");
+                int num = (int)(Math.random()*entyList.size());
+                MemberEnty enty = entyList.get(num);
+                Toast.makeText(gameMain.appClass, enty.name, Toast.LENGTH_SHORT).show();
                 gameMain.showAlertType = INN.ALERT_TYPE_GETNEWMEMBER;
             }
         }
