@@ -56,6 +56,10 @@ public class Scene_Home extends Scene {
         drawBG(mCanvas);
 
         gameHome.gameMain.drawMenu(mCanvas);
+
+        if (gameHome.gameMain.showAlertType == INN.ALERT_TYPE_TURNSTART)
+            gameHome.gameMain.drawTurnStartAlert(mCanvas);
+
     }
 
     private void drawBG(Canvas mCanvas) {

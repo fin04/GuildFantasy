@@ -131,9 +131,7 @@ public class DataManager {
                 enty.GEM_RED = INN.USER_START_GEM;
                 enty.GEM_GREEN = INN.USER_START_GEM;
                 enty.GEM_BLUE = INN.USER_START_GEM;
-                insertUserInfo(dbAdapter, enty.Name, Integer.toString(enty.EXP), Integer.toString(enty.LEVEL),
-                        Integer.toString(enty.AP), Integer.toString(enty.TURN), Integer.toString(enty.GOLD),
-                        Integer.toString(enty.GEM_RED), Integer.toString(enty.GEM_GREEN), Integer.toString(enty.GEM_BLUE));
+                insertUserInfo(dbAdapter, enty);
 
                 // 0turn에 해당하는 이벤트, 멤버, 퀘스트 가져옴
                 enty = setChangeEvent(dbAdapter, enty);
@@ -171,13 +169,13 @@ public class DataManager {
     /**
      * user table에 user 정보를 삽입함
      */
-    public static void insertUserInfo(GameDbAdapter dbAdapter,
-                                      String playerName, String Exp, String Level,
-                                      String Ap, String Turn, String Gold,
-                                      String GemRed, String GemGreen, String GemBlue) {
+    public static void insertUserInfo(GameDbAdapter dbAdapter, UserEnty enty) {
+
         String TableName = GameDbAdapter.PLAYER_MAIN_TABLE;
         String UserID = "0"; //추후 google, facebook과 연동 가능
-        String[] columns = {UserID, playerName, Exp, Level, Ap, Turn, Gold, GemRed, GemGreen, GemBlue};
+        String[] columns = {UserID, enty.Name, Integer.toString(enty.EXP), Integer.toString(enty.LEVEL),
+                Integer.toString(enty.AP), Integer.toString(enty.TURN), Integer.toString(enty.GOLD),
+                Integer.toString(enty.GEM_RED), Integer.toString(enty.GEM_GREEN), Integer.toString(enty.GEM_BLUE)};
         dbAdapter.insertDATA(TableName, columns);
     }
 

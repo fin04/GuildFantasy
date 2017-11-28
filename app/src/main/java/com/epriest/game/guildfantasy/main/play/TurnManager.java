@@ -20,7 +20,7 @@ public class TurnManager {
 
     private Game_Main game_main;
 
-    private int guildTax = 30;
+    private int guildTax = 5;
 
 //    public TurnEnty turnEnty;
 
@@ -29,7 +29,6 @@ public class TurnManager {
     }
 
     public void turnCycle(int turn) {
-        game_main.userEnty.TURN += turn;
 //        turnEnty = new TurnEnty();
 
         // 완료된 퀘스트는 보상처리, 미완료된 퀘스트는 실패 알림을 띄운다.

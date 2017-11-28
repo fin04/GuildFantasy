@@ -2,11 +2,17 @@ package com.epriest.game.guildfantasy.main;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
+import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
+import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 import com.epriest.game.guildfantasy.util.INN;
+
+import static com.epriest.game.CanvasGL.graphics.CanvasUtil.drawClip;
 
 
 /**
@@ -49,8 +55,12 @@ public class Scene_Recruit extends Scene {
 
         drawBtn(mCanvas);
 
-        if(gameRecruit.gameMain.showAlertType == INN.ALERT_TYPE_EMPTYGOLD)
+        if(gameRecruit.gameMain.showAlertType == INN.ALERT_TYPE_GETNEWMEMBER) {
+            gameRecruit.gameMain.drawRecruitAlert(mCanvas, gameRecruit.recruitImg, gameRecruit.recruitEnty);
+        }else if(gameRecruit.gameMain.showAlertType == INN.ALERT_TYPE_EMPTYGOLD)
             gameRecruit.gameMain.drawAlert(mCanvas, "", "Gold가 없습니다.");
+        else if(gameRecruit.gameMain.showAlertType == INN.ALERT_TYPE_MAXMEMBER)
+            gameRecruit.gameMain.drawAlert(mCanvas, "", "멤버가 찼습니다.");
     }
 
     private void drawBG(Canvas mCanvas) {

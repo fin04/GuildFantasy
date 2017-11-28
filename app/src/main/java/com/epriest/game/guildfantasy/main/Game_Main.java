@@ -15,6 +15,7 @@ import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.ClipImageEnty;
 import com.epriest.game.guildfantasy.main.enty.ImageEnty;
+import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 import com.epriest.game.guildfantasy.main.enty.UserEnty;
 import com.epriest.game.guildfantasy.main.play.DataManager;
 import com.epriest.game.guildfantasy.main.play.GameDbAdapter;
@@ -271,7 +272,7 @@ public class Game_Main {
                 menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOff;
                 switch (appClass.gameState) {
                     case INN.GAME_HOME:
-                        turnManager.turnCycle(1);
+                        turnManager.turnCycle(userEnty.TURN++);
                         break;
                 }
             } else {
@@ -339,8 +340,6 @@ public class Game_Main {
 
     public void drawMenu(Canvas mCanvas) {
         drawMenuButton(mCanvas);
-        if (appClass.gameState == INN.GAME_HOME && showAlertType>INN.ALERT_TYPE_NONE)
-            drawTurnStartAlert(mCanvas);
 
         drawStatusTab(mCanvas);
 
@@ -433,7 +432,7 @@ public class Game_Main {
         CanvasUtil.drawString(mCanvas, text, paint, canvasW / 2 - 150, alertY + 70);
     }
 
-    private void drawTurnStartAlert(Canvas mCanvas) {
+    public void drawTurnStartAlert(Canvas mCanvas) {
         StringBuilder sb = new StringBuilder("Turn : ");
         sb.append(userEnty.TURN);
         sb.append("\n");
@@ -446,6 +445,56 @@ public class Game_Main {
         sb.append(userEnty.eventEnty.QuestIDList.size());
 
         drawAlert(mCanvas, userEnty.TURN + " Turn", sb.toString());
+    }
+
+    public void drawRecruitAlert(Canvas mCanvas, Bitmap profileImg, MemberEnty enty){
+//        gameRecruit.gameMain.drawAlert(mCanvas, "",
+//                enty.name+"\n"+enty.race+"("+enty.age+")\n"+ enty.profile);
+//        recruitImg
+
+        int alertY = (canvasH - alertBox.getHeight()) / 2;
+        // alert bg
+        CanvasUtil.drawBitmap(alertBox, mCanvas, (canvasW - alertBox.getWidth()) / 2
+                , alertY);
+
+        // alert button
+        int alertBtnClipX = alertBtn.clipX;
+        if (alertBtn.clickState == ButtonEnty.ButtonClickOn) {
+            alertBtnClipX += alertBtn.clipW;
+        }
+        drawClip(img_mainBtn, mCanvas,
+                alertBtnClipX, alertBtn.clipY,
+                alertBtn.clipW, alertBtn.clipH, alertBtn.drawX, alertBtn.drawY);
+
+        // title
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(30);
+        CanvasUtil.drawString(mCanvas, enty.name+"("+enty.sex+")",
+                paint, canvasW / 2, alertY + 20);
+
+        //profile image
+        CanvasUtil.drawBitmap(profileImg, mCanvas, canvasW/2-profileImg.getWidth()/2, alertY+50);
+
+        // text
+        StringBuilder sb = new StringBuilder(enty.race+"("+enty.age+")  ");
+        sb.append(enty.memberclass+"\n");
+        int startNum = 0;
+        for(int i=0; i< enty.profile.length(); i++){
+            String tempStr = enty.profile.substring(startNum, i);
+            if(tempStr.length() > 15){
+                sb.append(tempStr+"\n");
+                startNum = i;
+            }
+        }
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(25);
+        CanvasUtil.drawString(mCanvas, sb.toString(), paint,
+                canvasW / 2 - 150, alertY + 40+ profileImg.getHeight());
+
     }
 
     /**

@@ -31,6 +31,11 @@ public class Game_Recruit extends Game {
     public ButtonEnty bondageBtn;
     public ButtonEnty covenantBtn;
 
+    public int maxMember = 100;
+
+    public MemberEnty recruitEnty;
+    public Bitmap recruitImg;
+
 
     public Game_Recruit(Game_Main gameMain) {
         this.gameMain = gameMain;
@@ -86,6 +91,10 @@ public class Game_Recruit extends Game {
     }
 
     private void activeNewCard(String type) {
+        if(gameMain.userEnty.MEMBERLIST.size() >= maxMember){
+            gameMain.showAlertType = INN.ALERT_TYPE_MAXMEMBER;
+            return;
+        }
         if (type.equals("covenant")) {
             if (gameMain.userEnty.GOLD < 10) {
                 gameMain.showAlertType = INN.ALERT_TYPE_EMPTYGOLD;
@@ -94,8 +103,11 @@ public class Game_Recruit extends Game {
                 gameMain.userEnty.GOLD -= 10;
                 ArrayList<MemberEnty> entyList = DataManager.getGradeMemberDataList(gameMain.dbAdapter, "1");
                 int num = (int)(Math.random()*entyList.size());
-                MemberEnty enty = entyList.get(num);
-                Toast.makeText(gameMain.appClass, enty.name, Toast.LENGTH_SHORT).show();
+                recruitEnty = entyList.get(num);
+                gameMain.userEnty.MEMBERLIST.add(recruitEnty);
+                DataManager.insertUserMember(gameMain.dbAdapter, recruitEnty, gameMain.userEnty.Name);
+                recruitImg = GLUtil.loadAssetsBitmap(gameMain.appClass, "member/"+recruitEnty.image, null);
+//                Toast.makeText(gameMain.appClass, enty.name, Toast.LENGTH_SHORT).show();
                 gameMain.showAlertType = INN.ALERT_TYPE_GETNEWMEMBER;
             }
         }
