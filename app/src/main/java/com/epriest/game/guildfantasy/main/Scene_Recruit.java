@@ -56,11 +56,13 @@ public class Scene_Recruit extends Scene {
         drawBtn(mCanvas);
 
         if(gameRecruit.gameMain.showAlertType == INN.ALERT_TYPE_GETNEWMEMBER) {
-            gameRecruit.gameMain.drawRecruitAlert(mCanvas, gameRecruit.recruitImg, gameRecruit.recruitEnty);
+            gameRecruit.gameMain.drawMemberAlert(mCanvas, gameRecruit.recruitImg, gameRecruit.recruitEnty);
         }else if(gameRecruit.gameMain.showAlertType == INN.ALERT_TYPE_EMPTYGOLD)
             gameRecruit.gameMain.drawAlert(mCanvas, "", "Gold가 없습니다.");
         else if(gameRecruit.gameMain.showAlertType == INN.ALERT_TYPE_MAXMEMBER)
             gameRecruit.gameMain.drawAlert(mCanvas, "", "멤버가 찼습니다.");
+        else if(gameRecruit.gameMain.showAlertType == INN.ALERT_TYPE_GEMNOTENOUGH)
+            gameRecruit.gameMain.drawAlert(mCanvas, "", "보석이 모자랍니다.");
     }
 
     private void drawBG(Canvas mCanvas) {

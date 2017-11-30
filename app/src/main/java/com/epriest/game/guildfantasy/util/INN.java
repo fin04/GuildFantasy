@@ -55,4 +55,5 @@ public interface INN {
     public final static int ALERT_TYPE_EMPTYGOLD = 2;
     public final static int ALERT_TYPE_GETNEWMEMBER = 3;
     public final static int ALERT_TYPE_MAXMEMBER = 4;
+    public final static int ALERT_TYPE_GEMNOTENOUGH = 5;
 }

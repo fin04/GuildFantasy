@@ -375,14 +375,20 @@ public class GameDbAdapter {
         updateData(TableName, columns, rowId);
     }
 
+    public long updateData(String TableName, ContentValues values, String columnName,
+                           String columnData){
+        String whereClause = columnName+"= '" + columnData+"'";
+        return mDb.update(TableName, values, whereClause, null);
+    }
+
     /**
      *
      * @param TableName
      * @param rowId -1 이면 모든 ROW 제거
      * @return
      */
-    public boolean deleteROW(String TableName, long rowId, String username) {
-        Log.i("Delete called", "value__" + rowId);
+    public boolean deleteROW(String TableName, long rowId, String username, String id) {
+//        Log.i("Delete called", "value__" + rowId);
         String whereClause = null;
         if(rowId != -1){
             whereClause = KEY_ROWID + "=" + rowId;

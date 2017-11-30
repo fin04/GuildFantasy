@@ -98,19 +98,38 @@ public class Game_Recruit extends Game {
         if (type.equals("covenant")) {
             if (gameMain.userEnty.GOLD < 10) {
                 gameMain.showAlertType = INN.ALERT_TYPE_EMPTYGOLD;
-//                Toast.makeText(gameMain.appClass, "Gold가 없습니다.", Toast.LENGTH_SHORT).show();
             } else {
                 gameMain.userEnty.GOLD -= 10;
                 ArrayList<MemberEnty> entyList = DataManager.getGradeMemberDataList(gameMain.dbAdapter, "1");
-                int num = (int)(Math.random()*entyList.size());
-                recruitEnty = entyList.get(num);
-                gameMain.userEnty.MEMBERLIST.add(recruitEnty);
-                DataManager.insertUserMember(gameMain.dbAdapter, recruitEnty, gameMain.userEnty.Name);
-                recruitImg = GLUtil.loadAssetsBitmap(gameMain.appClass, "member/"+recruitEnty.image, null);
-//                Toast.makeText(gameMain.appClass, enty.name, Toast.LENGTH_SHORT).show();
-                gameMain.showAlertType = INN.ALERT_TYPE_GETNEWMEMBER;
+                getRecruitMember(entyList);
+            }
+        }else if (type.equals("summon")) {
+            if(gameMain.userEnty.GEM_RED == 0 || gameMain.userEnty.GEM_GREEN == 0 || gameMain.userEnty.GEM_BLUE == 0){
+                gameMain.showAlertType = INN.ALERT_TYPE_GEMNOTENOUGH;
+            }else{
+                gameMain.userEnty.GEM_RED--;
+                gameMain.userEnty.GEM_GREEN--;
+                gameMain.userEnty.GEM_BLUE--;
+                ArrayList<MemberEnty> entyList = DataManager.getGradeMemberDataList(gameMain.dbAdapter, "2");
+                getRecruitMember(entyList);
             }
         }
+    }
+
+    /**
+     * entyList안에서 random으로 하나를 뽑아 update.
+     * @param entyList
+     */
+    private void getRecruitMember(ArrayList<MemberEnty> entyList){
+        int num = (int)(Math.random()*entyList.size());
+        recruitEnty = entyList.get(num);
+        gameMain.userEnty.MEMBERLIST.add(recruitEnty);
+
+        DataManager.updateUserInfo(gameMain.dbAdapter, gameMain.userEnty);
+        DataManager.insertUserMember(gameMain.dbAdapter, recruitEnty, gameMain.userEnty.Name);
+        recruitImg = GLUtil.loadAssetsBitmap(gameMain.appClass, "member/"+recruitEnty.image, null);
+//                Toast.makeText(gameMain.appClass, enty.name, Toast.LENGTH_SHORT).show();
+        gameMain.showAlertType = INN.ALERT_TYPE_GETNEWMEMBER;
     }
 
     @Override
@@ -121,7 +140,7 @@ public class Game_Recruit extends Game {
                 summonBtn.drawX, summonBtn.drawY, summonBtn.clipW, summonBtn.clipH)) {
             if (touch.action == MotionEvent.ACTION_UP) {
                 summonBtn.clickState = ButtonEnty.ButtonClickOff;
-
+                activeNewCard(summonBtn.name);
                 return;
             } else {
                 summonBtn.clickState = ButtonEnty.ButtonClickOn;

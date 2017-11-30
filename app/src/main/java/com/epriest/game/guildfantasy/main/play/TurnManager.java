@@ -1,6 +1,7 @@
 package com.epriest.game.guildfantasy.main.play;
 
 import com.epriest.game.guildfantasy.main.Game_Main;
+import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 import com.epriest.game.guildfantasy.main.enty.QuestEnty;
 import com.epriest.game.guildfantasy.util.INN;
 
@@ -35,8 +36,10 @@ public class TurnManager {
         // 모든 퀘스트를 제거한다.
         if (game_main.userEnty.QUESTLIST.size() > 0) {
             QuestLife();
-            DataManager.deleteUserTable(game_main.dbAdapter, GameDbAdapter.PLAYER_QUEST_TABLE,
-                    game_main.userEnty.Name);
+            for(QuestEnty enty : game_main.userEnty.QUESTLIST){
+                DataManager.deleteUserQuest(game_main.dbAdapter, enty.id);
+            }
+
         }
 
         // 사용중인 멤버의 진행
@@ -46,6 +49,7 @@ public class TurnManager {
         //db에서 turn에 해당되는 이벤트와 멤버, 퀘스트를 가져온다
         game_main.userEnty = DataManager.setChangeEvent(game_main.dbAdapter, game_main.userEnty);
 
+        DataManager.updateUserInfo(game_main.dbAdapter, game_main.userEnty);
 
 //        PlayEvent(game_main.userEnty.TURN);
 //        turnEnty.AP = getAP(game_main.userEnty.LEVEL, game_main.userEnty.TURN);
@@ -64,7 +68,19 @@ public class TurnManager {
     }
 
     private void MemberLife(){
+        for(MemberEnty enty : game_main.userEnty.MEMBERLIST) {
+            //exp가 full이면 level up, max_exp를 갱신.
+            if(enty.status.EXP >= enty.status.MAX_EXP){
+                enty.status.LEVEL++;
+                enty.status.EXP = enty.status.MAX_EXP - enty.status.EXP;
+                enty.status.MAX_EXP = mathMaxExp(enty.status.LEVEL);
+                DataManager.updateUserMember(game_main.dbAdapter, game_main.userEnty.Name, enty);
+            }
+        }
+    }
 
+    private int mathMaxExp(int level){
+        return (int)(Math.pow((double)level, 2));
     }
 
     private void PlayEvent(int turn){
