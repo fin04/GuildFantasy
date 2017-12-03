@@ -103,7 +103,7 @@ public class Game_Main {
         appClass.stateMode = mode;
         selectCardNum = -1;
 
-        new PPreference(appClass.getBaseContext()).writePlayer("player", userEnty);
+//        new PPreference(appClass.getBaseContext()).writePlayer("player", userEnty);
     }
 
     public void mainButtonAct(int state, int mode, int num) {
@@ -113,7 +113,7 @@ public class Game_Main {
         appClass.stateMode = mode;
         selectCardNum = num;
 
-        new PPreference(appClass.getBaseContext()).writePlayer("player", userEnty);
+//        new PPreference(appClass.getBaseContext()).writePlayer("player", userEnty);
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -248,15 +248,12 @@ public class Game_Main {
                     alertBtn.drawX, alertBtn.drawY, alertBtn.clipW, alertBtn.clipH)) {
                 if (appClass.touch.action == MotionEvent.ACTION_UP) {
                     alertBtn.clickState = ButtonEnty.ButtonClickOff;
-//                    userEnty.isStartTurnAlert = false;
-                    showAlertType = INN.ALERT_TYPE_NONE;
                     switch (showAlertType) {
                         case INN.ALERT_TYPE_TURNSTART:
                             userEnty.GOLD += userEnty.eventEnty.Gold;
                             break;
                     }
-
-
+                    showAlertType = INN.ALERT_TYPE_NONE;
                     return;
                 } else {
                     alertBtn.clickState = ButtonEnty.ButtonClickOn;
@@ -302,7 +299,7 @@ public class Game_Main {
                     else if (mBtn.name.equals(INN.menuIconName[3]))
                         mainButtonAct(INN.GAME_ITEM, 0);
                     else if (mBtn.name.equals(INN.menuIconName[4]))
-                        mainButtonAct(INN.GAME_QUEST, 0);
+                        mainButtonAct(INN.GAME_PARTY, 0);
                     else if (mBtn.name.equals(INN.menuIconName[5]))
                         mainButtonAct(INN.GAME_MOVE, 0);
                     else if (mBtn.name.equals("Menu"))
@@ -513,10 +510,10 @@ public class Game_Main {
 
         // status_detail
         drawBarGage(mCanvas, -1, Color.argb(255, 250, 90, 60),
-                "HP", enty.status.HP-enty.status.USE_HP,enty.status.HP,
+                "HP", enty.status.MAX_HP-enty.status.USE_HP,enty.status.MAX_HP,
                 halfCanvasW, alertY + 180, 200, 12);
         drawBarGage(mCanvas, -1, Color.argb(255, 60, 90, 250),
-                "MP", enty.status.MP-enty.status.USE_MP,enty.status.MP,
+                "MP", enty.status.MAX_MP-enty.status.USE_MP,enty.status.MAX_MP,
                 halfCanvasW, alertY + 200, 200, 12);
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setColor(Color.BLACK);

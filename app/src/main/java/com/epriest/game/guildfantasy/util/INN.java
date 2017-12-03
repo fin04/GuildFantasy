@@ -14,7 +14,7 @@ public interface INN {
     public final static int GAME_QUEST = 6;
     public final static int GAME_MOVE = 7;
     public final static int GAME_EVENT = 8;
-//    public final static int GAME_MEMBER = 9;
+    public final static int GAME_PARTY = 9;
     public final static int GAME_OPTION = 10;
 
     public final static int MODE_PARTY_SELECT = 1;

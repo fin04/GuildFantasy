@@ -12,6 +12,7 @@ public class MemberEnty {
     public String engname;
     public String sex;
     public String age;
+    public String birthday;
     public String mercy;
     public String image;
     public int iconid;

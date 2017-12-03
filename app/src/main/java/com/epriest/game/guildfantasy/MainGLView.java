@@ -28,6 +28,7 @@ import com.epriest.game.guildfantasy.main.Scene_Guild;
 import com.epriest.game.guildfantasy.main.Scene_Home;
 import com.epriest.game.guildfantasy.main.Scene_Main;
 import com.epriest.game.guildfantasy.main.Scene_Member;
+import com.epriest.game.guildfantasy.main.Scene_Party;
 import com.epriest.game.guildfantasy.main.Scene_Quest;
 import com.epriest.game.guildfantasy.main.Scene_Recruit;
 import com.epriest.game.guildfantasy.main.Scene_Title;
@@ -45,6 +46,7 @@ public class MainGLView extends GLView {
     private Game_Title gameTitle;
     private Game_Home gameHome;
     private Game_Member gameMember;
+    private Game_Party gameParty;
     private Game_Skill gameSkill;
     private Game_Recruit gameRecruit;
     private Game_Quest gameQuest;
@@ -97,6 +99,7 @@ public class MainGLView extends GLView {
             gameSkill = null;
             gameRecruit = null;
             gameEvent = null;
+            gameParty =null;
             /*if (gameMain != null && appClass.gameState != INN.GAME_PARTY)
                 gameMain.selectQuestEnty = null;*/
         }
@@ -171,6 +174,14 @@ public class MainGLView extends GLView {
                 }
                 gameQuest.gUpdate();
                 break;
+            case INN.GAME_PARTY:
+                if (appClass.isGameInit) {
+                    gameParty = new Game_Party(gameMain);
+                    gameParty.Start();
+                    appClass.isGameInit = false;
+                }
+                gameParty.gUpdate();
+                break;
         }
         //메뉴 바뀔때 Game 클래스를 생성하지 않고 바로 Scene으로 넘어가 error가 떨어지지 않도록 한번 더 Logic을 태움.
         if (appClass.isGameInit) {
@@ -228,6 +239,11 @@ public class MainGLView extends GLView {
                     break;
                 case INN.GAME_QUEST:
                     mScene = new Scene_Quest(gameQuest, sceneMain);
+                    mScene.initScene(appClass);
+                    appClass.isSceneInit = false;
+                    break;
+                case INN.GAME_PARTY:
+                    mScene = new Scene_Party(gameParty, sceneMain);
                     mScene.initScene(appClass);
                     appClass.isSceneInit = false;
                     break;
@@ -335,6 +351,9 @@ public class MainGLView extends GLView {
                 gameSkill.gOnTouchEvent(event);
             case INN.GAME_QUEST:
                 gameQuest.gOnTouchEvent(event);
+                break;
+            case INN.GAME_PARTY:
+                gameParty.gOnTouchEvent(event);
                 break;
         }
     }

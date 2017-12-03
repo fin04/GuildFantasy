@@ -11,9 +11,9 @@ public class StatusEnty {
 	public int USE_AP;
 	public int USE_HP;
 	public int USE_MP;
-	public int AP;
-	public int HP;
-	public int MP;
+	public int MAX_AP;
+	public int MAX_HP;
+	public int MAX_MP;
 
 	public int STR;
 	public int INT;

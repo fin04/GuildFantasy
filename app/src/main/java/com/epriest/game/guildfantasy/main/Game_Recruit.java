@@ -127,7 +127,8 @@ public class Game_Recruit extends Game {
 
         DataManager.updateUserInfo(gameMain.dbAdapter, gameMain.userEnty);
         DataManager.insertUserMember(gameMain.dbAdapter, recruitEnty, gameMain.userEnty.Name);
-        recruitImg = GLUtil.loadAssetsBitmap(gameMain.appClass, "member/"+recruitEnty.image, null);
+
+        recruitImg = GLUtil.loadAssetsBitmap(gameMain.appClass, "member/"+recruitEnty.image, null, 2);
 //                Toast.makeText(gameMain.appClass, enty.name, Toast.LENGTH_SHORT).show();
         gameMain.showAlertType = INN.ALERT_TYPE_GETNEWMEMBER;
     }

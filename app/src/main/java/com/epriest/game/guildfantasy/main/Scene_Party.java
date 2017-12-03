@@ -11,7 +11,6 @@ import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
-import com.epriest.game.guildfantasy.main.play.DataManager;
 
 import static com.epriest.game.CanvasGL.graphics.CanvasUtil.drawString;
 import static com.epriest.game.CanvasGL.graphics.CanvasUtil.recycleBitmap;
@@ -34,42 +33,6 @@ public class Scene_Party extends Scene {
     @Override
     public void initScene(ApplicationClass appClass) {
         this.context = appClass.getBaseContext();
-
-//        gameParty.viewMember.initScene();
-
-//        for (int i = 0; i < gameParty.gameMain.selectQuestEnty.needMember; i++) {
-//            ButtonEnty btn = new ButtonEnty();
-//            btn.clipW = 120;
-//            btn.clipH = 150;
-//            btn.drawX = img_questPaper.getWidth()+ 20 + (i%3)*(btn.clipW+10);
-//            btn.drawY = 70 + (i/3)*(btn.clipH+10);
-//
-//            gameParty.PartyButtonList.add(btn);
-//        }
-
-//        gameParty.startBtn = new ButtonEnty();
-//        gameParty.startBtn.clipW = 115;
-//        gameParty.startBtn.clipH = 115;
-//        gameParty.startBtn.clipX = 1;
-//        gameParty.startBtn.clipY = 172;
-//        gameParty.startBtn.drawX = gameParty.gameMain.appClass.getGameCanvasWidth() - gameParty.startBtn.clipW - 50;
-//        gameParty.startBtn.drawY = gameParty.gameMain.appClass.getGameCanvasHeight() - gameParty.startBtn.clipH - 10;
-//
-//        gameParty.supplyBtn = new ButtonEnty();
-//        gameParty.supplyBtn.clipW = 90;
-//        gameParty.supplyBtn.clipH = 90;
-//        gameParty.supplyBtn.clipX = 231;
-//        gameParty.supplyBtn.clipY = 173;
-//        gameParty.supplyBtn.drawX = gameParty.startBtn.drawX - gameParty.supplyBtn.clipW -30 ;
-//        gameParty.supplyBtn.drawY = gameParty.gameMain.appClass.getGameCanvasHeight() - gameParty.supplyBtn.clipH - 10;
-
-//        gameParty.backBtn = new ButtonEnty();
-//        gameParty.backBtn.clipW = 90;
-//        gameParty.backBtn.clipH = 90;
-//        gameParty.backBtn.clipX = 231;
-//        gameParty.backBtn.clipY = 173;
-//        gameParty.backBtn.drawX = gameParty.supplyBtn.drawX - gameParty.backBtn.clipW -30 ;
-//        gameParty.backBtn.drawY = gameParty.gameMain.appClass.getGameCanvasHeight() - gameParty.backBtn.clipH - 10;
     }
 
     @Override
@@ -79,8 +42,8 @@ public class Scene_Party extends Scene {
             if (gameParty.CardImgList.get(i) != null)
                 recycleBitmap(gameParty.CardImgList.get(i));
         }
-        CanvasUtil.recycleBitmap(gameParty.img_questPaper);
-//        gameParty.viewMember.recycleScene();
+        CanvasUtil.recycleBitmap(gameParty.img_title_bg);
+        CanvasUtil.recycleBitmap(gameParty.img_membercard);
     }
 
     @Override
@@ -92,13 +55,19 @@ public class Scene_Party extends Scene {
     public void draw(Canvas mCanvas) {
         //draw bg
         CanvasUtil.drawBitmap(gameParty.img_title_bg, mCanvas, 0, 0);
-        CanvasUtil.drawBox(mCanvas, Color.DKGRAY, true, 0, gameParty.img_title_bg.getHeight(), gameParty.gameMain.canvasW, 300);
-        CanvasUtil.drawBox(mCanvas, Color.LTGRAY, true, 0, gameParty.img_title_bg.getHeight() + 300, gameParty.gameMain.canvasW, 300);
 
         //draw menubar
+        drawMenuBar(mCanvas);
+
+        //draw card
+        drawPartyCard(mCanvas);
+    }
+
+    private void drawMenuBar(Canvas mCanvas){
         int barNum = gameParty.gameMain.appClass.getGameCanvasWidth() / gameParty.gameMain.statusBarW;
         for (int i = 0; i <= barNum; i++) {
-            CanvasUtil.drawClip(gameParty.img_menuBar, mCanvas, 0, 0, gameParty.gameMain.statusBarW, gameParty.gameMain.statusBarH,
+            CanvasUtil.drawClip(gameParty.gameMain.img_menuBar, mCanvas, 0, 0,
+                    gameParty.gameMain.statusBarW, gameParty.gameMain.statusBarH,
                     gameParty.gameMain.statusBarW * i, gameParty.mMenuTabBarY);
         }
 
@@ -107,55 +76,49 @@ public class Scene_Party extends Scene {
             clipY = 54;
         }
 
-        CanvasUtil.drawClip(gameParty.img_menuBar, mCanvas, gameParty.backBtn.clipX, clipY,
+        CanvasUtil.drawClip(gameParty.gameMain.img_menuBar, mCanvas, gameParty.backBtn.clipX, clipY,
                 gameParty.backBtn.clipW, gameParty.backBtn.clipH, gameParty.backBtn.drawX, gameParty.backBtn.drawY);
-        CanvasUtil.drawClip(gameParty.img_menuBar, mCanvas, 121, 130,
-                82, 23, gameParty.backBtn.drawX + (gameParty.backBtn.clipW - 82) / 2, gameParty.backBtn.drawY + (gameParty.backBtn.clipH - 23) / 2);
+        CanvasUtil.drawClip(gameParty.gameMain.img_menuBar, mCanvas, 121, 130,
+                82, 23, gameParty.backBtn.drawX + (gameParty.backBtn.clipW - 82) / 2,
+                gameParty.backBtn.drawY + (gameParty.backBtn.clipH - 23) / 2);
 
         for (ButtonEnty mBtn : gameParty.PartyNumButtonList) {
             clipY = mBtn.clipY;
             if (mBtn.clickState == ButtonEnty.ButtonClickOn) {
                 clipY = 54;
             }
-            CanvasUtil.drawClip(gameParty.img_menuBar, mCanvas, mBtn.clipX, clipY,
+            CanvasUtil.drawClip(gameParty.gameMain.img_menuBar, mCanvas, mBtn.clipX, clipY,
                     mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
-            CanvasUtil.drawClip(gameParty.img_menuBar, mCanvas, (mBtn.num + 1) * 16, 98, 16, 24,
+            CanvasUtil.drawClip(gameParty.gameMain.img_menuBar, mCanvas, (mBtn.num + 1) * 16,
+                    98, 16, 24,
                     mBtn.drawX + (mBtn.clipW - 15) / 2, mBtn.drawY + (mBtn.clipH - 24) / 2);
         }
+    }
 
-        //draw card
-        CanvasUtil.drawClip(gameParty.img_membercard, mCanvas, 0, 0,
-                162, 253, 50, gameParty.img_title_bg.getHeight() + 30);
-
+    private void drawPartyCard(Canvas mCanvas){
         int cardY = gameParty.img_title_bg.getHeight() + 300 + 30;
-        for (int i = 0; i < gameParty.CardButtonList.size(); i++) {
-            ButtonEnty mBtn = gameParty.CardButtonList.get(i);
+        int btnX = (212 - 47) / 2;
+        int btnY = (280 - 47) / 2;
+        for (int i = 0; i < gameParty.PartyCardList.size(); i++) {
+            ButtonEnty mBtn = gameParty.PartyCardList.get(i);
 
+            // 빈 card draw
             CanvasUtil.drawClip(gameParty.img_membercard, mCanvas, mBtn.clipX, mBtn.clipY,
                     mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
 
-            clipY = 39;
+            int clipY = 0;
             if (mBtn.clickState == ButtonEnty.ButtonClickOn) {
-                clipY += 47;
+                clipY = 47;
             }
-            CanvasUtil.drawClip(gameParty.img_membercard, mCanvas, 163, clipY,
-                    47, 47, mBtn.drawX + (163 - 47) / 2, cardY + (253 - 47 - 25) / 2);
 
+            CanvasUtil.drawClip(gameParty.img_membercard, mCanvas, 213, clipY,
+                    47, 47, mBtn.drawX + btnX, mBtn.drawY + btnY);
+
+            // 멤버가 정해진 card draw
             if (gameParty.CardImgList.size() > 0 &&  gameParty.CardImgList.get(i) != null)
                 drawMemberCard(mCanvas, i, mBtn.drawX, mBtn.drawY);
         }
-
-
-//        if(gameParty.isViewMember)
-//            gameParty.viewMember.draw(mCanvas);
-//        else{
-////            drawQuestDetail(mCanvas, paint);
-////            drawPartyGroup(mCanvas, paint);
-////            drawButton(mCanvas, paint);
-//        }
-
     }
-
 
     private void drawMemberCard(Canvas mCanvas, int cardNum, int cx, int cy) {
         int cardW = 212;
@@ -173,8 +136,8 @@ public class Scene_Party extends Scene {
         CanvasUtil.drawClip(gameParty.img_membercard, mCanvas, 35, 283,
                 cardTextBoxW, cardTextBoxH, cx + 35, cy + cardTextBoxY);
 
-        CanvasUtil.drawString(mCanvas, gameParty.PartyCardList.get(cardNum).name, 20, Color.WHITE, Paint.Align.CENTER, cx + cardW / 2, cy + 7);
-        CanvasUtil.drawString(mCanvas, "LV." + Integer.toString(gameParty.PartyCardList.get(cardNum).status.LEVEL),
+        CanvasUtil.drawString(mCanvas, gameParty.PartyMemberList.get(cardNum).name, 20, Color.WHITE, Paint.Align.CENTER, cx + cardW / 2, cy + 7);
+        CanvasUtil.drawString(mCanvas, "LV." + Integer.toString(gameParty.PartyMemberList.get(cardNum).status.LEVEL),
                 20, Color.DKGRAY, Paint.Align.LEFT, cx + 15, cy + 3);
     }
 
@@ -234,7 +197,7 @@ public class Scene_Party extends Scene {
         }
     }*/
 
-    private void drawQuestDetail(Canvas mCanvas, Paint paint) {
+    /*private void drawQuestDetail(Canvas mCanvas, Paint paint) {
         int paperX = 10;
         int paperY = 62;
         CanvasUtil.drawBitmap(gameParty.img_questPaper, mCanvas, paperX, paperY);
@@ -256,5 +219,5 @@ public class Scene_Party extends Scene {
 //            CanvasUtil.drawString(mCanvas, gameParty.gameMain.selectQuestEnty.textArr.get(i), paint,
 //                    paperX+15, (int) (paperY + i*(paint.getTextSize()+10)));
 //        }
-    }
+    }*/
 }

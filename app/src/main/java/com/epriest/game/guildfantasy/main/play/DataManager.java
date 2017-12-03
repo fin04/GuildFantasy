@@ -192,9 +192,9 @@ public class DataManager {
         enty.image = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERIMAGENAME));
         enty.status.EXP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBEREXP)));
         enty.status.LEVEL = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERLEVEL)));
-        enty.status.HP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERHP)));
-        enty.status.MP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERMP)));
-        enty.status.AP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERAP)));
+        enty.status.MAX_HP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERHP)));
+        enty.status.MAX_MP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERMP)));
+        enty.status.MAX_AP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERAP)));
         enty.status.STR = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERSTR)));
         enty.status.DEX = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERDEX)));
         enty.status.INT = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERINT)));
@@ -347,8 +347,8 @@ public class DataManager {
         memEnty.status.VIT = classCursor.getInt(classCursor.getColumnIndex(GameDbAdapter.KEY_CLASSVIT));
 
         Cursor raceCursor = getRaceCursor(dbAdapter, memEnty.race);
-        memEnty.status.HP = raceCursor.getInt(raceCursor.getColumnIndex(GameDbAdapter.KEY_RACEHP));
-        memEnty.status.MP = raceCursor.getInt(raceCursor.getColumnIndex(GameDbAdapter.KEY_RACEMP));
+        memEnty.status.MAX_HP = raceCursor.getInt(raceCursor.getColumnIndex(GameDbAdapter.KEY_RACEHP));
+        memEnty.status.MAX_MP = raceCursor.getInt(raceCursor.getColumnIndex(GameDbAdapter.KEY_RACEMP));
 
         memEnty.equip = new EquipEnty();
         memEnty.equip.gold = 0;
@@ -478,8 +478,8 @@ public class DataManager {
                 memEnty.age, memEnty.race, memEnty.memberclass, memEnty.mercy, memEnty.image,
                 Integer.toString(memEnty.iconid), memEnty.profile, memEnty.dialog1,
                 Integer.toString(memEnty.status.LEVEL), Integer.toString(memEnty.status.EXP),
-                Integer.toString(memEnty.status.HP), Integer.toString(memEnty.status.MP),
-                Integer.toString(memEnty.status.AP), Integer.toString(memEnty.status.STR),
+                Integer.toString(memEnty.status.MAX_HP), Integer.toString(memEnty.status.MAX_MP),
+                Integer.toString(memEnty.status.MAX_AP), Integer.toString(memEnty.status.STR),
                 Integer.toString(memEnty.status.DEX), Integer.toString(memEnty.status.INT),
                 Integer.toString(memEnty.status.VIT), Integer.toString(memEnty.status.RENOWN),
                 Integer.toString(memEnty.equip.food), memEnty.equip.equipID_head, memEnty.equip.equipID_body,
@@ -533,9 +533,9 @@ public class DataManager {
         String TableName = GameDbAdapter.PLAYER_MEMBER_TABLE;
         ContentValues values = new ContentValues();
         values.put(GameDbAdapter.KEY_MEMBEREXP, memEnty.status.EXP);
-        values.put(GameDbAdapter.KEY_MEMBERHP, memEnty.status.HP);
-        values.put(GameDbAdapter.KEY_MEMBERMP, memEnty.status.MP);
-        values.put(GameDbAdapter.KEY_MEMBERAP, memEnty.status.AP);
+        values.put(GameDbAdapter.KEY_MEMBERHP, memEnty.status.MAX_HP);
+        values.put(GameDbAdapter.KEY_MEMBERMP, memEnty.status.MAX_MP);
+        values.put(GameDbAdapter.KEY_MEMBERAP, memEnty.status.MAX_AP);
         values.put(GameDbAdapter.KEY_MEMBERSTR, memEnty.status.STR);
         values.put(GameDbAdapter.KEY_MEMBERDEX, memEnty.status.DEX);
         values.put(GameDbAdapter.KEY_MEMBERINT, memEnty.status.INT);

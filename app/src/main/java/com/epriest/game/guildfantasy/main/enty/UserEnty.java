@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class UserEnty {
     public String Name;
     public int EXP;
+    public int MAXEXP;
     public int LEVEL;
     public int AP;
     public int GOLD;
