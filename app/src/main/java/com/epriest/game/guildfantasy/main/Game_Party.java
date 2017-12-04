@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class Game_Party extends Game {
 
-//    public int partyState;
+    //    public int partyState;
     public Game_Main gameMain;
 //    public View_Member viewMember;
 
@@ -26,18 +26,17 @@ public class Game_Party extends Game {
     public ArrayList<ButtonEnty> PartyCardList = new ArrayList<>();
     public ArrayList<MemberEnty> PartyMemberList = new ArrayList<>();
     public ArrayList<Bitmap> CardImgList = new ArrayList<>();
-//    public PartyEnty currentParty = new PartyEnty();
+    //    public PartyEnty currentParty = new PartyEnty();
     public ButtonEnty backBtn;
 //    public ButtonEnty startBtn;
 //    public ButtonEnty supplyBtn;
 
     /**
-     * partyNumber = 10단위
-     * cardNumber = 1단위
+     * partyNumber.cardNumber
      */
-    public int selectCardNum;
+//    public String selectCardNum;
 
-//    public Bitmap img_mainBtn;
+    //    public Bitmap img_mainBtn;
 //    public Bitmap img_menuBar;
     public Bitmap img_membercard;
     public Bitmap img_memberFrame;
@@ -70,7 +69,8 @@ public class Game_Party extends Game {
 //        img_memberFrame = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member_frame.png", null);
 //        img_questPaper = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/guildpaper.png", null);
 
-        setCardListFromSelectParty(this.selectCardNum/10);
+
+        gameMain.setCardListFromSelectParty(0,0);
 
         mMenuTabBarY = gameMain.canvasH - gameMain.statusBarH;
 
@@ -84,8 +84,8 @@ public class Game_Party extends Game {
             mBtn.clipH = 280;
             mBtn.clipX = 0;
             mBtn.clipY = 0;
-            mBtn.drawX = 34 + (i%3) * (mBtn.clipW + 8);
-            mBtn.drawY = cardY + (i/3) * (mBtn.clipH + 10);
+            mBtn.drawX = 34 + (i % 3) * (mBtn.clipW + 8);
+            mBtn.drawY = cardY + (i / 3) * (mBtn.clipH + 10);
             PartyCardList.add(mBtn);
         }
 
@@ -123,22 +123,6 @@ public class Game_Party extends Game {
 
     }
 
-    private void setCardListFromSelectParty(int selectParty) {
-        this.selectCardNum = selectParty*10+selectCardNum%10;
-        /*for (int i = 0; i < 4; i++) {
-            int num = (selectParty * 4) + i;
-            if (this.gameMain.userEnty.PARTY_MEMBERID_LIST.get(num) == null) {
-                this.CardImgList.add(i, null);
-                this.PartyMemberList.add(i, null);
-            } else {
-                MemberEnty enty = DataManager.getMemberEntyFromDB(this.gameMain.dbAdapter, (String) this.gameMain.userEnty.PARTY_MEMBERID_LIST.get(num));
-                this.CardImgList.add(i, GLUtil.loadAssetsBitmap(this.gameMain.appClass, "member/" + enty.image, null));
-                this.PartyMemberList.add(i, enty);
-            }
-        }*/
-
-    }
-
     @Override
     public void gOnTouchEvent(MotionEvent event) {
         if (gameMain.onTouchEvent(event))
@@ -149,7 +133,7 @@ public class Game_Party extends Game {
             backBtn.clickState = ButtonEnty.ButtonClickOn;
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 backBtn.clickState = ButtonEnty.ButtonClickOff;
-                gameMain.mainButtonAct(INN.GAME_HOME, 0, -1);
+                gameMain.mainButtonAct(INN.GAME_HOME, 0);
             }
             return;
         }
@@ -160,7 +144,7 @@ public class Game_Party extends Game {
                 btn.clickState = ButtonEnty.ButtonClickOn;
                 if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                     btn.clickState = ButtonEnty.ButtonClickOff;
-                    setCardListFromSelectParty(i);
+                    gameMain.setSelectPartyNum(i);
 //                    currentParty = gameMain.userEnty.PARTYLIST.get(selectPartyNum);
                 }
                 return;
@@ -176,8 +160,8 @@ public class Game_Party extends Game {
                 btn.clickState = ButtonEnty.ButtonClickOn;
                 if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                     btn.clickState = ButtonEnty.ButtonClickOff;
-                    selectCardNum = i;
-                    gameMain.mainButtonAct(INN.GAME_MEMBER, INN.MODE_MEMBER_SELECT, selectCardNum);
+                    gameMain.setSelectCardNum(i);
+                    gameMain.mainButtonAct(INN.GAME_MEMBER, INN.MODE_MEMBER_SELECT, gameMain.selectCardNum);
                 }
                 return;
             } else {

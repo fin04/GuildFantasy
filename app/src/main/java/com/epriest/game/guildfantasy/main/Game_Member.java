@@ -47,7 +47,7 @@ public class Game_Member extends Game {
         bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member.jpg", null);
         img_member = new ArrayList<>();
         for (int i = 0; i < memberList.size(); i++) {
-            img_member.add(GLUtil.loadAssetsBitmap(gameMain.appClass, "member/" + memberList.get(i).image, null));
+            img_member.add(GLUtil.loadAssetsBitmap(gameMain.appClass, "member/" + memberList.get(i).image, null, 2));
         }
 
         cardW = 212;

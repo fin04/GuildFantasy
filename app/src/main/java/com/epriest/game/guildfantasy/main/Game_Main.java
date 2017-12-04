@@ -66,7 +66,10 @@ public class Game_Main {
 
     public int canvasW, canvasH;
 
-    public int selectCardNum;
+    /**
+     * partyNumber.cardNumber
+     */
+    public String selectCardNum;
 
     public Game_Main(Context context, GameDbAdapter dbAdapter) {
         appClass = (ApplicationClass) context.getApplicationContext();
@@ -90,6 +93,8 @@ public class Game_Main {
         loadManager();
         setMenuIcon();
         setManager();
+
+        setCardListFromSelectParty(0,0);
     }
 
     private UserEnty checkPlayerData() {
@@ -101,17 +106,17 @@ public class Game_Main {
         appClass.isSceneInit = true;
         appClass.gameState = state;
         appClass.stateMode = mode;
-        selectCardNum = -1;
+        setCardListFromSelectParty(0,0);
 
 //        new PPreference(appClass.getBaseContext()).writePlayer("player", userEnty);
     }
 
-    public void mainButtonAct(int state, int mode, int num) {
+    public void mainButtonAct(int state, int mode, String cardNum) {
         appClass.isGameInit = true;
         appClass.isSceneInit = true;
         appClass.gameState = state;
         appClass.stateMode = mode;
-        selectCardNum = num;
+        selectCardNum = cardNum;
 
 //        new PPreference(appClass.getBaseContext()).writePlayer("player", userEnty);
     }
@@ -455,6 +460,30 @@ public class Game_Main {
         // alert bg
         CanvasUtil.drawBitmap(img_alertBox, mCanvas, alertX, alertY);
 
+        //profile image
+        CanvasUtil.drawBitmap(profileImg, mCanvas, alertX + 15, alertY + 105);
+        if(INN.setTempImg)
+            CanvasUtil.drawBox(mCanvas,Color.DKGRAY, true, alertX+15, alertY+105, 400, 512);
+
+        // class mark
+        int classId = 0;
+        if(enty.memberclass.equals("knight"))
+            classId = 1;
+        else if(enty.memberclass.equals("warrior"))
+            classId = 2;
+        else if(enty.memberclass.equals("priest"))
+            classId = 3;
+        else if(enty.memberclass.equals("mage"))
+            classId = 4;
+        else if(enty.memberclass.equals("hunter"))
+            classId = 5;
+        else if(enty.memberclass.equals("rogue"))
+            classId = 6;
+        int clipX = classId%4*64;
+        int clipY = classId/4*64;
+        CanvasUtil.drawClip(img_classMark, mCanvas, clipX, clipY,
+                64, 64, alertX+10, alertY+105);
+
         // alert button
         int alertBtnClipX = alertBtn.clipX;
         if (alertBtn.clickState == ButtonEnty.ButtonClickOn) {
@@ -476,28 +505,6 @@ public class Game_Main {
         drawBarGage(mCanvas, -1, Color.argb(255,0,200,50),
                 "", enty.status.EXP,enty.status.MAX_EXP,
                 alertX+5, alertY+100, img_alertBox.getWidth()-10, 5);
-
-        //profile image
-        CanvasUtil.drawBitmap(profileImg, mCanvas, alertX + 15, alertY + 105);
-
-        // class mark
-        int classId = 0;
-        if(enty.memberclass.equals("knight"))
-            classId = 1;
-        else if(enty.memberclass.equals("warrior"))
-            classId = 2;
-        else if(enty.memberclass.equals("priest"))
-            classId = 3;
-        else if(enty.memberclass.equals("mage"))
-            classId = 4;
-        else if(enty.memberclass.equals("hunter"))
-            classId = 5;
-        else if(enty.memberclass.equals("rogue"))
-            classId = 6;
-        int clipX = classId%4*64;
-        int clipY = classId/4*64;
-        CanvasUtil.drawClip(img_classMark, mCanvas, clipX, clipY,
-                64, 64, alertX+10, alertY+105);
 
         // status_basic
         StringBuilder sb = new StringBuilder(enty.race + "(" + enty.sex + ")\n");
@@ -620,5 +627,29 @@ public class Game_Main {
             }
         }
 
+    }
+
+    public void setCardListFromSelectParty(int selectParty, int selectCardNum) {
+        this.selectCardNum = selectParty + "-" + selectCardNum;
+    }
+
+    public  void setSelectPartyNum(int selectPartyNum){
+        String str[] = this.selectCardNum.split("-");
+        this.selectCardNum = selectPartyNum+"-"+str[1];
+    }
+
+    public void setSelectCardNum(int selectCardNum){
+        String str[] = this.selectCardNum.split("-");
+        this.selectCardNum = str[0]+"-"+selectCardNum;
+    }
+
+    public Integer getSelectPartyNum(){
+        String str[] = selectCardNum.split("-");
+        return Integer.parseInt(str[0]);
+    }
+
+    public Integer getSelectCardNum(){
+        String str[] = selectCardNum.split("-");
+        return Integer.parseInt(str[1]);
     }
 }

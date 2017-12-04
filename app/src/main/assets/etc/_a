@@ -1,596 +1,655 @@
-package com.epriest.game.guildfantasy.main.play;
+package com.epriest.game.guildfantasy.main;
 
-import android.content.ContentValues;
-import android.database.Cursor;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.view.MotionEvent;
+import android.widget.Toast;
 
-import com.epriest.game.guildfantasy.main.Game_Title;
-import com.epriest.game.guildfantasy.main.enty.EquipEnty;
-import com.epriest.game.guildfantasy.main.enty.EventEnty;
+import com.epriest.game.CanvasGL.graphics.CanvasUtil;
+import com.epriest.game.CanvasGL.graphics.GLUtil;
+import com.epriest.game.CanvasGL.util.ApplicationClass;
+import com.epriest.game.CanvasGL.util.GameUtil;
+import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
+import com.epriest.game.guildfantasy.main.enty.ClipImageEnty;
+import com.epriest.game.guildfantasy.main.enty.ImageEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 import com.epriest.game.guildfantasy.main.enty.UserEnty;
-import com.epriest.game.guildfantasy.main.enty.QuestEnty;
-import com.epriest.game.guildfantasy.main.enty.StatusEnty;
+import com.epriest.game.guildfantasy.main.play.DataManager;
+import com.epriest.game.guildfantasy.main.play.GameDbAdapter;
+import com.epriest.game.guildfantasy.main.play.TurnManager;
 import com.epriest.game.guildfantasy.util.INN;
+import com.epriest.game.guildfantasy.util.PPreference;
 
 import java.util.ArrayList;
 
+import static com.epriest.game.CanvasGL.graphics.CanvasUtil.drawClip;
+
 /**
- * Created by darka on 2017-04-30.
+ * Created by darka on 2017-03-26.
  */
 
-public class DataManager {
+public class Game_Main {
+
+    public ApplicationClass appClass;
+    public TurnManager turnManager;
+    public GameDbAdapter dbAdapter;
+//    public Scene_Main sceneMain;
+
+    public UserEnty userEnty;
+
+    public int showAlertType;
+    public ButtonEnty alertBtn;
+    public ArrayList<ButtonEnty> menuButtonList;
+
+    public ImageEnty managerImg;
+
+    public Bitmap img_mainBtn;
+    public Bitmap img_homeBtn;
+    public Bitmap img_menuBar;
+    public Bitmap img_alertBox;
+    public Bitmap img_classMark;
+
+    public ButtonEnty optionBtn;
+    public ButtonEnty menIcon;
+    public ButtonEnty feedIcon;
+    public ButtonEnty goldIcon;
+
+    //    public int mMainScreenY;
+//    public int mMainScreenHeight;
+    public int mMenuTabBarY;
+
+    public final int statusBarW = 120;
+    public final int statusBarH = 75;
+
+    public int canvasW, canvasH;
 
     /**
-     * User의 cursor를 찾음
-     * @param playerName - 플레이어 이름, null이면 모든 플레이어를 찾음
-     * @return cursor
+     * partyNumber.cardNumber
      */
-    public static Cursor getUserMainCursor(GameDbAdapter dbAdapter, String playerName) {
-        return dbAdapter.getCursor(GameDbAdapter.PLAYER_MAIN_TABLE, GameDbAdapter.KEY_USERNAME, playerName);
+    public String selectCardNum;
+
+    public Game_Main(Context context, GameDbAdapter dbAdapter) {
+        appClass = (ApplicationClass) context.getApplicationContext();
+//        sceneMain = new Scene_Main(this);
+        this.dbAdapter = dbAdapter;
+        turnManager = new TurnManager(this);
+    }
+
+    public void Init() {
+//        userEnty = checkPlayerData();
+        /*if (userEnty == null) {
+            // 프롤로그를 실행하고 플레이어를 작성
+//            startProlog1();
+            userEnty = DataManager.createUserData(dbAdapter, "홍길동");
+        }*/
+
+        canvasW = appClass.getGameCanvasWidth();
+        canvasH = appClass.getGameCanvasHeight();
+
+        loadMenuIcon();
+        loadManager();
+        setMenuIcon();
+        setManager();
+
+        setCardListFromSelectParty(0,0);
+    }
+
+    private UserEnty checkPlayerData() {
+        return new PPreference(appClass.getBaseContext()).readPlayer("player");
+    }
+
+    public void mainButtonAct(int state, int mode) {
+        appClass.isGameInit = true;
+        appClass.isSceneInit = true;
+        appClass.gameState = state;
+        appClass.stateMode = mode;
+        setCardListFromSelectParty(0,0);
+
+//        new PPreference(appClass.getBaseContext()).writePlayer("player", userEnty);
+    }
+
+    public void mainButtonAct(int state, int mode, String cardNum) {
+        appClass.isGameInit = true;
+        appClass.isSceneInit = true;
+        appClass.gameState = state;
+        appClass.stateMode = mode;
+        selectCardNum = cardNum;
+
+//        new PPreference(appClass.getBaseContext()).writePlayer("player", userEnty);
+    }
+
+    public boolean onTouchEvent(MotionEvent event) {
+        return false;
+    }
+
+    public void loadManager() {
+        managerImg = new ImageEnty();
+        managerImg.bitmap = GLUtil.loadAssetsBitmap(appClass, "main/manager_0.png", null);
+    }
+
+    public void setManager() {
+        managerImg.animFrame = new ArrayList<>();
+        managerImg.animMaxFrame = 100;
+
+        managerImg.animClipList = new ArrayList<>();
+        ClipImageEnty clipEnty1 = new ClipImageEnty();
+        clipEnty1.animClipX = 758;
+        clipEnty1.animClipY = 302;
+        clipEnty1.animClipW = 96;
+        clipEnty1.animClipH = 28;
+        clipEnty1.animStartFrame = 85;
+        clipEnty1.animEndFrame = 88;
+        clipEnty1.animDrawX = 551;
+        clipEnty1.animDrawY = 253;
+        managerImg.animClipList.add(clipEnty1);
+        ClipImageEnty clipEnty2 = new ClipImageEnty();
+        clipEnty2.animClipX = 758;
+        clipEnty2.animClipY = 266;
+        clipEnty2.animClipW = 96;
+        clipEnty2.animClipH = 28;
+        clipEnty2.animStartFrame = 89;
+        clipEnty2.animEndFrame = 95;
+        clipEnty2.animDrawX = 551;
+        clipEnty2.animDrawY = 253;
+        managerImg.animClipList.add(clipEnty2);
+        ClipImageEnty clipEnty3 = new ClipImageEnty();
+        clipEnty3.animClipX = 758;
+        clipEnty3.animClipY = 302;
+        clipEnty3.animClipW = 96;
+        clipEnty3.animClipH = 28;
+        clipEnty3.animStartFrame = 96;
+        clipEnty3.animEndFrame = 100;
+        clipEnty3.animDrawX = 551;
+        clipEnty3.animDrawY = 253;
+        managerImg.animClipList.add(clipEnty3);
+    }
+
+    public void loadMenuIcon() {
+        img_homeBtn = GLUtil.loadAssetsBitmap(appClass, "main/home_btn.png", null);
+        img_mainBtn = GLUtil.loadAssetsBitmap(appClass, "main/main_btn.png", null);
+        img_menuBar = GLUtil.loadAssetsBitmap(appClass, "main/statusbar.png", null);
+        img_alertBox = GLUtil.loadAssetsBitmap(appClass, "main/alertbox.png", null);
+        img_classMark = GLUtil.loadAssetsBitmap(appClass, "main/classes_mark.png", null);
+    }
+
+    public void setMenuIcon() {
+        menuButtonList = new ArrayList<>();
+        mMenuTabBarY = canvasH - 300 - statusBarH;
+        for (int i = 0; i < INN.menuIconName.length; i++) {
+            ButtonEnty mBtn = new ButtonEnty();
+            mBtn.num = i;
+            mBtn.name = INN.menuIconName[i];
+            mBtn.iconImgNum = INN.menuIconNum[i];
+//                    mBtn.clipW = 96;
+//                    mBtn.clipH = 84;
+//                    mBtn.clipX = 0;
+//                    mBtn.clipY = 0;
+            mBtn.clipW = 220;
+            mBtn.clipH = 150;
+            mBtn.clipX = 0;
+            mBtn.clipY = 0;
+//                    mBtn.drawX = canvasW - 110 - (4 - i) * (mBtn.clipW + 10);
+//                    mBtn.drawY = canvasH - mBtn.clipH - 10;
+
+            mBtn.drawX = 20 + ((mBtn.clipW + 5) * (i % 3));
+            mBtn.drawY = mMenuTabBarY + statusBarH + mBtn.clipH * (i / 3);
+            menuButtonList.add(mBtn);
+        }
+
+        alertBtn = new ButtonEnty();
+        alertBtn.name = "Alert";
+        alertBtn.drawX = (appClass.getGameCanvasWidth() -
+                img_alertBox.getWidth()) / 2 + img_alertBox.getWidth() - 100;
+        alertBtn.drawY = (appClass.getGameCanvasHeight() -
+                img_alertBox.getHeight()) / 2 + img_alertBox.getHeight() - 100;
+        alertBtn.clipW = 90;
+        alertBtn.clipH = 90;
+        alertBtn.clipX = 231;
+        alertBtn.clipY = 173;
+
+        optionBtn = new ButtonEnty();
+        optionBtn.clipW = 103;
+        optionBtn.clipH = 52;
+        optionBtn.clipX = 121;
+        optionBtn.clipY = 0;
+        optionBtn.name = "Back";
+        optionBtn.drawX = canvasW - optionBtn.clipW - 15;
+        optionBtn.drawY = mMenuTabBarY + (statusBarH - optionBtn.clipH) / 2;
+
+        menIcon = new ButtonEnty();
+        menIcon.name = "Men";
+        menIcon.drawX = (canvasW - 120) / 5 + 260;
+        menIcon.drawY = 5;
+        menIcon.clipW = 24;
+        menIcon.clipH = 34;
+        menIcon.clipX = 136;
+        menIcon.clipY = 92;
+
+        feedIcon = new ButtonEnty();
+        feedIcon.name = "Feed";
+        feedIcon.drawX = (canvasW - 120) / 5 + 360;
+        feedIcon.drawY = 5;
+        feedIcon.clipW = 32;
+        feedIcon.clipH = 32;
+        feedIcon.clipX = 100;
+        feedIcon.clipY = 92;
+
+        goldIcon = new ButtonEnty();
+        goldIcon.name = "Gold";
+        goldIcon.drawX = (canvasW - 120) / 5 + 160;
+        goldIcon.drawY = 5;
+        goldIcon.clipW = 36;
+        goldIcon.clipH = 27;
+        goldIcon.clipX = 101;
+        goldIcon.clipY = 126;
+    }
+
+    public void onTouchMenuIcon() {
+        if (showAlertType > INN.ALERT_TYPE_NONE) {
+            if (GameUtil.equalsTouch(appClass.touch,
+                    alertBtn.drawX, alertBtn.drawY, alertBtn.clipW, alertBtn.clipH)) {
+                if (appClass.touch.action == MotionEvent.ACTION_UP) {
+                    alertBtn.clickState = ButtonEnty.ButtonClickOff;
+                    switch (showAlertType) {
+                        case INN.ALERT_TYPE_TURNSTART:
+                            userEnty.GOLD += userEnty.eventEnty.Gold;
+                            break;
+                    }
+                    showAlertType = INN.ALERT_TYPE_NONE;
+                    return;
+                } else {
+                    alertBtn.clickState = ButtonEnty.ButtonClickOn;
+                }
+            } else
+                alertBtn.clickState = ButtonEnty.ButtonClickOn;
+            return;
+        }
+
+        int turnBtnNum = menuButtonList.size() - 1;
+        if (GameUtil.equalsTouch(appClass.touch,
+                menuButtonList.get(turnBtnNum).drawX, menuButtonList.get(turnBtnNum).drawY,
+                menuButtonList.get(turnBtnNum).clipW, menuButtonList.get(turnBtnNum).clipH)) {
+            if (appClass.touch.action == MotionEvent.ACTION_UP) {
+                menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOff;
+                switch (appClass.gameState) {
+                    case INN.GAME_HOME:
+                        turnManager.turnCycle(userEnty.TURN++);
+                        break;
+                }
+            } else {
+                menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOn;
+            }
+            return;
+        } else {
+            menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOff;
+        }
+        if (appClass.gameState != INN.GAME_HOME)
+            return;
+
+        for (ButtonEnty mBtn : menuButtonList) {
+            if (GameUtil.equalsTouch(appClass.touch, mBtn.drawX, mBtn.drawY, mBtn.clipW, mBtn.clipH)) {
+                mBtn.clickState = ButtonEnty.ButtonClickOn;
+                if (appClass.touch.action == MotionEvent.ACTION_UP) {
+                    mBtn.clickState = ButtonEnty.ButtonClickOff;
+
+                    if (mBtn.name.equals(INN.menuIconName[0]))
+                        mainButtonAct(INN.GAME_MEMBER, 0);
+                    else if (mBtn.name.equals(INN.menuIconName[1]))
+                        mainButtonAct(INN.GAME_RECRUIT, INN.MODE_MEMBER_RECRUIT);
+                    else if (mBtn.name.equals(INN.menuIconName[2]))
+                        mainButtonAct(INN.GAME_SKILL, 0);
+                    else if (mBtn.name.equals(INN.menuIconName[3]))
+                        mainButtonAct(INN.GAME_ITEM, 0);
+                    else if (mBtn.name.equals(INN.menuIconName[4]))
+                        mainButtonAct(INN.GAME_PARTY, 0);
+                    else if (mBtn.name.equals(INN.menuIconName[5]))
+                        mainButtonAct(INN.GAME_MOVE, 0);
+                    else if (mBtn.name.equals("Menu"))
+                        mainButtonAct(INN.GAME_OPTION, 0);
+                }
+                return;
+            } else {
+                mBtn.clickState = ButtonEnty.ButtonClickOff;
+            }
+        }
+
+        if (GameUtil.equalsTouch(appClass.touch,
+                optionBtn.drawX, optionBtn.drawY, optionBtn.clipW, optionBtn.clipH)) {
+            if (appClass.touch.action == MotionEvent.ACTION_UP) {
+                optionBtn.clickState = ButtonEnty.ButtonClickOff;
+                Toast.makeText(appClass, "menu", Toast.LENGTH_SHORT).show();
+            } else {
+                optionBtn.clickState = ButtonEnty.ButtonClickOn;
+            }
+            return;
+        } else {
+            optionBtn.clickState = ButtonEnty.ButtonClickOff;
+        }
+    }
+
+    public void recycleScene() {
+        CanvasUtil.recycleBitmap(img_mainBtn);
+        CanvasUtil.recycleBitmap(img_homeBtn);
+        CanvasUtil.recycleBitmap(img_menuBar);
+        CanvasUtil.recycleBitmap(img_alertBox);
+        CanvasUtil.recycleBitmap(img_classMark);
+        CanvasUtil.recycleBitmap(managerImg.bitmap);
+    }
+
+    public void drawMain(Canvas mCanvas, boolean viewMenuButton) {
+
+    }
+
+    public void drawMenu(Canvas mCanvas) {
+        drawMenuButton(mCanvas);
+
+        drawStatusTab(mCanvas);
+
+        //manager mode
+//        drawManager(mCanvas);
+    }
+
+    private void drawMenuButton(Canvas mCanvas) {
+//        int btnArea = (canvasH - statusBarH)/ gameMain.menuButtonList.size();
+        for (ButtonEnty mBtn : menuButtonList) {
+            int clipX = mBtn.clipX;
+            int clipY = mBtn.clipY;
+            if (mBtn.clickState == ButtonEnty.ButtonClickOn) {
+                if (mBtn.num == menuButtonList.size() - 1)
+                    clipX += mBtn.clipW;
+                else
+                    clipY += mBtn.clipH;
+            }
+            //Button Image
+            CanvasUtil.drawClip(img_homeBtn, mCanvas, clipX, clipY,
+                    mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
+
+            int btnNameX = mBtn.drawX + (mBtn.clipW - 180) / 2;
+            int btnNameY = mBtn.drawY + (mBtn.clipH - 50) / 2;
+            //Button Title
+            CanvasUtil.drawClip(img_homeBtn, mCanvas, 220, mBtn.iconImgNum * 50,
+                    180, 50, btnNameX, btnNameY);
+            btnNameX = mBtn.drawX + (mBtn.clipW - 130);
+            btnNameY = mBtn.drawY;
+            //Button Subtitle
+            CanvasUtil.drawClip(img_homeBtn, mCanvas, 400, mBtn.iconImgNum * 50,
+                    130, 50, btnNameX, btnNameY);
+            //Button Subtitle HanGul
+//            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 531, mBtn.iconImgNum*50,
+//                    130, 50, btnNameX, btnNameY);
+//            CanvasUtil.drawClip(menu_icon, mCanvas, null, (iconNum%5)*mBtn.w, (iconNum/5)*mBtn.h,
+//                    mBtn.w, mBtn.h, mBtn.x+(btnArea-mBtn.w)/2, mBtn.y);
+        }
+
+        int clipY = optionBtn.clipY;
+        if (optionBtn.clickState == ButtonEnty.ButtonClickOn) {
+            clipY = 54;
+        }
+        CanvasUtil.drawClip(img_menuBar, mCanvas, optionBtn.clipX, clipY,
+                optionBtn.clipW, optionBtn.clipH, optionBtn.drawX, optionBtn.drawY);
+
+        CanvasUtil.drawClip(img_menuBar, mCanvas, 121, 107,
+                82, 23, optionBtn.drawX + (optionBtn.clipW - 82) / 2,
+                optionBtn.drawY + (optionBtn.clipH - 23) / 2);
+//
+//        switch (gameHome.gameMain.appClass.gameState) {
+//            case INN.GAME_HOME:
+//                CanvasUtil.drawClip(gameHome.img_mainBtn, mCanvas, 270, 0,
+//                        gameHome.optionBtn.clipW, 18, gameHome.optionBtn.drawX, gameHome.optionBtn.drawY + 12);
+//                break;
+//            default:
+//                CanvasUtil.drawClip(gameHome.img_mainBtn, mCanvas, 270, 18,
+//                        gameHome.optionBtn.clipW, 18, gameHome.optionBtn.drawX, gameHome.optionBtn.drawY + 12);
+//                break;
+//        }
+    }
+
+    public void drawAlert(Canvas mCanvas, String title, String text) {
+        int alertY = (canvasH - img_alertBox.getHeight()) / 2;
+        // alert bg
+        CanvasUtil.drawBitmap(img_alertBox, mCanvas, (canvasW - img_alertBox.getWidth()) / 2
+                , alertY);
+
+        // alert button
+        int alertBtnClipX = alertBtn.clipX;
+        if (alertBtn.clickState == ButtonEnty.ButtonClickOn) {
+            alertBtnClipX += alertBtn.clipW;
+        }
+        drawClip(img_mainBtn, mCanvas,
+                alertBtnClipX, alertBtn.clipY,
+                alertBtn.clipW, alertBtn.clipH, alertBtn.drawX, alertBtn.drawY);
+
+        // title
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(30);
+        CanvasUtil.drawString(mCanvas, title, paint, canvasW / 2, alertY + 20);
+
+        // text
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setColor(Color.DKGRAY);
+        paint.setTextSize(25);
+        CanvasUtil.drawString(mCanvas, text, paint, canvasW / 2 - 150, alertY + 70);
+    }
+
+    public void drawTurnStartAlert(Canvas mCanvas) {
+        StringBuilder sb = new StringBuilder("Turn : ");
+        sb.append(userEnty.TURN);
+        sb.append("\n");
+        sb.append("Clear Quest : ");
+        sb.append("\n");
+        sb.append("Income : ");
+        sb.append(userEnty.eventEnty.Gold + "Gold");
+        sb.append("\n");
+        sb.append("New Quest : ");
+        sb.append(userEnty.eventEnty.QuestIDList.size());
+
+        drawAlert(mCanvas, userEnty.TURN + " Turn", sb.toString());
+    }
+
+    public void drawMemberAlert(Canvas mCanvas, Bitmap profileImg, MemberEnty enty) {
+        int alertY = (canvasH - img_alertBox.getHeight()) / 2;
+        int alertX = (canvasW - img_alertBox.getWidth()) / 2;
+        int halfCanvasW = canvasW/2;
+
+        // alert bg
+        CanvasUtil.drawBitmap(img_alertBox, mCanvas, alertX, alertY);
+
+        //profile image
+        CanvasUtil.drawBitmap(profileImg, mCanvas, alertX + 15, alertY + 105);
+        if(INN.setTempImg)
+            CanvasUtil.drawBox(mCanvas,Color.DKGRAY, true, alertX+15, alertY+105, 400, 512);
+
+        // class mark
+        int classId = 0;
+        if(enty.memberclass.equals("knight"))
+            classId = 1;
+        else if(enty.memberclass.equals("warrior"))
+            classId = 2;
+        else if(enty.memberclass.equals("priest"))
+            classId = 3;
+        else if(enty.memberclass.equals("mage"))
+            classId = 4;
+        else if(enty.memberclass.equals("hunter"))
+            classId = 5;
+        else if(enty.memberclass.equals("rogue"))
+            classId = 6;
+        int clipX = classId%4*64;
+        int clipY = classId/4*64;
+        CanvasUtil.drawClip(img_classMark, mCanvas, clipX, clipY,
+                64, 64, alertX+10, alertY+105);
+
+        // alert button
+        int alertBtnClipX = alertBtn.clipX;
+        if (alertBtn.clickState == ButtonEnty.ButtonClickOn) {
+            alertBtnClipX += alertBtn.clipW;
+        }
+        drawClip(img_mainBtn, mCanvas,
+                alertBtnClipX, alertBtn.clipY,
+                alertBtn.clipW, alertBtn.clipH, alertBtn.drawX, alertBtn.drawY);
+
+        // title
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(35);
+        CanvasUtil.drawString(mCanvas, enty.name, paint, halfCanvasW, alertY + 30);
+
+        // exp
+        drawBarGage(mCanvas, -1, Color.argb(255,0,200,50),
+                "", enty.status.EXP,enty.status.MAX_EXP,
+                alertX+5, alertY+100, img_alertBox.getWidth()-10, 5);
+
+        // status_basic
+        StringBuilder sb = new StringBuilder(enty.race + "(" + enty.sex + ")\n");
+        sb.append("age  : " + enty.age);
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setColor(Color.argb(255, 80,80,80));
+        paint.setTextSize(25);
+        CanvasUtil.drawString(mCanvas, sb.toString(), paint,
+                halfCanvasW, alertY + 110);
+
+        // status_detail
+        drawBarGage(mCanvas, -1, Color.argb(255, 250, 90, 60),
+                "HP", enty.status.MAX_HP-enty.status.USE_HP,enty.status.MAX_HP,
+                halfCanvasW, alertY + 180, 200, 12);
+        drawBarGage(mCanvas, -1, Color.argb(255, 60, 90, 250),
+                "MP", enty.status.MAX_MP-enty.status.USE_MP,enty.status.MAX_MP,
+                halfCanvasW, alertY + 200, 200, 12);
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(25);
+        CanvasUtil.drawString(mCanvas, "STR : "+enty.status.STR, paint,
+                halfCanvasW, alertY + 230);
+        CanvasUtil.drawString(mCanvas, "DEX : "+enty.status.DEX, paint,
+                halfCanvasW+ 100, alertY + 230);
+        CanvasUtil.drawString(mCanvas, "INT : "+enty.status.INT, paint,
+                halfCanvasW, alertY + 255);
+        CanvasUtil.drawString(mCanvas, "VIT : "+enty.status.VIT, paint,
+                halfCanvasW+ 100, alertY + 255);
+
+        // profile text
+        sb = new StringBuilder();
+        int startNum = 0;
+        for (int i = 0; i < enty.profile.length(); i++) {
+            String tempStr = enty.profile.substring(startNum, i);
+            if (tempStr.length() > 20) {
+                sb.append(tempStr + "\n");
+                startNum = i;
+            }else if(i == tempStr.length()-1){
+                sb.append(tempStr);
+            }
+        }
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(25);
+        CanvasUtil.drawString(mCanvas, sb.toString(), paint,
+                halfCanvasW - 200, alertY + 300);
+
+    }
+
+    public void drawBarGage(Canvas mCanvas, int bgColor, int color, String title,
+                            int num, int maxNum, int x, int y, int w, int h){
+        int gageW = (int)(((float)num/(float)maxNum)*w);
+
+        if(bgColor > -1)
+            CanvasUtil.drawBox(mCanvas, bgColor, true, x, y, w, h);
+        CanvasUtil.drawBox(mCanvas, color, true, x, y, gageW, h);
+        String exp = title+" "+num+"/"+maxNum;
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setTextSize(15);
+        paint.setColor(Color.argb(255, 180, 190,210));
+        CanvasUtil.drawString(mCanvas, exp, paint, x+w/2, y-5);
     }
 
     /**
-     * memberID로 user 소속의 멤버 cursor를 찾음
-     * @param memberID - null이면 모든 멤버를 찾음
-     * @return cursor
+     * draw user status
      */
-    public static Cursor getUserMemberCursor(GameDbAdapter dbAdapter, String memberID) {
-        return dbAdapter.getCursor(GameDbAdapter.PLAYER_MEMBER_TABLE, GameDbAdapter.KEY_MEMBERID, memberID);
+    private void drawStatusTab(Canvas mCanvas) {
+        int canvasWidth = appClass.getGameCanvasWidth();
+        Paint paint = new Paint();
+        int drawY = mMenuTabBarY + statusBarH / 2 - 10;
+        int drawX = (canvasWidth - 120) / 5 + 60;
+        paint.setColor(Color.argb(255, 50, 50, 50));
+        paint.setTextSize(20);
+
+        // Name Lv
+        CanvasUtil.drawString(mCanvas, userEnty.Name + "(Lv " + userEnty.LEVEL + ")", paint, 10, drawY);
+
+        // AP
+        CanvasUtil.drawString(mCanvas, "AP " + userEnty.AP, paint, drawX, drawY);
+
+        // Gold
+        CanvasUtil.drawClip(img_mainBtn, mCanvas, goldIcon.clipX, goldIcon.clipY,
+                goldIcon.clipW, goldIcon.clipH, goldIcon.drawX, drawY);
+        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.GOLD), paint,
+                goldIcon.drawX + goldIcon.clipW + 5, drawY + 3);
+
+        // Member
+        CanvasUtil.drawClip(img_mainBtn, mCanvas, menIcon.clipX, menIcon.clipY,
+                menIcon.clipW, menIcon.clipH, menIcon.drawX, drawY);
+        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.MEMBERLIST.size()), paint,
+                menIcon.drawX + menIcon.clipW + 5, drawY + 3);
+
+//        CanvasUtil.drawClip(gameHome.img_mainBtn, mCanvas, partyIcon.clipX, partyIcon.clipY,
+//                partyIcon.clipW, partyIcon.clipH, partyIcon.drawX, partyIcon.drawY);
+//        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.PARTYLIST.size()), paint,
+//                partyIcon.drawX + partyIcon.clipW + 5, partyIcon.drawY + 3);
+
+        //Turn
+        CanvasUtil.drawString(mCanvas, "Turn " + userEnty.TURN, paint, canvasWidth - 180, drawY);
     }
 
-    /**
-     * questID user의 퀘스트 cursor를 찾음
-     * @param questID - null이면 모든 퀘스트를 찾음
-     * @return cursor
-     */
-    public static Cursor getUserQuestCursor(GameDbAdapter dbAdapter, String questID) {
-        return dbAdapter.getCursor(GameDbAdapter.PLAYER_QUEST_TABLE, GameDbAdapter.KEY_QUESTID, questID);
-    }
+    private void drawManager(Canvas mCanvas) {
+        int managerBottomY = mMenuTabBarY - 484;
+        CanvasUtil.drawClip(managerImg.bitmap, mCanvas, 490, 156,
+                228, 484, 50, managerBottomY);
 
-    /**
-     * DB에서 해당 turn의 이벤트 cursor를 찾음
-     * @return cursor
-     */
-    public static Cursor getEventCursorOfTurn(GameDbAdapter dbAdapter, String turn) {
-        return dbAdapter.getCursor(GameDbAdapter.EVENT_TABLE, GameDbAdapter.KEY_EVENTTURN, turn);
-    }
+        if (managerImg.animCnt < managerImg.animMaxFrame) {
+            managerImg.animCnt++;
+        } else {
+            managerImg.animCnt = 0;
+        }
 
-    /*public static Cursor getEventQuestCursor(GameDbAdapter dbAdapter, String turn) {
-        return dbAdapter.getCursor(GameDbAdapter.EVENT_TABLE, GameDbAdapter.KEY_EVENTTURN, turn);
-    }*/
-
-    /**
-     * questID로 DB에서 퀘스트 cursor를 찾음
-     * @param questID
-     * @return cursor
-     */
-    public static Cursor getDBQuestCursor(GameDbAdapter dbAdapter, String questID) {
-        return dbAdapter.getCursor(GameDbAdapter.QUEST_TABLE, GameDbAdapter.KEY_QUESTID, questID);
-    }
-
-    /**
-     * memberID로 DB에서 멤버 cursor를 찾음
-     * @param memberID
-     * @return cursor
-     */
-    public static Cursor getDBMemberCursor(GameDbAdapter dbAdapter, String memberID) {
-        return dbAdapter.getCursor(GameDbAdapter.DB_MEMBER_TABLE, GameDbAdapter.KEY_MEMBERID, memberID);
-    }
-
-    /**
-     * grade로 DB에서 멤버 cursor를 찾음
-     * @param grade
-     * @return cursor
-     */
-    public static Cursor getGradeDBMemberCursor(GameDbAdapter dbAdapter, String grade){
-        return dbAdapter.getCursor(GameDbAdapter.DB_MEMBER_TABLE, GameDbAdapter.KEY_MEMBERGRADE, grade);
-    }
-
-    /**
-     * DB에서 해당 직업의 cursor를 찾음
-     * @param className
-     * @return cursor
-     */
-    public static Cursor getClassCursor(GameDbAdapter dbAdapter, String className) {
-        return dbAdapter.getCursor(GameDbAdapter.CLASS_TABLE, GameDbAdapter.KEY_CLASSNAME, className);
-    }
-
-    /**
-     * DB에서 해당 종족의 cursor를 찾음
-     * @param raceName
-     * @return cursor
-     */
-    public static Cursor getRaceCursor(GameDbAdapter dbAdapter, String raceName) {
-        return dbAdapter.getCursor(GameDbAdapter.RACE_TABLE, GameDbAdapter.KEY_RACENAME, raceName);
-    }
-
-    /**
-     * 유저 길드의 전체 멤버 수를 반환
-     * @param userName
-     * @return count
-     */
-    public static int getUserMemberSize(GameDbAdapter dbAdapter, String userName) {
-        return dbAdapter.getRowCount(GameDbAdapter.PLAYER_MEMBER_TABLE, GameDbAdapter.KEY_USERNAME, userName);
-    }
-
-
-    /**
-     * 새로운 user data를 생성함.
-     * @param playerName
-     * @param flag
-     * @return userEnty
-     */
-    public static UserEnty createUserData(GameDbAdapter dbAdapter,
-                                          String playerName, int flag) {
-        UserEnty userEnty= new UserEnty();
-        switch(flag){
-            case Game_Title.STARTGAME_NEWPLAYER:
-                userEnty.Name = playerName;
-                userEnty.EXP = INN.USER_START_EXP;
-                userEnty.LEVEL = INN.USER_START_LV;
-                userEnty.AP = INN.USER_START_AP;
-                userEnty.GOLD = INN.USER_START_GOLD;
-                userEnty.TURN = INN.USER_START_TURN;
-                userEnty.GEM_RED = INN.USER_START_GEM;
-                userEnty.GEM_GREEN = INN.USER_START_GEM;
-                userEnty.GEM_BLUE = INN.USER_START_GEM;
-                insertUserInfo(dbAdapter, userEnty);
-
-                // 0turn에 해당하는 이벤트, 멤버, 퀘스트 가져옴
-                userEnty = setChangeEvent(dbAdapter, userEnty);
+        for (ClipImageEnty enty : managerImg.animClipList) {
+            if (enty.animStartFrame <= managerImg.animCnt && enty.animEndFrame >= managerImg.animCnt) {
+                CanvasUtil.drawClip(managerImg.bitmap, mCanvas, enty.animClipX, enty.animClipY,
+                        enty.animClipW, enty.animClipH, enty.animDrawX - 490 + 50, enty.animDrawY - 156 + managerBottomY);
                 break;
-            case Game_Title.STARTGAME_LOADPLAYER:
-                userEnty = getUserInfo(dbAdapter, playerName);
-                userEnty.MEMBERLIST = getUserMemberList(dbAdapter, playerName);
-                userEnty.QUESTLIST = getUserQuestList(dbAdapter, playerName);
-                break;
-        }
-
-        return userEnty;
-    }
-
-    /**
-     * UserDB에서 user 정보를 UserEnty로 불러옴
-     * @param userName
-     * @return userEnty
-     */
-    public static UserEnty getUserInfo(GameDbAdapter dbAdapter, String userName) {
-        UserEnty userEnty = new UserEnty();
-        Cursor cursor = getUserMainCursor(dbAdapter, userName);
-        userEnty.Name = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USERNAME));
-        userEnty.EXP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USEREXP)));
-        userEnty.LEVEL = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USERLEVEL)));
-        userEnty.AP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USERAP)));
-        userEnty.TURN = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USERTURN)));
-        userEnty.GOLD = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USERGOLD)));
-        userEnty.GEM_RED = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USERGEM_RED)));
-        userEnty.GEM_GREEN = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USERGEM_GREEN)));
-        userEnty.GEM_BLUE = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USERGEM_BLUE)));
-        cursor.close();
-
-        return userEnty;
-    }
-
-    /**
-     * userDB에서 member enty를 불러옴
-     * @param memberID
-     * @return enty
-     */
-    public static MemberEnty getUserMemberEnty(GameDbAdapter dbAdapter, String memberID) {
-        MemberEnty enty = new MemberEnty();
-        Cursor cursor = getUserMemberCursor(dbAdapter, memberID);
-        enty.status = new StatusEnty();
-        enty.equip = new EquipEnty();
-        enty.name = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERNAME));
-        enty.engname = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERENGNAME));
-        enty.sex = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERSEX));
-        enty.age = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERAGE));
-        enty.race = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERRACE));
-        enty.memberclass = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERCLASS));
-        enty.profile = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERPROFILE));
-        enty.dialog1 = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERDIALOG1));
-        enty.image = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERIMAGENAME));
-        enty.status.EXP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBEREXP)));
-        enty.status.LEVEL = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERLEVEL)));
-        enty.status.HP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERHP)));
-        enty.status.MP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERMP)));
-        enty.status.AP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERAP)));
-        enty.status.STR = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERSTR)));
-        enty.status.DEX = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERDEX)));
-        enty.status.INT = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERINT)));
-        enty.status.VIT = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERVIT)));
-        enty.status.RENOWN = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERRENOWN)));
-        enty.equip.food = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERFOOD)));
-        enty.equip.equipID_head = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERITEM1));
-        enty.equip.equipID_body = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERITEM2));
-        enty.equip.equipID_etc = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERITEM3));
-        enty.equip.equipID_main_arms = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERARM1));
-        enty.equip.equipID_sub_arms = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERARM2));
-        cursor.close();
-        return enty;
-    }
-
-    /**
-     * user 길드의 모든 멤버의 리스트를 불러옴
-     * @param username
-     * @return entyList
-     */
-    public static ArrayList<MemberEnty> getUserMemberList(GameDbAdapter dbAdapter, String username) {
-        ArrayList<MemberEnty> entyList = new ArrayList<>();
-//        int userMemberSize = DataManager.getGuildMemberSize(dbAdapter, username);
-        Cursor cursor = dbAdapter.getCursor(GameDbAdapter.PLAYER_MEMBER_TABLE, GameDbAdapter.KEY_USERNAME, username);
-        if(cursor!=null) {
-            cursor.moveToFirst();
-            do {
-                MemberEnty memEnty = getUserMemberEnty(dbAdapter, cursor.getString(
-                        cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERID)));
-                entyList.add(memEnty);
-            } while (cursor.moveToNext()) ;
-            cursor.close();
-        }
-        return entyList;
-    }
-
-    /**
-     * DB에서 Quest list를 가져옴
-     * @param username
-     * @return entyList
-     */
-    public static ArrayList<QuestEnty> getUserQuestList(GameDbAdapter dbAdapter, String username) {
-        ArrayList<QuestEnty> entyList = new ArrayList<>();
-        Cursor questCursor = dbAdapter.getCursor(GameDbAdapter.PLAYER_QUEST_TABLE, GameDbAdapter.KEY_USERNAME, username);
-        if(questCursor!=null) {
-            questCursor.moveToFirst();
-            do {
-                QuestEnty enty = new QuestEnty();
-                enty.id = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTID));
-                enty.title = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTTITLE));
-                enty.type = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTTYPE));
-                enty.difficult = questCursor.getInt(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTDIFFICULT));
-                enty.needMember = questCursor.getInt(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTNEEDMEMBER));
-                enty.image = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTIMAGENAME));
-                enty.text = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTTEXT));
-                enty.rewardGold = questCursor.getInt(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTREWARD_GOLD));
-                enty.rewardExp = questCursor.getInt(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTREWARD_EXP));
-                enty.monster1 = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTMONSTER1));
-                enty.monster2 = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTMONSTER2));
-                enty.monsterLV = questCursor.getInt(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTMONSTERLV));
-                entyList.add(enty);
-            } while (questCursor.moveToNext()) ;
-            questCursor.close();
-        }
-        return entyList;
-    }
-
-    /**
-     * db에서 turn에 해당하는 event를 불러옴
-     * @param turn
-     * @return eventEnty
-     */
-    public static EventEnty getEventData(GameDbAdapter dbAdapter, int turn) {
-        EventEnty eventEnty = new EventEnty();
-        Cursor eventCursor = getEventCursorOfTurn(dbAdapter, Integer.toString(turn));
-        eventEnty.MemberIDList = new ArrayList<>();
-        eventEnty.QuestIDList = new ArrayList<>();
-        String gold = "";
-        eventEnty.ItemList = new ArrayList<>();
-        eventEnty.ImageList = new ArrayList<>();
-        eventEnty.TextList = new ArrayList<>();
-
-        while (!eventCursor.isAfterLast()) {
-            String questId = eventCursor.getString(eventCursor.getColumnIndex(GameDbAdapter.KEY_EVENTQUEST));
-            if (questId.equals("") || questId == null) {
-            } else {
-                eventEnty.QuestIDList.add(questId);
             }
-            String memberId = eventCursor.getString(eventCursor.getColumnIndex(GameDbAdapter.KEY_EVENTMEMBER));
-            if (memberId.equals("") || memberId == null) {
-            } else {
-                eventEnty.MemberIDList.add(memberId);
-            }
-            gold = eventCursor.getString(eventCursor.getColumnIndex(GameDbAdapter.KEY_EVENTGOLD));
-            if (gold.equals("") || gold == null) {
-                gold = "0";
-            }
-            eventEnty.Gold += Integer.parseInt(gold);
-
-            String itemId = eventCursor.getString(eventCursor.getColumnIndex(GameDbAdapter.KEY_EVENTITEM));
-            if (itemId.equals("") || itemId == null) {
-            } else {
-                eventEnty.ItemList.add(itemId);
-            }
-            String ImageName = eventCursor.getString(eventCursor.getColumnIndex(GameDbAdapter.KEY_EVENTIMAGE));
-            if (ImageName.equals("") || ImageName == null) {
-            } else {
-                eventEnty.ImageList.add(ImageName);
-            }
-            String text = eventCursor.getString(eventCursor.getColumnIndex(GameDbAdapter.KEY_EVENTTEXT));
-            if (text.equals("") || text == null) {
-            } else {
-                eventEnty.TextList.add(text);
-            }
-            eventCursor.moveToNext();
         }
-        eventCursor.close();
-        return eventEnty;
+
     }
 
-    /**
-     * DB의 member table에서 멤버 정보를 불러옴
-     * @param memberID
-     * @return memberEnty
-     */
-    public static MemberEnty getMemberData(GameDbAdapter dbAdapter, String memberID){
-        String id = memberID.split("-")[0];
-        MemberEnty memEnty = new MemberEnty();
-        Cursor memberCursor = getDBMemberCursor(dbAdapter, id);
-        memEnty.db_memberID = id;
-        memEnty.memberId = id + "-" + System.currentTimeMillis();
-        memEnty.name = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERNAME));
-        memEnty.engname = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERENGNAME));
-        memEnty.sex = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERSEX));
-        memEnty.age = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERAGE));
-        memEnty.race = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERRACE));
-        memEnty.memberclass = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERCLASS));
-        memEnty.mercy = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERMERCY));
-        memEnty.image = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERIMAGENAME));
-        memEnty.iconid = memberCursor.getInt(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERICONID));
-        memEnty.profile = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERPROFILE));
-        memEnty.dialog1 = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERDIALOG1));
-        memEnty.questID = "";
-
-        memEnty.status = new StatusEnty();
-        Cursor classCursor = getClassCursor(dbAdapter, memEnty.memberclass);
-        memEnty.status.STR = classCursor.getInt(classCursor.getColumnIndex(GameDbAdapter.KEY_CLASSSTR));
-        memEnty.status.DEX = classCursor.getInt(classCursor.getColumnIndex(GameDbAdapter.KEY_CLASSDEX));
-        memEnty.status.INT = classCursor.getInt(classCursor.getColumnIndex(GameDbAdapter.KEY_CLASSINT));
-        memEnty.status.VIT = classCursor.getInt(classCursor.getColumnIndex(GameDbAdapter.KEY_CLASSVIT));
-
-        Cursor raceCursor = getRaceCursor(dbAdapter, memEnty.race);
-        memEnty.status.HP = raceCursor.getInt(raceCursor.getColumnIndex(GameDbAdapter.KEY_RACEHP));
-        memEnty.status.MP = raceCursor.getInt(raceCursor.getColumnIndex(GameDbAdapter.KEY_RACEMP));
-
-        memEnty.equip = new EquipEnty();
-        memEnty.equip.gold = 0;
-        memEnty.equip.food = 0;
-        memEnty.equip.equipID_head = "";
-        memEnty.equip.equipID_body = "";
-        memEnty.equip.equipID_etc = "";
-        memEnty.equip.equipID_main_arms = "";
-        memEnty.equip.equipID_sub_arms = "";
-
-        classCursor.close();
-        raceCursor.close();
-        memberCursor.close();
-        return memEnty;
+    public void setCardListFromSelectParty(int selectParty, int selectCardNum) {
+        this.selectCardNum = selectParty + "-" + selectCardNum;
     }
 
-    /**
-     * memberID List의 모든 멤버를 DB에서 찾아 MemberEnty List로 변환
-     * @param memberIdList
-     * @return entyList
-     */
-    public static ArrayList<MemberEnty> getMemberDataList(GameDbAdapter dbAdapter, ArrayList<String> memberIdList) {
-        ArrayList<MemberEnty> entyList = new ArrayList<>();
-        for (String memberID : memberIdList) {
-            entyList.add(getMemberData(dbAdapter, memberID));
-        }
-        return entyList;
+    public  void setSelectPartyNum(int selectPartyNum){
+        String str[] = this.selectCardNum.split("-");
+        this.selectCardNum = selectPartyNum+"-"+str[1];
     }
 
-    /**
-     * grade에 해당하는 모든 멤버를 DB에서 찾아 List로 변환
-     * @param grade
-     * @return entyList
-     */
-    public static ArrayList<MemberEnty> getGradeMemberDataList(GameDbAdapter dbAdapter, String grade){
-        ArrayList<MemberEnty> entyList = new ArrayList<>();
-        Cursor cursor = getGradeDBMemberCursor(dbAdapter, grade);
-        do {
-            MemberEnty memEnty = getMemberData(dbAdapter, cursor.getString(
-                    cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERID)));
-            entyList.add(memEnty);
-        } while (cursor.moveToNext()) ;
-        cursor.close();
-        return entyList;
+    public void setSelectCardNum(int selectCardNum){
+        String str[] = this.selectCardNum.split("-");
+        this.selectCardNum = str[0]+"-"+selectCardNum;
     }
 
-    /**
-     * db에서 quest data를 불러옴
-     * @param questID
-     * @return enty
-     */
-    public static QuestEnty getQuestData(GameDbAdapter dbAdapter, String questID) {
-        Cursor questCursor = getDBQuestCursor(dbAdapter, questID);
-        QuestEnty enty = new QuestEnty();
-        enty.id = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTID));
-        enty.title = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTTITLE));
-        enty.type = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTTYPE));
-        enty.difficult = questCursor.getInt(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTDIFFICULT));
-        enty.needMember = questCursor.getInt(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTNEEDMEMBER));
-        enty.image = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTIMAGENAME));
-        enty.text = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTTEXT));
-        enty.rewardGold = questCursor.getInt(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTREWARD_GOLD));
-        enty.rewardExp = questCursor.getInt(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTREWARD_EXP));
-        enty.monster1 = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTMONSTER1));
-        enty.monster2 = questCursor.getString(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTMONSTER2));
-        enty.monsterLV = questCursor.getInt(questCursor.getColumnIndex(GameDbAdapter.KEY_QUESTMONSTERLV));
-        questCursor.close();
-        return enty;
+    public Integer getSelectPartyNum(){
+        String str[] = selectCardNum.split("-");
+        return Integer.parseInt(str[0]);
     }
 
-    /**
-     * quest table에서 quest 리스트를 불러옴
-     * @param eventQuest
-     * @return entyList
-     */
-    public static ArrayList<QuestEnty> getQuestDataList(GameDbAdapter dbAdapter, ArrayList<String> eventQuest) {
-        ArrayList<QuestEnty> entyList = new ArrayList<>();
-        for (String questId : eventQuest) {
-            entyList.add(getQuestData(dbAdapter, questId));
-        }
-        return entyList;
+    public Integer getSelectCardNum(){
+        String str[] = selectCardNum.split("-");
+        return Integer.parseInt(str[1]);
     }
-
-    /**
-     * 현재 턴의 Event의 member와 quest List를 불러옴
-     * @param userEnty
-     * @return userEnty
-     */
-    public static UserEnty setChangeEvent(GameDbAdapter dbAdapter, UserEnty userEnty) {
-        userEnty.eventEnty = getEventData(dbAdapter, userEnty.TURN);
-
-        userEnty.MEMBERLIST = getMemberDataList(dbAdapter, userEnty.eventEnty.MemberIDList);
-        for(MemberEnty enty : userEnty.MEMBERLIST) {
-            insertUserMember(dbAdapter, enty, userEnty.Name);
-        }
-        userEnty.QUESTLIST = getQuestDataList(dbAdapter, userEnty.eventEnty.QuestIDList);
-        for(QuestEnty enty : userEnty.QUESTLIST){
-            insertUserQuest(dbAdapter, enty, userEnty.Name);
-        }
-        return userEnty;
-    }
-
-    /**
-     * user table에 user 정보를 삽입함
-     * @param userEnty
-     */
-    public static void insertUserInfo(GameDbAdapter dbAdapter, UserEnty userEnty) {
-        String TableName = GameDbAdapter.PLAYER_MAIN_TABLE;
-        String UserID = "0"; //추후 google, facebook과 연동 가능
-        String[] columns = {UserID, userEnty.Name, Integer.toString(userEnty.EXP),
-                Integer.toString(userEnty.LEVEL), Integer.toString(userEnty.AP),
-                Integer.toString(userEnty.TURN), Integer.toString(userEnty.GOLD),
-                Integer.toString(userEnty.GEM_RED), Integer.toString(userEnty.GEM_GREEN),
-                Integer.toString(userEnty.GEM_BLUE)};
-        dbAdapter.insertDATA(TableName, columns);
-    }
-
-    /**
-     * userDB에에 member를 삽입
-     * @param userName
-     * @param memEnty
-     * @return row_id
-     */
-    public static long insertUserMember(GameDbAdapter dbAdapter, MemberEnty memEnty, String userName){
-        String TableName = GameDbAdapter.PLAYER_MEMBER_TABLE;
-        String[] columns = {memEnty.memberId, userName, memEnty.name, memEnty.engname, memEnty.sex,
-                memEnty.age, memEnty.race, memEnty.memberclass, memEnty.mercy, memEnty.image,
-                Integer.toString(memEnty.iconid), memEnty.profile, memEnty.dialog1,
-                Integer.toString(memEnty.status.LEVEL), Integer.toString(memEnty.status.EXP),
-                Integer.toString(memEnty.status.HP), Integer.toString(memEnty.status.MP),
-                Integer.toString(memEnty.status.AP), Integer.toString(memEnty.status.STR),
-                Integer.toString(memEnty.status.DEX), Integer.toString(memEnty.status.INT),
-                Integer.toString(memEnty.status.VIT), Integer.toString(memEnty.status.RENOWN),
-                Integer.toString(memEnty.equip.food), memEnty.equip.equipID_head, memEnty.equip.equipID_body,
-                memEnty.equip.equipID_etc, memEnty.equip.equipID_main_arms, memEnty.equip.equipID_sub_arms,
-                memEnty.questID};
-        long row_id = dbAdapter.insertDATA(TableName, columns);
-        return row_id;
-    }
-
-    /**
-     * userDB에 quest를 삽입
-     * @param userName
-     * @param questEnty
-     * @return
-     */
-    public static long insertUserQuest(GameDbAdapter dbAdapter, QuestEnty questEnty, String userName){
-        String TableName = GameDbAdapter.PLAYER_QUEST_TABLE;
-        String[] columns = {questEnty.id, userName, questEnty.title, questEnty.type, questEnty.map,
-                questEnty.monster1, questEnty.monster2, Integer.toString(questEnty.difficult),
-                Integer.toString(questEnty.monsterLV), Integer.toString(questEnty.needMember),
-                Integer.toString(questEnty.rewardGold), Integer.toString(questEnty.rewardExp),
-                questEnty.image, questEnty.text};
-
-        long row_id = dbAdapter.insertDATA(TableName, columns);
-        return row_id;
-    }
-
-    /**
-     * UserDB의 user정보를 갱신
-     * @param userEnty
-     */
-    public static void updateUserInfo(GameDbAdapter dbAdapter, UserEnty userEnty){
-        String TableName = GameDbAdapter.PLAYER_MAIN_TABLE;
-        ContentValues values = new ContentValues();
-        values.put(GameDbAdapter.KEY_USERTURN, userEnty.TURN);
-        values.put(GameDbAdapter.KEY_USEREXP, userEnty.EXP);
-        values.put(GameDbAdapter.KEY_USERLEVEL, userEnty.LEVEL);
-        values.put(GameDbAdapter.KEY_USERAP, userEnty.AP);
-        values.put(GameDbAdapter.KEY_USERGOLD, userEnty.GOLD);
-        values.put(GameDbAdapter.KEY_USERGEM_RED, userEnty.GEM_RED);
-        values.put(GameDbAdapter.KEY_USERGEM_GREEN, userEnty.GEM_GREEN);
-        values.put(GameDbAdapter.KEY_USERGEM_BLUE, userEnty.GEM_BLUE);
-        dbAdapter.updateData(TableName, values, GameDbAdapter.KEY_USERNAME, userEnty.Name);
-    }
-
-    /**
-     * user 길드의 member정보 갱신
-     * @param memEnty
-     */
-    public static void updateUserMember(GameDbAdapter dbAdapter, String userName, MemberEnty memEnty){
-        String TableName = GameDbAdapter.PLAYER_MEMBER_TABLE;
-        ContentValues values = new ContentValues();
-        values.put(GameDbAdapter.KEY_MEMBEREXP, memEnty.status.EXP);
-        values.put(GameDbAdapter.KEY_MEMBERHP, memEnty.status.HP);
-        values.put(GameDbAdapter.KEY_MEMBERMP, memEnty.status.MP);
-        values.put(GameDbAdapter.KEY_MEMBERAP, memEnty.status.AP);
-        values.put(GameDbAdapter.KEY_MEMBERSTR, memEnty.status.STR);
-        values.put(GameDbAdapter.KEY_MEMBERDEX, memEnty.status.DEX);
-        values.put(GameDbAdapter.KEY_MEMBERINT, memEnty.status.INT);
-        values.put(GameDbAdapter.KEY_MEMBERVIT, memEnty.status.VIT);
-        values.put(GameDbAdapter.KEY_MEMBERRENOWN, memEnty.status.RENOWN);
-        values.put(GameDbAdapter.KEY_MEMBERFOOD, memEnty.equip.food);
-        values.put(GameDbAdapter.KEY_MEMBERITEM1, memEnty.equip.equipID_head);
-        values.put(GameDbAdapter.KEY_MEMBERITEM2, memEnty.equip.equipID_body);
-        values.put(GameDbAdapter.KEY_MEMBERITEM3, memEnty.equip.equipID_etc);
-        values.put(GameDbAdapter.KEY_MEMBERARM1, memEnty.equip.equipID_main_arms);
-        values.put(GameDbAdapter.KEY_MEMBERARM2, memEnty.equip.equipID_sub_arms);
-        dbAdapter.updateData(TableName, values, GameDbAdapter.KEY_USERNAME, userName);
-    }
-
-    /**
-     * 지정된 user data를 모두 삭제함
-     * @param playerName
-     * @return true
-     */
-    public static boolean deleteUserData(GameDbAdapter dbAdapter, String playerName) {
-        boolean delUser = dbAdapter.deleteROW(GameDbAdapter.PLAYER_MAIN_TABLE, -1, playerName, null);
-        boolean delMember = dbAdapter.deleteROW(GameDbAdapter.PLAYER_MEMBER_TABLE, -1, playerName, null);
-        boolean delQuest = dbAdapter.deleteROW(GameDbAdapter.PLAYER_QUEST_TABLE, -1, playerName, null);
-        if(!delUser || !delMember || !delQuest)
-            return false;
-        else
-            return true;
-    }
-
-    /**
-     * 해당테이블의 user의 컬럼을 모두 삭제한다.
-     * @param playerName
-     * @return true;
-     */
-    public static boolean deleteUserColumn(GameDbAdapter dbAdapter, String table, String playerName){
-        return dbAdapter.deleteROW(table, -1, playerName, null);
-    }
-
-    /**
-     * memberID의 멤버를 삭제한다
-     * @param memberId
-     * @return true
-     */
-    public static boolean deleteUserMemberData(GameDbAdapter dbAdapter, String memberId){
-        return dbAdapter.deleteROW(GameDbAdapter.PLAYER_MEMBER_TABLE, -1, null, memberId);
-    }
-
-    /**
-     * questID의 quest를 삭제한다
-     * @param questId
-     * @return true
-     */
-    public static boolean deleteUserQuest(GameDbAdapter dbAdapter, String questId){
-        return dbAdapter.deleteROW(GameDbAdapter.PLAYER_QUEST_TABLE, -1, null, questId);
-    }
-
-
 }

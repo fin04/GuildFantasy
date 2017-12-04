@@ -138,7 +138,7 @@ public class Game_Title extends Game {
 //            startProlog1();
             gameMain.userEnty = DataManager.createUserData(gameMain.dbAdapter, name, flag);
         }
-        gameMain.mainButtonAct(INN.GAME_HOME, 0, -1);
+        gameMain.mainButtonAct(INN.GAME_HOME, 0);
     }
 
     @Override

@@ -1,107 +1,174 @@
-package com.epriest.game.guildfantasy.main.play;
+package com.epriest.game.guildfantasy.main;
 
-import com.epriest.game.guildfantasy.main.Game_Main;
+import android.graphics.Bitmap;
+import android.view.MotionEvent;
+
+import com.epriest.game.CanvasGL.graphics.GLUtil;
+import com.epriest.game.CanvasGL.util.Game;
+import com.epriest.game.CanvasGL.util.GameUtil;
+import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
-import com.epriest.game.guildfantasy.main.enty.QuestEnty;
 import com.epriest.game.guildfantasy.util.INN;
 
 import java.util.ArrayList;
 
 /**
- * Created by darka on 2017-04-23.
+ * Created by darka on 2017-04-07.
  */
 
-public class TurnManager {
+public class Game_Party extends Game {
 
-    public class TurnEnty{
-        public int AP;
-        public int GOLD;
-        public ArrayList<QuestEnty> questEnty = new ArrayList<>();
+    //    public int partyState;
+    public Game_Main gameMain;
+//    public View_Member viewMember;
+
+    public ArrayList<ButtonEnty> PartyNumButtonList = new ArrayList<>();
+    public ArrayList<ButtonEnty> PartyCardList = new ArrayList<>();
+    public ArrayList<MemberEnty> PartyMemberList = new ArrayList<>();
+    public ArrayList<Bitmap> CardImgList = new ArrayList<>();
+    //    public PartyEnty currentParty = new PartyEnty();
+    public ButtonEnty backBtn;
+//    public ButtonEnty startBtn;
+//    public ButtonEnty supplyBtn;
+
+    /**
+     * partyNumber.cardNumber
+     */
+//    public String selectCardNum;
+
+    //    public Bitmap img_mainBtn;
+//    public Bitmap img_menuBar;
+    public Bitmap img_membercard;
+    public Bitmap img_memberFrame;
+    public Bitmap img_title_bg;
+//    public Bitmap img_questPaper;
+
+    public int mMenuTabBarY;
+
+    public Game_Party(Game_Main gameMain) {
+        this.gameMain = gameMain;
+//        this.partyState = partyState;
+//        viewMember = new View_Member(gameMain);
     }
 
-    private Game_Main game_main;
+    @Override
+    public void gStart() {
+//        if(partyState == INN.MODE_PARTY_INFO){
+//            tempParty = gameMain.userEnty.PARTYLIST.get(gameMain.selectQuestEnty.actPartyNum-1);
+//        }
+//        gameMain.selectQuestEnty.textArr = TextUtil.setMultiLineText(gameMain.selectQuestEnty.text, 24, 300);
+//        if (gameMain.userEnty.PARTYLIST.size() == 0)
+//            gameMain.userEnty.PARTYLIST.add(currentParty);
+//        else
+//            currentParty = gameMain.userEnty.PARTYLIST.get(selectPartyNum);
 
-    private int guildTax = 5;
+//        img_menuBar = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/statusbar.png", null);
+//        img_mainBtn = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/main_btn.png", null);
+        img_membercard = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/membercard.png", null);
+        img_title_bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/party_cr.jpg", null);
+//        img_memberFrame = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member_frame.png", null);
+//        img_questPaper = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/guildpaper.png", null);
 
-//    public TurnEnty turnEnty;
 
-    public TurnManager(Game_Main game_main) {
-        this.game_main = game_main;
-    }
+        gameMain.setCardListFromSelectParty(0,0);
 
-    public void turnCycle(int turn) {
-//        turnEnty = new TurnEnty();
+        mMenuTabBarY = gameMain.canvasH - gameMain.statusBarH;
 
-        // 완료된 퀘스트는 보상처리, 미완료된 퀘스트는 실패 알림을 띄운다.
-        // 모든 퀘스트를 제거한다.
-        if (game_main.userEnty.QUESTLIST.size() > 0) {
-            QuestLife();
-            for(QuestEnty enty : game_main.userEnty.QUESTLIST){
-                DataManager.deleteUserQuest(game_main.dbAdapter, enty.id);
-            }
-
+        // party card 위치
+        int cardY = 150;
+        for (int i = 0; i < 9; i++) {
+            ButtonEnty mBtn = new ButtonEnty();
+            mBtn.num = i;
+            mBtn.name = "card" + (i + 1);
+            mBtn.clipW = 212;
+            mBtn.clipH = 280;
+            mBtn.clipX = 0;
+            mBtn.clipY = 0;
+            mBtn.drawX = 34 + (i % 3) * (mBtn.clipW + 8);
+            mBtn.drawY = cardY + (i / 3) * (mBtn.clipH + 10);
+            PartyCardList.add(mBtn);
         }
 
-        // 사용중인 멤버의 진행
-        if (game_main.userEnty.MEMBERLIST.size() > 0)
-            MemberLife();
+        // party button 위치
+        for (int i = 0; i < 5; i++) {
+            ButtonEnty mBtn = new ButtonEnty();
+            mBtn.num = i;
+            mBtn.name = "party" + (i + 1);
+            mBtn.clipW = 103;
+            mBtn.clipH = 52;
+            mBtn.clipX = 121;
+            mBtn.clipY = 0;
+            mBtn.drawX = 30 + (mBtn.clipW + 10) * i;
+            mBtn.drawY = mMenuTabBarY + 1;
+            PartyNumButtonList.add(mBtn);
+        }
 
-        //db에서 turn에 해당되는 이벤트와 멤버, 퀘스트를 가져온다
-        game_main.userEnty = DataManager.setChangeEvent(game_main.dbAdapter, game_main.userEnty);
-
-        DataManager.updateUserInfo(game_main.dbAdapter, game_main.userEnty);
-
-//        PlayEvent(game_main.userEnty.TURN);
-//        turnEnty.AP = getAP(game_main.userEnty.LEVEL, game_main.userEnty.TURN);
-//        turnEnty.GOLD = getGold(game_main.userEnty.MEMBERLIST.size(), game_main.userEnty.TURN);
-
-        AddQuest();
-        game_main.showAlertType = INN.ALERT_TYPE_TURNSTART;
-//        game_main.userEnty.isStartTurnAlert = true;
-        game_main.userEnty.eventEnty.changeView = true;
-        if(game_main.userEnty.eventEnty.ImageList.size() > 0)
-            game_main.mainButtonAct(INN.GAME_EVENT, 0);
+        // back button 위치
+        backBtn = new ButtonEnty();
+        backBtn.clipW = 103;
+        backBtn.clipH = 52;
+        backBtn.clipX = 121;
+        backBtn.clipY = 0;
+        backBtn.name = "Back";
+        backBtn.drawX = gameMain.canvasW - backBtn.clipW - 15;
+        backBtn.drawY = mMenuTabBarY + (gameMain.statusBarH - backBtn.clipH) / 2;
     }
 
-    private void QuestLife(){
+    @Override
+    public void gStop() {
+    }
+
+    @Override
+    public void gUpdate() {
 
     }
 
-    private void MemberLife(){
-        for(MemberEnty enty : game_main.userEnty.MEMBERLIST) {
-            //exp가 full이면 level up, max_exp를 갱신.
-            if(enty.status.EXP >= enty.status.MAX_EXP){
-                enty.status.LEVEL++;
-                enty.status.EXP = enty.status.MAX_EXP - enty.status.EXP;
-                enty.status.MAX_EXP = mathMaxExp(enty.status.LEVEL);
-                DataManager.updateUserMember(game_main.dbAdapter, game_main.userEnty.Name, enty);
+    @Override
+    public void gOnTouchEvent(MotionEvent event) {
+        if (gameMain.onTouchEvent(event))
+            return;
+
+        if (GameUtil.equalsTouch(gameMain.appClass.touch, backBtn.drawX, backBtn.drawY,
+                backBtn.clipW, backBtn.clipH)) {
+            backBtn.clickState = ButtonEnty.ButtonClickOn;
+            if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
+                backBtn.clickState = ButtonEnty.ButtonClickOff;
+                gameMain.mainButtonAct(INN.GAME_HOME, 0);
+            }
+            return;
+        }
+
+        for (int i = 0; i < PartyNumButtonList.size(); i++) {
+            ButtonEnty btn = PartyNumButtonList.get(i);
+            if (GameUtil.equalsTouch(gameMain.appClass.touch, btn.drawX, btn.drawY, btn.clipW, btn.clipH)) {
+                btn.clickState = ButtonEnty.ButtonClickOn;
+                if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
+                    btn.clickState = ButtonEnty.ButtonClickOff;
+                    gameMain.setSelectPartyNum(i);
+//                    currentParty = gameMain.userEnty.PARTYLIST.get(selectPartyNum);
+                }
+                return;
+            } else {
+                if (btn.clickState == ButtonEnty.ButtonClickOn)
+                    btn.clickState = ButtonEnty.ButtonClickOff;
             }
         }
-    }
 
-    private int mathMaxExp(int level){
-        return (int)(Math.pow((double)level, 2));
-    }
-
-    private void PlayEvent(int turn){
-
-    }
-
-    private int getAP(int level, int turn){
-        if(turn == 1)
-            return 30;
-        int ap = (int) ((level/5) * 1.5f + 10);
-        return ap;
-    }
-
-    private int getGold(int member, int turn){
-        if(turn == 1)
-            return 300;
-        int gold = member * guildTax;
-        return gold;
-    }
-
-    private void AddQuest(){
+        for (int i = 0; i < PartyCardList.size(); i++) {
+            ButtonEnty btn = PartyCardList.get(i);
+            if (GameUtil.equalsTouch(gameMain.appClass.touch, btn.drawX, btn.drawY, btn.clipW, btn.clipH)) {
+                btn.clickState = ButtonEnty.ButtonClickOn;
+                if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
+                    btn.clickState = ButtonEnty.ButtonClickOff;
+                    gameMain.setSelectCardNum(i);
+                    gameMain.mainButtonAct(INN.GAME_MEMBER, INN.MODE_MEMBER_SELECT, gameMain.selectCardNum);
+                }
+                return;
+            } else {
+                if (btn.clickState == ButtonEnty.ButtonClickOn)
+                    btn.clickState = ButtonEnty.ButtonClickOff;
+            }
+        }
 
     }
 }
