@@ -54,7 +54,7 @@ public class Game_Quest extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-        if (gameMain.onTouchEvent(event))
+        if (gameMain.onTouchEvent())
             return;
 
         for (QuestEnty enty : gameMain.userEnty.QUESTLIST) {

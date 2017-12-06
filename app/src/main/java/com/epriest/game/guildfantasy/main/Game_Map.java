@@ -118,7 +118,7 @@ public class Game_Map extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-        if (gameMain.onTouchEvent(event))
+        if (gameMain.onTouchEvent())
             return;
         boolean hasTouchMap = false;
         if (GameUtil.equalsTouch(gameMain.appClass.touch, 0, mMapScreenTop, mapDrawW, mapDrawH)) {

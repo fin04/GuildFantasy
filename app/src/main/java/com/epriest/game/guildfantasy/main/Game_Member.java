@@ -6,8 +6,10 @@ import android.view.MotionEvent;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
+import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 import com.epriest.game.guildfantasy.main.play.DataManager;
+import com.epriest.game.guildfantasy.util.INN;
 
 import java.util.ArrayList;
 
@@ -25,6 +27,7 @@ public class Game_Member extends Game {
     public Bitmap img_membercard;
     public Bitmap bg;
 
+    public ArrayList<ButtonEnty> MemberButtonList = new ArrayList<>();
     public ArrayList<MemberEnty> memberList;
     public ArrayList<Bitmap> img_member;
 
@@ -32,6 +35,10 @@ public class Game_Member extends Game {
     public int cardRowNum;
     public int cardTextBoxW, cardTextBoxH;
     public int scrollY, prevScrollY;
+
+    public int selectMember = -1;
+
+    public int cardX, cardY;
 
     public Game_Member(Game_Main gameMain) {
         this.gameMain = gameMain;
@@ -54,8 +61,27 @@ public class Game_Member extends Game {
         cardH = 280;
         cardRowNum = gameMain.canvasW / cardW;
 
+        cardX = (gameMain.canvasW-(cardW+10)*cardRowNum+10)/2;
+        cardY = gameMain.statusBarH+200;
+
         cardTextBoxW = 140;
         cardTextBoxH = 90;
+
+        int memberBtnH = 84;
+        int bottomMenuY = gameMain.canvasH-memberBtnH;
+        // party button 위치
+        for (int i = 0; i < 5; i++) {
+            ButtonEnty mBtn = new ButtonEnty();
+            mBtn.num = i;
+            mBtn.name = "party" + (i + 1);
+            mBtn.clipW = 95;
+            mBtn.clipH = memberBtnH;
+            mBtn.clipX = 0;
+            mBtn.clipY = 0;
+            mBtn.drawX = 30 + (mBtn.clipW + 10) * i;
+            mBtn.drawY = bottomMenuY + 1;
+            MemberButtonList.add(mBtn);
+        }
     }
 
 
@@ -71,13 +97,51 @@ public class Game_Member extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-        if (gameMain.onTouchEvent(event))
+        if (gameMain.onTouchEvent())
             return;
+
+        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+            prevScrollY = scrollY;
+        }else if(event.getAction() == MotionEvent.ACTION_UP) {
+            if (prevScrollY == scrollY) {
+                selectMember = (((int)gameMain.appClass.touch.mLastTouchX-cardX) / cardW)
+                        + (((int)gameMain.appClass.touch.mLastTouchY+scrollY-cardY)/cardH)*cardRowNum + 1;
+//                gameMain.userEnty.MEMBERLIST.get(selectMember).party_number = gameMain.selectCardNum;
+                gameMain.mainButtonAct(INN.GAME_PARTY, 0);
+                return;
+            }else{
+            }
+        }
+        scrollY = prevScrollY - (int)(gameMain.appClass.touch.mLastTouchY - gameMain.appClass.touch.mDownY);
+        int maxScrollY = (gameMain.userEnty.MEMBERLIST.size()/cardRowNum) * (cardH+30) - (gameMain.canvasH-cardY);
+        if(maxScrollY < 0 )
+            maxScrollY = 0;
+        if(scrollY < 0)
+            scrollY = 0;
+        else if(scrollY > maxScrollY)
+            scrollY = maxScrollY;
+
+//        if(event.getAction() == MotionEvent.ACTION_UP) {
+//            if(prevScrollY == scrollY){
+//                selectMember = (((int)gameMain.appClass.touch.mLastTouchX-cardX) / cardW)
+//                        + (((int)gameMain.appClass.touch.mLastTouchY+scrollY-cardY)/cardH)*cardRowNum + 1;
+//                gameMain.userEnty.MEMBERLIST.get(selectMember).party_number = gameMain.selectCardNum;
+//                gameMain.mainButtonAct(INN.GAME_PARTY, 0);
+//                return;
+//            }else
+//                prevScrollY = scrollY;
+//        }
+//        scrollY = prevScrollY + (int)(gameMain.appClass.touch.mLastTouchY - gameMain.appClass.touch.mDownY);
+//        int maxScrollY = (gameMain.userEnty.MEMBERLIST.size()/4+1) * 200 - gameMain.appClass.getGameCanvasHeight() + 100;
+//        if(scrollY < 0)
+//            scrollY = 0;
+//        else if(scrollY > maxScrollY)
+//            scrollY = maxScrollY;
 
         if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
             for (int i = 0; i < memberList.size(); i++) {
-                int cx = 20 + i % cardRowNum * (cardW + 10);
-                int cy = 300 + i / cardRowNum * (cardH + 30);
+                int cx = cardX + i % cardRowNum * (cardW + 10);
+                int cy = cardY + i / cardRowNum * (cardH + 30);
                 if (GameUtil.equalsTouch(gameMain.appClass.touch, cx, cy, cardW, cardH)) {
 //                    gameMain.userEnty.PARTY_MEMBERID_LIST.set(gameMain.selectCardNum, memberList.get(i).memberId);
 //                    gameMain.mainButtonAct(INN.GAME_MEMBER, 0);

@@ -160,7 +160,8 @@ public class Game_Home extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-        gameMain.onTouchMenuIcon();
+        if (gameMain.onTouchMenu())
+            return;
     }
 }
 

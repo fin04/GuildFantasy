@@ -2,22 +2,11 @@ package com.epriest.game.guildfantasy.main;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 
 import com.epriest.game.CanvasGL.graphics.CanvasUtil;
-import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
-import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
-import com.epriest.game.guildfantasy.main.enty.ClipImageEnty;
-import com.epriest.game.guildfantasy.main.enty.ImageEnty;
-import com.epriest.game.guildfantasy.main.enty.UserEnty;
 import com.epriest.game.guildfantasy.util.INN;
-
-import java.util.ArrayList;
-
-import static com.epriest.game.CanvasGL.graphics.CanvasUtil.drawClip;
 
 /**
  * Created by darka on 2016-10-31.
@@ -68,12 +57,12 @@ public class Scene_Home extends Scene {
 //                0, 0,
 //                gameHome.gameMain.appClass.getGameCanvasWidth(), gameHome.mMainScreenY);
 
-        int barNum = gameHome.gameMain.appClass.getGameCanvasWidth() / gameHome.gameMain.statusBarW;
-        for (int i = 0; i <= barNum; i++) {
-            CanvasUtil.drawClip(gameHome.gameMain.img_menuBar, mCanvas, 0, 0,
-                    gameHome.gameMain.statusBarW, gameHome.gameMain.statusBarH,
-                    gameHome.gameMain.statusBarW * i, gameHome.gameMain.mMenuTabBarY);
-        }
+//        int barNum = gameHome.gameMain.appClass.getGameCanvasWidth() / gameHome.gameMain.statusBarW;
+//        for (int i = 0; i <= barNum; i++) {
+//            CanvasUtil.drawClip(gameHome.gameMain.img_statusBar, mCanvas, 0, 0,
+//                    gameHome.gameMain.statusBarW, gameHome.gameMain.statusBarH,
+//                    gameHome.gameMain.statusBarW * i, gameHome.gameMain.mMenuTabBarY);
+//        }
     }
 
 }

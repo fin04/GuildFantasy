@@ -51,7 +51,8 @@ public class Scene_Recruit extends Scene {
     public void draw(Canvas mCanvas) {
         drawBG(mCanvas);
 
-        gameRecruit.gameMain.drawMenu(mCanvas);
+        gameRecruit.gameMain.drawStatusTab(mCanvas);
+//        gameRecruit.gameMain.drawMenu(mCanvas);
 
         drawBtn(mCanvas);
 
@@ -71,12 +72,12 @@ public class Scene_Recruit extends Scene {
 //                0, 0,
 //                gameHome.gameMain.appClass.getGameCanvasWidth(), gameHome.mMainScreenY);
 
-        int barNum = gameRecruit.gameMain.appClass.getGameCanvasWidth() / gameRecruit.gameMain.statusBarW;
-        for (int i = 0; i <= barNum; i++) {
-            CanvasUtil.drawClip(gameRecruit.gameMain.img_menuBar, mCanvas, 0, 0,
-                    gameRecruit.gameMain.statusBarW, gameRecruit.gameMain.statusBarH,
-                    gameRecruit.gameMain.statusBarW * i, gameRecruit.gameMain.mMenuTabBarY);
-        }
+//        int barNum = gameRecruit.gameMain.appClass.getGameCanvasWidth() / gameRecruit.gameMain.statusBarW;
+//        for (int i = 0; i <= barNum; i++) {
+//            CanvasUtil.drawClip(gameRecruit.gameMain.img_statusBar, mCanvas, 0, 0,
+//                    gameRecruit.gameMain.statusBarW, gameRecruit.gameMain.statusBarH,
+//                    gameRecruit.gameMain.statusBarW * i, gameRecruit.gameMain.mMenuTabBarY);
+//        }
     }
 
     private void drawBtn(Canvas mCanvas) {

@@ -9,6 +9,7 @@ import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
+import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.ImageEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 
@@ -57,18 +58,25 @@ public class Scene_Member extends Scene {
 
         int partyNum = gameMember.gameMain.getSelectPartyNum();
         CanvasUtil.drawString(mCanvas, Integer.toString(partyNum), 20,
-                Color.argb(255,255,255,255), Paint.Align.LEFT, 200, 50);
+                Color.argb(255, 255, 255, 255), Paint.Align.LEFT, 200, 50);
 
         int chrImgX = (200 - gameMember.img_member.get(0).getWidth()) / 2;
         int chrImgY = 30;// + (180 - gameMember.img_member.get(0).getHeight()) / 2;
         int cardTextBoxY = gameMember.cardH - gameMember.cardTextBoxH - 15;
 
         for (int i = 0; i < gameMember.memberList.size(); i++) {
-            int cx = 30 + i % gameMember.cardRowNum * (gameMember.cardW + 10);
-            int cy = 300 + i / gameMember.cardRowNum * (gameMember.cardH + 30);
+            int cx = gameMember.cardX + i % gameMember.cardRowNum * (gameMember.cardW + 10);
+            int cy = gameMember.cardY + i / gameMember.cardRowNum * (gameMember.cardH + 30) - gameMember.scrollY;
 
-            drawMemberCard(mCanvas, i, cx, cy, chrImgX, chrImgY, cardTextBoxY);
+            if (cy < gameMember.cardY - gameMember.cardH || cy > gameMember.gameMain.canvasH){}else {
+                drawMemberCard(mCanvas, i, cx, cy, chrImgX, chrImgY, cardTextBoxY);
+            }
         }
+//        CanvasUtil.drawString(mCanvas, "" + gameMember.scrollY, 30, Color.YELLOW, Paint.Align.LEFT, 300, 300);
+        CanvasUtil.drawString(mCanvas, "" + gameMember.gameMain.selectCardNum, 30, Color.YELLOW, Paint.Align.LEFT, 300, 300);
+
+        drawPartyButton(mCanvas);
+        gameMember.gameMain.drawStatusTab(mCanvas);
     }
 
     private void drawMemberCard(Canvas mCanvas, int i, int cx, int cy, int chrImgX, int chrImgY, int cardTextBoxY) {
@@ -78,17 +86,18 @@ public class Scene_Member extends Scene {
         CanvasUtil.drawClip(gameMember.img_membercard, mCanvas, 0, 0,
                 gameMember.cardW, gameMember.cardH, cx, cy);
         //draw Character
-        CanvasUtil.drawClip(gameMember.img_member.get(i), mCanvas, (gameMember.img_member.get(i).getWidth()-gameMember.cardW)/2, 80,
-                gameMember.cardW-10, gameMember.cardH-10,  cx+5, cy+5);
+        CanvasUtil.drawClip(gameMember.img_member.get(i), mCanvas, (gameMember.img_member.get(i).getWidth() - gameMember.cardW) / 2, 80,
+                gameMember.cardW - 10, gameMember.cardH - 10, cx + 5, cy + 5);
         //draw cardNameBG
         CanvasUtil.drawClip(gameMember.img_membercard, mCanvas, 176, 283,
-                127, 26, cx+(gameMember.cardW-127)/2, cy+10 );
+                127, 26, cx + (gameMember.cardW - 127) / 2, cy + 10);
         //draw cardTextBox
         CanvasUtil.drawClip(gameMember.img_membercard, mCanvas, 35, 283,
-                gameMember.cardTextBoxW, gameMember.cardTextBoxH, cx+35, cy+cardTextBoxY );
+                gameMember.cardTextBoxW, gameMember.cardTextBoxH, cx + 35, cy + cardTextBoxY);
 
         CanvasUtil.drawString(mCanvas, enty.name, 20, Color.WHITE, Paint.Align.CENTER, cx + gameMember.cardW / 2, cy + 7);
         CanvasUtil.drawString(mCanvas, "LV." + Integer.toString(enty.status.LEVEL), 20, Color.DKGRAY, Paint.Align.LEFT, cx + 15, cy + 3);
+
 
 //        int cardY = gameMember.img_title_bg.getHeight()+300+30;
 //        for (ButtonEnty mBtn : gameMember.CardButtonList) {
@@ -102,6 +111,20 @@ public class Scene_Member extends Scene {
 //            CanvasUtil.drawClip(gameMember.img_membercard, mCanvas, 163, clipY,
 //                    47, 47, mBtn.drawX+(163-47)/2,  cardY+(253-47-25)/2);
 //        }
+    }
+
+    private void drawPartyButton(Canvas mCanvas) {
+        for (ButtonEnty mBtn : gameMember.MemberButtonList) {
+            int clipY = mBtn.clipY;
+            if (mBtn.clickState == ButtonEnty.ButtonClickOn || gameMember.gameMain.getSelectPartyNum() == mBtn.num) {
+                clipY += 84;
+            }
+            CanvasUtil.drawClip(gameMember.gameMain.img_mainBtn, mCanvas, mBtn.clipX, clipY,
+                    mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
+//            CanvasUtil.drawClip(gameMember.gameMain.img_statusBar, mCanvas, (mBtn.num + 1) * 16,
+//                    98, 14, 24,
+//                    mBtn.drawX + (mBtn.clipW - 15) / 2, mBtn.drawY + (mBtn.clipH - 24) / 2);
+        }
     }
 
     private void drawMemberSheet(Canvas mCanvas) {

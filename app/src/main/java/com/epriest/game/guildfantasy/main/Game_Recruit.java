@@ -62,19 +62,19 @@ public class Game_Recruit extends Game {
         int btnX = canvasW / 2 - btnW / 2;
 
         summonBtn.drawX = btnX;
-        summonBtn.drawY = 100;
+        summonBtn.drawY = (canvasH-btnH*3)/2-40;
         summonBtn.clipW = btnW;
         summonBtn.clipH = btnH;
         summonBtn.name = "summon";
 
         bondageBtn.drawX = btnX;
-        bondageBtn.drawY = btnH+130;
+        bondageBtn.drawY = (canvasH-btnH*3)/2+btnH;
         bondageBtn.clipW = btnW;
         bondageBtn.clipH = btnH;
         bondageBtn.name = "bondage";
 
         covenantBtn.drawX = btnX;
-        covenantBtn.drawY = btnH*2+160;
+        covenantBtn.drawY = (canvasH-btnH*3)/2+btnH*2+40;
         covenantBtn.clipW = btnW;
         covenantBtn.clipH = btnH;
         covenantBtn.name = "covenant";
@@ -135,7 +135,9 @@ public class Game_Recruit extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-        gameMain.onTouchMenuIcon();
+        if (gameMain.onTouchEvent())
+            return;
+
         TouchData.Touch touch = gameMain.appClass.touch;
         if (GameUtil.equalsTouch(touch,
                 summonBtn.drawX, summonBtn.drawY, summonBtn.clipW, summonBtn.clipH)) {

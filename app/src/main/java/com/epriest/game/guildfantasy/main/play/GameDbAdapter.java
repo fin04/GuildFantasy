@@ -109,6 +109,17 @@ public class GameDbAdapter {
     public static final String KEY_MEMBERARM1 = "member_arm1";
     public static final String KEY_MEMBERARM2 = "member_arm2";
 
+    public static final String KEY_PARTYID = "party_id";
+    public static final String KEY_PARTYTITLE = "party_title";
+    public static final String KEY_PARTYBIRTH = "party_birth";
+    public static final String KEY_MEMBER1_ID = "party_member1";
+    public static final String KEY_MEMBER2_ID = "party_member2";
+    public static final String KEY_MEMBER3_ID = "party_member3";
+    public static final String KEY_MEMBER4_ID = "party_member4";
+    public static final String KEY_MEMBER5_ID = "party_member5";
+    public static final String KEY_PARTY_GOLD = "party_gold";
+    public static final String KEY_PARTY_EXP = "party_exp";
+
     private static String[] MemberColumns = new String[]{
             KEY_MEMBERID, KEY_MEMBERNAME, KEY_MEMBERENGNAME, KEY_MEMBERSEX,
             KEY_MEMBERAGE, KEY_MEMBERRACE, KEY_MEMBERCLASS, KEY_MEMBERMERCY, KEY_MEMBERIMAGENAME, KEY_MEMBERICONID,
@@ -157,6 +168,12 @@ public class GameDbAdapter {
             KEY_QUESTREWARD_GOLD, KEY_QUESTREWARD_EXP, KEY_QUESTIMAGENAME, KEY_QUESTTEXT
     };
 
+    private static String[] PlayerPartyColumns = new String[]{
+            KEY_PARTYID, KEY_USERNAME, KEY_PARTYTITLE, KEY_PARTYBIRTH, KEY_QUESTID,
+            KEY_MEMBER1_ID, KEY_MEMBER2_ID, KEY_MEMBER3_ID, KEY_MEMBER4_ID, KEY_MEMBER5_ID,
+            KEY_PARTY_GOLD, KEY_PARTY_EXP
+    };
+
     private static final String TAG = "GameDbAdapter";
 
     private DatabaseHelper mDbHelper;
@@ -174,6 +191,7 @@ public class GameDbAdapter {
     public static final String PLAYER_MAIN_TABLE = "player_main";
     public static final String PLAYER_MEMBER_TABLE = "player_member";
     public static final String PLAYER_QUEST_TABLE = "player_quest";
+    public static final String PLAYER_PARTY_TABLE = "player_party";
 
     private static final int DATABASE_VERSION = 1;
     private final Context mCtx;
@@ -197,6 +215,7 @@ public class GameDbAdapter {
             createPlayerTable(db, PLAYER_MAIN_TABLE, PlayerMainColumns);
             createPlayerTable(db, PLAYER_MEMBER_TABLE, PlayerMemberColumns);
             createPlayerTable(db, PLAYER_QUEST_TABLE, PlayerQuestColumns);
+            createPlayerTable(db, PLAYER_PARTY_TABLE, PlayerPartyColumns);
         }
 
         private String createTable(String tableName, String[] columns) {
@@ -347,6 +366,8 @@ public class GameDbAdapter {
             return PlayerMemberColumns;
         else if (TableName.equals(PLAYER_QUEST_TABLE))
             return PlayerQuestColumns;
+        else if (TableName.equals(PLAYER_PARTY_TABLE))
+            return PlayerPartyColumns;
         return null;
     }
 

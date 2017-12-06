@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.MotionEvent;
-import android.widget.Toast;
 
 import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
@@ -17,7 +16,6 @@ import com.epriest.game.guildfantasy.main.enty.ClipImageEnty;
 import com.epriest.game.guildfantasy.main.enty.ImageEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 import com.epriest.game.guildfantasy.main.enty.UserEnty;
-import com.epriest.game.guildfantasy.main.play.DataManager;
 import com.epriest.game.guildfantasy.main.play.GameDbAdapter;
 import com.epriest.game.guildfantasy.main.play.TurnManager;
 import com.epriest.game.guildfantasy.util.INN;
@@ -48,7 +46,7 @@ public class Game_Main {
 
     public Bitmap img_mainBtn;
     public Bitmap img_homeBtn;
-    public Bitmap img_menuBar;
+    public Bitmap img_statusBar;
     public Bitmap img_alertBox;
     public Bitmap img_classMark;
 
@@ -59,7 +57,7 @@ public class Game_Main {
 
     //    public int mMainScreenY;
 //    public int mMainScreenHeight;
-    public int mMenuTabBarY;
+//    public int mMenuTabBarY;
 
     public final int statusBarW = 120;
     public final int statusBarH = 75;
@@ -94,7 +92,7 @@ public class Game_Main {
         setMenuIcon();
         setManager();
 
-        setCardListFromSelectParty(0,0);
+        setCardListFromSelectParty(0, 0);
     }
 
     private UserEnty checkPlayerData() {
@@ -106,7 +104,7 @@ public class Game_Main {
         appClass.isSceneInit = true;
         appClass.gameState = state;
         appClass.stateMode = mode;
-        setCardListFromSelectParty(0,0);
+        setCardListFromSelectParty(0, 0);
 
 //        new PPreference(appClass.getBaseContext()).writePlayer("player", userEnty);
     }
@@ -121,9 +119,9 @@ public class Game_Main {
 //        new PPreference(appClass.getBaseContext()).writePlayer("player", userEnty);
     }
 
-    public boolean onTouchEvent(MotionEvent event) {
-        return false;
-    }
+//    public boolean onTouchEvent(MotionEvent event) {
+//        return false;
+//    }
 
     public void loadManager() {
         managerImg = new ImageEnty();
@@ -170,14 +168,14 @@ public class Game_Main {
     public void loadMenuIcon() {
         img_homeBtn = GLUtil.loadAssetsBitmap(appClass, "main/home_btn.png", null);
         img_mainBtn = GLUtil.loadAssetsBitmap(appClass, "main/main_btn.png", null);
-        img_menuBar = GLUtil.loadAssetsBitmap(appClass, "main/statusbar.png", null);
+        img_statusBar = GLUtil.loadAssetsBitmap(appClass, "main/statusbar.png", null);
         img_alertBox = GLUtil.loadAssetsBitmap(appClass, "main/alertbox.png", null);
         img_classMark = GLUtil.loadAssetsBitmap(appClass, "main/classes_mark.png", null);
     }
 
     public void setMenuIcon() {
         menuButtonList = new ArrayList<>();
-        mMenuTabBarY = canvasH - 300 - statusBarH;
+
         for (int i = 0; i < INN.menuIconName.length; i++) {
             ButtonEnty mBtn = new ButtonEnty();
             mBtn.num = i;
@@ -195,12 +193,12 @@ public class Game_Main {
 //                    mBtn.drawY = canvasH - mBtn.clipH - 10;
 
             mBtn.drawX = 20 + ((mBtn.clipW + 5) * (i % 3));
-            mBtn.drawY = mMenuTabBarY + statusBarH + mBtn.clipH * (i / 3);
+            mBtn.drawY = canvasH -  mBtn.clipH * ((i / 3)+1);
             menuButtonList.add(mBtn);
         }
 
         alertBtn = new ButtonEnty();
-        alertBtn.name = "Alert";
+        alertBtn.name = "alert";
         alertBtn.drawX = (appClass.getGameCanvasWidth() -
                 img_alertBox.getWidth()) / 2 + img_alertBox.getWidth() - 100;
         alertBtn.drawY = (appClass.getGameCanvasHeight() -
@@ -211,16 +209,16 @@ public class Game_Main {
         alertBtn.clipY = 173;
 
         optionBtn = new ButtonEnty();
-        optionBtn.clipW = 103;
-        optionBtn.clipH = 52;
+        optionBtn.clipW = 102;
+        optionBtn.clipH = 53;
         optionBtn.clipX = 121;
         optionBtn.clipY = 0;
-        optionBtn.name = "Back";
+        optionBtn.name = "back";
         optionBtn.drawX = canvasW - optionBtn.clipW - 15;
-        optionBtn.drawY = mMenuTabBarY + (statusBarH - optionBtn.clipH) / 2;
+        optionBtn.drawY = (statusBarH - optionBtn.clipH) / 2;
 
         menIcon = new ButtonEnty();
-        menIcon.name = "Men";
+        menIcon.name = "men";
         menIcon.drawX = (canvasW - 120) / 5 + 260;
         menIcon.drawY = 5;
         menIcon.clipW = 24;
@@ -229,7 +227,7 @@ public class Game_Main {
         menIcon.clipY = 92;
 
         feedIcon = new ButtonEnty();
-        feedIcon.name = "Feed";
+        feedIcon.name = "feed";
         feedIcon.drawX = (canvasW - 120) / 5 + 360;
         feedIcon.drawY = 5;
         feedIcon.clipW = 32;
@@ -238,7 +236,7 @@ public class Game_Main {
         feedIcon.clipY = 92;
 
         goldIcon = new ButtonEnty();
-        goldIcon.name = "Gold";
+        goldIcon.name = "gold";
         goldIcon.drawX = (canvasW - 120) / 5 + 160;
         goldIcon.drawY = 5;
         goldIcon.clipW = 36;
@@ -247,28 +245,58 @@ public class Game_Main {
         goldIcon.clipY = 126;
     }
 
-    public void onTouchMenuIcon() {
-        if (showAlertType > INN.ALERT_TYPE_NONE) {
-            if (GameUtil.equalsTouch(appClass.touch,
-                    alertBtn.drawX, alertBtn.drawY, alertBtn.clipW, alertBtn.clipH)) {
-                if (appClass.touch.action == MotionEvent.ACTION_UP) {
-                    alertBtn.clickState = ButtonEnty.ButtonClickOff;
-                    switch (showAlertType) {
-                        case INN.ALERT_TYPE_TURNSTART:
-                            userEnty.GOLD += userEnty.eventEnty.Gold;
-                            break;
-                    }
-                    showAlertType = INN.ALERT_TYPE_NONE;
-                    return;
-                } else {
-                    alertBtn.clickState = ButtonEnty.ButtonClickOn;
-                }
-            } else
-                alertBtn.clickState = ButtonEnty.ButtonClickOn;
-            return;
+    public boolean onTouchMenu() {
+        if (onAlertTouch() || onTurnAlertTouch())
+            return true;
+
+        if (appClass.gameState == INN.GAME_HOME) {
+            if (onMeunTouch()) {
+                return true;
+            }
         }
 
-        int turnBtnNum = menuButtonList.size() - 1;
+        if (onStatusTouch()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean onTouchEvent(){
+        if (onStatusTouch())
+            return true;
+
+        if (onAlertTouch()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean onAlertTouch() {
+        if (showAlertType == INN.ALERT_TYPE_NONE)
+            return false;
+        if (GameUtil.equalsTouch(appClass.touch,
+                alertBtn.drawX, alertBtn.drawY, alertBtn.clipW, alertBtn.clipH)) {
+            if (appClass.touch.action == MotionEvent.ACTION_UP) {
+                alertBtn.clickState = ButtonEnty.ButtonClickOff;
+                switch (showAlertType) {
+                    case INN.ALERT_TYPE_TURNSTART:
+                        userEnty.GOLD += userEnty.eventEnty.Gold;
+                        break;
+                }
+                showAlertType = INN.ALERT_TYPE_NONE;
+                return true;
+            } else {
+                alertBtn.clickState = ButtonEnty.ButtonClickOn;
+            }
+        } else
+            alertBtn.clickState = ButtonEnty.ButtonClickOn;
+        return false;
+    }
+
+    public boolean onTurnAlertTouch() {
+        if (showAlertType == INN.ALERT_TYPE_NONE)
+            return false;
+        int turnBtnNum = 5;
         if (GameUtil.equalsTouch(appClass.touch,
                 menuButtonList.get(turnBtnNum).drawX, menuButtonList.get(turnBtnNum).drawY,
                 menuButtonList.get(turnBtnNum).clipW, menuButtonList.get(turnBtnNum).clipH)) {
@@ -279,16 +307,18 @@ public class Game_Main {
                         turnManager.turnCycle(userEnty.TURN++);
                         break;
                 }
+                showAlertType = INN.ALERT_TYPE_NONE;
+                return true;
             } else {
                 menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOn;
             }
-            return;
         } else {
             menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOff;
         }
-        if (appClass.gameState != INN.GAME_HOME)
-            return;
+        return false;
+    }
 
+    public boolean onMeunTouch() {
         for (ButtonEnty mBtn : menuButtonList) {
             if (GameUtil.equalsTouch(appClass.touch, mBtn.drawX, mBtn.drawY, mBtn.clipW, mBtn.clipH)) {
                 mBtn.clickState = ButtonEnty.ButtonClickOn;
@@ -307,33 +337,39 @@ public class Game_Main {
                         mainButtonAct(INN.GAME_PARTY, 0);
                     else if (mBtn.name.equals(INN.menuIconName[5]))
                         mainButtonAct(INN.GAME_MOVE, 0);
-                    else if (mBtn.name.equals("Menu"))
+                    else if (mBtn.name.equals("menu"))
                         mainButtonAct(INN.GAME_OPTION, 0);
+                    return true;
                 }
-                return;
             } else {
                 mBtn.clickState = ButtonEnty.ButtonClickOff;
             }
         }
+        return false;
+    }
 
+    public boolean onStatusTouch() {
         if (GameUtil.equalsTouch(appClass.touch,
                 optionBtn.drawX, optionBtn.drawY, optionBtn.clipW, optionBtn.clipH)) {
             if (appClass.touch.action == MotionEvent.ACTION_UP) {
                 optionBtn.clickState = ButtonEnty.ButtonClickOff;
-                Toast.makeText(appClass, "menu", Toast.LENGTH_SHORT).show();
+                if(optionBtn.name.equals("back")) {
+                    mainButtonAct(INN.GAME_HOME, 0);
+                }
+                return true;
             } else {
                 optionBtn.clickState = ButtonEnty.ButtonClickOn;
             }
-            return;
         } else {
             optionBtn.clickState = ButtonEnty.ButtonClickOff;
         }
+        return false;
     }
 
     public void recycleScene() {
         CanvasUtil.recycleBitmap(img_mainBtn);
         CanvasUtil.recycleBitmap(img_homeBtn);
-        CanvasUtil.recycleBitmap(img_menuBar);
+        CanvasUtil.recycleBitmap(img_statusBar);
         CanvasUtil.recycleBitmap(img_alertBox);
         CanvasUtil.recycleBitmap(img_classMark);
         CanvasUtil.recycleBitmap(managerImg.bitmap);
@@ -383,28 +419,6 @@ public class Game_Main {
 //            CanvasUtil.drawClip(menu_icon, mCanvas, null, (iconNum%5)*mBtn.w, (iconNum/5)*mBtn.h,
 //                    mBtn.w, mBtn.h, mBtn.x+(btnArea-mBtn.w)/2, mBtn.y);
         }
-
-        int clipY = optionBtn.clipY;
-        if (optionBtn.clickState == ButtonEnty.ButtonClickOn) {
-            clipY = 54;
-        }
-        CanvasUtil.drawClip(img_menuBar, mCanvas, optionBtn.clipX, clipY,
-                optionBtn.clipW, optionBtn.clipH, optionBtn.drawX, optionBtn.drawY);
-
-        CanvasUtil.drawClip(img_menuBar, mCanvas, 121, 107,
-                82, 23, optionBtn.drawX + (optionBtn.clipW - 82) / 2,
-                optionBtn.drawY + (optionBtn.clipH - 23) / 2);
-//
-//        switch (gameHome.gameMain.appClass.gameState) {
-//            case INN.GAME_HOME:
-//                CanvasUtil.drawClip(gameHome.img_mainBtn, mCanvas, 270, 0,
-//                        gameHome.optionBtn.clipW, 18, gameHome.optionBtn.drawX, gameHome.optionBtn.drawY + 12);
-//                break;
-//            default:
-//                CanvasUtil.drawClip(gameHome.img_mainBtn, mCanvas, 270, 18,
-//                        gameHome.optionBtn.clipW, 18, gameHome.optionBtn.drawX, gameHome.optionBtn.drawY + 12);
-//                break;
-//        }
     }
 
     public void drawAlert(Canvas mCanvas, String title, String text) {
@@ -455,34 +469,34 @@ public class Game_Main {
     public void drawMemberAlert(Canvas mCanvas, Bitmap profileImg, MemberEnty enty) {
         int alertY = (canvasH - img_alertBox.getHeight()) / 2;
         int alertX = (canvasW - img_alertBox.getWidth()) / 2;
-        int halfCanvasW = canvasW/2;
+        int halfCanvasW = canvasW / 2;
 
         // alert bg
         CanvasUtil.drawBitmap(img_alertBox, mCanvas, alertX, alertY);
 
         //profile image
         CanvasUtil.drawBitmap(profileImg, mCanvas, alertX + 15, alertY + 105);
-        if(INN.setTempImg)
-            CanvasUtil.drawBox(mCanvas,Color.DKGRAY, true, alertX+15, alertY+105, 400, 512);
+        if (INN.setTempImg)
+            CanvasUtil.drawBox(mCanvas, Color.DKGRAY, true, alertX + 15, alertY + 105, 400, 512);
 
         // class mark
         int classId = 0;
-        if(enty.memberclass.equals("knight"))
+        if (enty.memberclass.equals("knight"))
             classId = 1;
-        else if(enty.memberclass.equals("warrior"))
+        else if (enty.memberclass.equals("warrior"))
             classId = 2;
-        else if(enty.memberclass.equals("priest"))
+        else if (enty.memberclass.equals("priest"))
             classId = 3;
-        else if(enty.memberclass.equals("mage"))
+        else if (enty.memberclass.equals("mage"))
             classId = 4;
-        else if(enty.memberclass.equals("hunter"))
+        else if (enty.memberclass.equals("hunter"))
             classId = 5;
-        else if(enty.memberclass.equals("rogue"))
+        else if (enty.memberclass.equals("rogue"))
             classId = 6;
-        int clipX = classId%4*64;
-        int clipY = classId/4*64;
+        int clipX = classId % 4 * 64;
+        int clipY = classId / 4 * 64;
         CanvasUtil.drawClip(img_classMark, mCanvas, clipX, clipY,
-                64, 64, alertX+10, alertY+105);
+                64, 64, alertX + 10, alertY + 105);
 
         // alert button
         int alertBtnClipX = alertBtn.clipX;
@@ -502,37 +516,37 @@ public class Game_Main {
         CanvasUtil.drawString(mCanvas, enty.name, paint, halfCanvasW, alertY + 30);
 
         // exp
-        drawBarGage(mCanvas, -1, Color.argb(255,0,200,50),
-                "", enty.status.EXP,enty.status.MAX_EXP,
-                alertX+5, alertY+100, img_alertBox.getWidth()-10, 5);
+        drawBarGage(mCanvas, -1, Color.argb(255, 0, 200, 50),
+                "", enty.status.EXP, enty.status.MAX_EXP,
+                alertX + 5, alertY + 100, img_alertBox.getWidth() - 10, 5);
 
         // status_basic
         StringBuilder sb = new StringBuilder(enty.race + "(" + enty.sex + ")\n");
         sb.append("age  : " + enty.age);
         paint.setTextAlign(Paint.Align.LEFT);
-        paint.setColor(Color.argb(255, 80,80,80));
+        paint.setColor(Color.argb(255, 80, 80, 80));
         paint.setTextSize(25);
         CanvasUtil.drawString(mCanvas, sb.toString(), paint,
                 halfCanvasW, alertY + 110);
 
         // status_detail
         drawBarGage(mCanvas, -1, Color.argb(255, 250, 90, 60),
-                "HP", enty.status.MAX_HP-enty.status.USE_HP,enty.status.MAX_HP,
+                "HP", enty.status.MAX_HP - enty.status.USE_HP, enty.status.MAX_HP,
                 halfCanvasW, alertY + 180, 200, 12);
         drawBarGage(mCanvas, -1, Color.argb(255, 60, 90, 250),
-                "MP", enty.status.MAX_MP-enty.status.USE_MP,enty.status.MAX_MP,
+                "MP", enty.status.MAX_MP - enty.status.USE_MP, enty.status.MAX_MP,
                 halfCanvasW, alertY + 200, 200, 12);
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setColor(Color.BLACK);
         paint.setTextSize(25);
-        CanvasUtil.drawString(mCanvas, "STR : "+enty.status.STR, paint,
+        CanvasUtil.drawString(mCanvas, "STR : " + enty.status.STR, paint,
                 halfCanvasW, alertY + 230);
-        CanvasUtil.drawString(mCanvas, "DEX : "+enty.status.DEX, paint,
-                halfCanvasW+ 100, alertY + 230);
-        CanvasUtil.drawString(mCanvas, "INT : "+enty.status.INT, paint,
+        CanvasUtil.drawString(mCanvas, "DEX : " + enty.status.DEX, paint,
+                halfCanvasW + 100, alertY + 230);
+        CanvasUtil.drawString(mCanvas, "INT : " + enty.status.INT, paint,
                 halfCanvasW, alertY + 255);
-        CanvasUtil.drawString(mCanvas, "VIT : "+enty.status.VIT, paint,
-                halfCanvasW+ 100, alertY + 255);
+        CanvasUtil.drawString(mCanvas, "VIT : " + enty.status.VIT, paint,
+                halfCanvasW + 100, alertY + 255);
 
         // profile text
         sb = new StringBuilder();
@@ -542,7 +556,7 @@ public class Game_Main {
             if (tempStr.length() > 20) {
                 sb.append(tempStr + "\n");
                 startNum = i;
-            }else if(i == tempStr.length()-1){
+            } else if (i == tempStr.length() - 1) {
                 sb.append(tempStr);
             }
         }
@@ -555,31 +569,37 @@ public class Game_Main {
     }
 
     public void drawBarGage(Canvas mCanvas, int bgColor, int color, String title,
-                            int num, int maxNum, int x, int y, int w, int h){
-        int gageW = (int)(((float)num/(float)maxNum)*w);
+                            int num, int maxNum, int x, int y, int w, int h) {
+        int gageW = (int) (((float) num / (float) maxNum) * w);
 
-        if(bgColor > -1)
+        if (bgColor > -1)
             CanvasUtil.drawBox(mCanvas, bgColor, true, x, y, w, h);
         CanvasUtil.drawBox(mCanvas, color, true, x, y, gageW, h);
-        String exp = title+" "+num+"/"+maxNum;
+        String exp = title + " " + num + "/" + maxNum;
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setTextSize(15);
-        paint.setColor(Color.argb(255, 180, 190,210));
-        CanvasUtil.drawString(mCanvas, exp, paint, x+w/2, y-5);
+        paint.setColor(Color.argb(255, 180, 190, 210));
+        CanvasUtil.drawString(mCanvas, exp, paint, x + w / 2, y - 5);
     }
 
     /**
      * draw user status
      */
-    private void drawStatusTab(Canvas mCanvas) {
-        int canvasWidth = appClass.getGameCanvasWidth();
+    public void drawStatusTab(Canvas mCanvas) {
+        int barNum = canvasW / statusBarW;
+        for (int i = 0; i <= barNum; i++) {
+            CanvasUtil.drawClip(img_statusBar, mCanvas, 0, 0,
+                    statusBarW, statusBarH, statusBarW * i, 0);
+        }
+
         Paint paint = new Paint();
-        int drawY = mMenuTabBarY + statusBarH / 2 - 10;
-        int drawX = (canvasWidth - 120) / 5 + 60;
+        int fontSize = 30;
+        int drawY = (statusBarH-fontSize)/2;
+        int drawX = (canvasW - 120) / 5 + 60;
         paint.setColor(Color.argb(255, 50, 50, 50));
-        paint.setTextSize(20);
+        paint.setTextSize(fontSize);
 
         // Name Lv
         CanvasUtil.drawString(mCanvas, userEnty.Name + "(Lv " + userEnty.LEVEL + ")", paint, 10, drawY);
@@ -605,11 +625,32 @@ public class Game_Main {
 //                partyIcon.drawX + partyIcon.clipW + 5, partyIcon.drawY + 3);
 
         //Turn
-        CanvasUtil.drawString(mCanvas, "Turn " + userEnty.TURN, paint, canvasWidth - 180, drawY);
+        CanvasUtil.drawString(mCanvas, "Turn " + userEnty.TURN, paint, canvasW - 250, drawY);
+
+        //Option Button
+        int clipY = optionBtn.clipY;
+        if (optionBtn.clickState == ButtonEnty.ButtonClickOn) {
+            clipY = 53;
+        }
+        CanvasUtil.drawClip(img_statusBar, mCanvas, optionBtn.clipX, clipY,
+                optionBtn.clipW, optionBtn.clipH, optionBtn.drawX, optionBtn.drawY);
+
+        switch (appClass.gameState) {
+            case INN.GAME_HOME:
+                CanvasUtil.drawClip(img_statusBar, mCanvas, 121, 107,
+                        82, 23, optionBtn.drawX + (optionBtn.clipW - 82) / 2,
+                        optionBtn.drawY + (optionBtn.clipH - 23) / 2);
+                break;
+            default:
+                CanvasUtil.drawClip(img_statusBar, mCanvas, 121, 130,
+                        82, 23, optionBtn.drawX + (optionBtn.clipW - 82) / 2,
+                        optionBtn.drawY + (optionBtn.clipH - 23) / 2);
+                break;
+        }
     }
 
     private void drawManager(Canvas mCanvas) {
-        int managerBottomY = mMenuTabBarY - 484;
+        int managerBottomY = menuButtonList.get(3).drawY - 484;
         CanvasUtil.drawClip(managerImg.bitmap, mCanvas, 490, 156,
                 228, 484, 50, managerBottomY);
 
@@ -633,22 +674,22 @@ public class Game_Main {
         this.selectCardNum = selectParty + "-" + selectCardNum;
     }
 
-    public  void setSelectPartyNum(int selectPartyNum){
+    public void setSelectPartyNum(int selectPartyNum) {
         String str[] = this.selectCardNum.split("-");
-        this.selectCardNum = selectPartyNum+"-"+str[1];
+        this.selectCardNum = selectPartyNum + "-" + str[1];
     }
 
-    public void setSelectCardNum(int selectCardNum){
+    public void setSelectCardNum(int selectCardNum) {
         String str[] = this.selectCardNum.split("-");
-        this.selectCardNum = str[0]+"-"+selectCardNum;
+        this.selectCardNum = str[0] + "-" + selectCardNum;
     }
 
-    public Integer getSelectPartyNum(){
+    public Integer getSelectPartyNum() {
         String str[] = selectCardNum.split("-");
         return Integer.parseInt(str[0]);
     }
 
-    public Integer getSelectCardNum(){
+    public Integer getSelectCardNum() {
         String str[] = selectCardNum.split("-");
         return Integer.parseInt(str[1]);
     }

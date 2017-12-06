@@ -56,46 +56,30 @@ public class Scene_Party extends Scene {
         //draw bg
         CanvasUtil.drawBitmap(gameParty.img_title_bg, mCanvas, 0, 0);
 
-        //draw menubar
-        drawMenuBar(mCanvas);
+        gameParty.gameMain.drawStatusTab(mCanvas);
+
+        //draw party button
+        drawPartyButton(mCanvas);
 
         //draw card
         drawPartyCard(mCanvas);
     }
 
-    private void drawMenuBar(Canvas mCanvas){
-        int barNum = gameParty.gameMain.appClass.getGameCanvasWidth() / gameParty.gameMain.statusBarW;
-        for (int i = 0; i <= barNum; i++) {
-            CanvasUtil.drawClip(gameParty.gameMain.img_menuBar, mCanvas, 0, 0,
-                    gameParty.gameMain.statusBarW, gameParty.gameMain.statusBarH,
-                    gameParty.gameMain.statusBarW * i, gameParty.mMenuTabBarY);
-        }
-
-        int clipY = gameParty.backBtn.clipY;
-        if (gameParty.backBtn.clickState == ButtonEnty.ButtonClickOn) {
-            clipY = 54;
-        }
-
-        CanvasUtil.drawClip(gameParty.gameMain.img_menuBar, mCanvas, gameParty.backBtn.clipX, clipY,
-                gameParty.backBtn.clipW, gameParty.backBtn.clipH, gameParty.backBtn.drawX, gameParty.backBtn.drawY);
-        CanvasUtil.drawClip(gameParty.gameMain.img_menuBar, mCanvas, 121, 130,
-                82, 23, gameParty.backBtn.drawX + (gameParty.backBtn.clipW - 82) / 2,
-                gameParty.backBtn.drawY + (gameParty.backBtn.clipH - 23) / 2);
-
+    private void drawPartyButton(Canvas mCanvas) {
         for (ButtonEnty mBtn : gameParty.PartyNumButtonList) {
-            clipY = mBtn.clipY;
-            if (mBtn.clickState == ButtonEnty.ButtonClickOn) {
-                clipY = 54;
+            int clipX = mBtn.clipX;
+            if (mBtn.clickState == ButtonEnty.ButtonClickOn || gameParty.gameMain.getSelectPartyNum() == mBtn.num) {
+                clipX += 115;
             }
-            CanvasUtil.drawClip(gameParty.gameMain.img_menuBar, mCanvas, mBtn.clipX, clipY,
+            CanvasUtil.drawClip(gameParty.gameMain.img_mainBtn, mCanvas, clipX, mBtn.clipY,
                     mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
-            CanvasUtil.drawClip(gameParty.gameMain.img_menuBar, mCanvas, (mBtn.num + 1) * 16,
-                    98, 16, 24,
+            CanvasUtil.drawClip(gameParty.gameMain.img_statusBar, mCanvas, (mBtn.num + 1) * 16,
+                    98, 14, 24,
                     mBtn.drawX + (mBtn.clipW - 15) / 2, mBtn.drawY + (mBtn.clipH - 24) / 2);
         }
     }
 
-    private void drawPartyCard(Canvas mCanvas){
+    private void drawPartyCard(Canvas mCanvas) {
         int cardY = gameParty.img_title_bg.getHeight() + 300 + 30;
         int btnX = (212 - 47) / 2;
         int btnY = (280 - 47) / 2;
@@ -115,7 +99,7 @@ public class Scene_Party extends Scene {
                     47, 47, mBtn.drawX + btnX, mBtn.drawY + btnY);
 
             // 멤버가 정해진 card draw
-            if (gameParty.CardImgList.size() > 0 &&  gameParty.CardImgList.get(i) != null)
+            if (gameParty.CardImgList.size() > 0 && gameParty.CardImgList.get(i) != null)
                 drawMemberCard(mCanvas, i, mBtn.drawX, mBtn.drawY);
         }
     }
