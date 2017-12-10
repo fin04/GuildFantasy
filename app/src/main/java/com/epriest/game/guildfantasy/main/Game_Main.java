@@ -193,7 +193,7 @@ public class Game_Main {
 //                    mBtn.drawY = canvasH - mBtn.clipH - 10;
 
             mBtn.drawX = 20 + ((mBtn.clipW + 5) * (i % 3));
-            mBtn.drawY = canvasH -  mBtn.clipH * ((i / 3)+1);
+            mBtn.drawY = canvasH - (mBtn.clipH * 2) + mBtn.clipH * (i / 3);
             menuButtonList.add(mBtn);
         }
 
@@ -261,7 +261,7 @@ public class Game_Main {
         return false;
     }
 
-    public boolean onTouchEvent(){
+    public boolean onTouchEvent() {
         if (onStatusTouch())
             return true;
 
@@ -330,11 +330,11 @@ public class Game_Main {
                     else if (mBtn.name.equals(INN.menuIconName[1]))
                         mainButtonAct(INN.GAME_RECRUIT, INN.MODE_MEMBER_RECRUIT);
                     else if (mBtn.name.equals(INN.menuIconName[2]))
-                        mainButtonAct(INN.GAME_SKILL, 0);
+                        mainButtonAct(INN.GAME_PARTY, 0);
                     else if (mBtn.name.equals(INN.menuIconName[3]))
                         mainButtonAct(INN.GAME_ITEM, 0);
                     else if (mBtn.name.equals(INN.menuIconName[4]))
-                        mainButtonAct(INN.GAME_PARTY, 0);
+                        mainButtonAct(INN.GAME_SKILL, 0);
                     else if (mBtn.name.equals(INN.menuIconName[5]))
                         mainButtonAct(INN.GAME_MOVE, 0);
                     else if (mBtn.name.equals("menu"))
@@ -353,7 +353,7 @@ public class Game_Main {
                 optionBtn.drawX, optionBtn.drawY, optionBtn.clipW, optionBtn.clipH)) {
             if (appClass.touch.action == MotionEvent.ACTION_UP) {
                 optionBtn.clickState = ButtonEnty.ButtonClickOff;
-                if(optionBtn.name.equals("back")) {
+                if (optionBtn.name.equals("back")) {
                     mainButtonAct(INN.GAME_HOME, 0);
                 }
                 return true;
@@ -596,7 +596,7 @@ public class Game_Main {
 
         Paint paint = new Paint();
         int fontSize = 30;
-        int drawY = (statusBarH-fontSize)/2;
+        int drawY = (statusBarH - fontSize) / 2;
         int drawX = (canvasW - 120) / 5 + 60;
         paint.setColor(Color.argb(255, 50, 50, 50));
         paint.setTextSize(fontSize);
@@ -670,8 +670,8 @@ public class Game_Main {
 
     }
 
-    public void setCardListFromSelectParty(int selectParty, int selectCardNum) {
-        this.selectCardNum = selectParty + "-" + selectCardNum;
+    public void setCardListFromSelectParty(int selectParty, int selectCardPos) {
+        this.selectCardNum = selectParty + "-" + selectCardPos;
     }
 
     public void setSelectPartyNum(int selectPartyNum) {
@@ -689,7 +689,7 @@ public class Game_Main {
         return Integer.parseInt(str[0]);
     }
 
-    public Integer getSelectCardNum() {
+    public Integer getSelectPosition() {
         String str[] = selectCardNum.split("-");
         return Integer.parseInt(str[1]);
     }

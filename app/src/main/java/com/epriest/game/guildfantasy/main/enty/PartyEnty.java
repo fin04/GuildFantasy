@@ -14,14 +14,15 @@ public class PartyEnty {
 	public String questId;
 	public String questTime;
 
-	public String memberID_1;
-	public String memberID_2;
-	public String memberID_3;
-	public String memberID_4;
-	public String memberID_5;
+	public String[] memberPos =
+			{"0","0","0",
+			"0","0","0",
+			"0","0","0",};
 
 
 //	public ArrayList<Integer> memberNum = new ArrayList<>();
 //	public ArrayList<String> playerIdList = new ArrayList<>();
-		
+
 }
+
+

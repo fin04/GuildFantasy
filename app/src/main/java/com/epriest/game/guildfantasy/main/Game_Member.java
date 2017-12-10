@@ -25,7 +25,7 @@ public class Game_Member extends Game {
 
     public Bitmap img_memberSheet;
     public Bitmap img_membercard;
-    public Bitmap bg;
+    public Bitmap img_bg;
 
     public ArrayList<ButtonEnty> MemberButtonList = new ArrayList<>();
     public ArrayList<MemberEnty> memberList;
@@ -51,7 +51,7 @@ public class Game_Member extends Game {
         memberList = DataManager.getUserMemberList(gameMain.dbAdapter, gameMain.userEnty.Name);
         img_memberSheet = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member_sheet.png", null);
         img_membercard = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/membercard.png", null);
-        bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member.jpg", null);
+        img_bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member.jpg", null);
         img_member = new ArrayList<>();
         for (int i = 0; i < memberList.size(); i++) {
             img_member.add(GLUtil.loadAssetsBitmap(gameMain.appClass, "member/" + memberList.get(i).image, null, 2));
@@ -105,9 +105,19 @@ public class Game_Member extends Game {
         }else if(event.getAction() == MotionEvent.ACTION_UP) {
             if (prevScrollY == scrollY) {
                 selectMember = (((int)gameMain.appClass.touch.mLastTouchX-cardX) / cardW)
-                        + (((int)gameMain.appClass.touch.mLastTouchY+scrollY-cardY)/cardH)*cardRowNum + 1;
+                        + (((int)gameMain.appClass.touch.mLastTouchY+scrollY-cardY)/cardH)*cardRowNum;
 //                gameMain.userEnty.MEMBERLIST.get(selectMember).party_number = gameMain.selectCardNum;
-                gameMain.mainButtonAct(INN.GAME_PARTY, 0);
+//                String partyID = gameMain.userEnty.Name+"_"+gameMain.getSelectPartyNum();
+                String memberID = memberList.get(selectMember).memberId;
+                DataManager.updateUserPartyMember(gameMain.dbAdapter, memberID,
+                        gameMain.userEnty.Name, gameMain.getSelectPartyNum(), gameMain.getSelectPosition());
+
+                if(gameMain.appClass.stateMode == INN.MODE_MEMBER_SELECT) {
+                    gameMain.appClass.stateMode = INN.MODE_DEFAULT;
+                    gameMain.mainButtonAct(INN.GAME_PARTY, 0);
+                }else{
+                    //멤버 상세
+                }
                 return;
             }else{
             }

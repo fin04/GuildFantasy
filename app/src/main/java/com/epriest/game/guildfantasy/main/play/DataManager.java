@@ -3,10 +3,12 @@ package com.epriest.game.guildfantasy.main.play;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import com.epriest.game.guildfantasy.main.Game_Main;
 import com.epriest.game.guildfantasy.main.Game_Title;
 import com.epriest.game.guildfantasy.main.enty.EquipEnty;
 import com.epriest.game.guildfantasy.main.enty.EventEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
+import com.epriest.game.guildfantasy.main.enty.PartyEnty;
 import com.epriest.game.guildfantasy.main.enty.UserEnty;
 import com.epriest.game.guildfantasy.main.enty.QuestEnty;
 import com.epriest.game.guildfantasy.main.enty.StatusEnty;
@@ -46,6 +48,25 @@ public class DataManager {
     public static Cursor getUserQuestCursor(GameDbAdapter dbAdapter, String questID) {
         return dbAdapter.getCursor(GameDbAdapter.PLAYER_QUEST_TABLE, GameDbAdapter.KEY_QUESTID, questID);
     }
+
+    /**
+     * partyID user의 파티 cursor를 찾음
+     * @param partyID - null이면 모든 퀘스트를 찾음
+     * @return cursor
+     */
+    public static Cursor getPartyCursorFromId(GameDbAdapter dbAdapter, String partyID) {
+        return dbAdapter.getCursor(GameDbAdapter.PLAYER_PARTY_TABLE, GameDbAdapter.KEY_PARTYID, partyID);
+    }
+
+    /**
+     * username으로 party cursor를 찾음
+     * @param username
+     * @return cursor
+     */
+    public static Cursor getPartyCursorFromUserName(GameDbAdapter dbAdapter, String username) {
+        return dbAdapter.getCursor(GameDbAdapter.QUEST_TABLE, GameDbAdapter.KEY_USERNAME, username);
+    }
+
 
     /**
      * DB에서 해당 turn의 이벤트 cursor를 찾음
@@ -136,6 +157,14 @@ public class DataManager {
                 userEnty.GEM_BLUE = INN.USER_START_GEM;
                 insertUserInfo(dbAdapter, userEnty);
 
+                //player party table 생성
+                for(int i=0; i< 5; i++){
+                    PartyEnty enty = new PartyEnty();
+                    enty.partyId = userEnty.Name+"_"+i;
+                    enty.num = i;
+                    insertUserParty(dbAdapter, enty, userEnty.Name);
+                }
+
                 // 0turn에 해당하는 이벤트, 멤버, 퀘스트 가져옴
                 userEnty = setChangeEvent(dbAdapter, userEnty);
                 break;
@@ -181,6 +210,7 @@ public class DataManager {
         Cursor cursor = getUserMemberCursor(dbAdapter, memberID);
         enty.status = new StatusEnty();
         enty.equip = new EquipEnty();
+        enty.memberId = memberID;
         enty.name = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERNAME));
         enty.engname = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERENGNAME));
         enty.sex = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERSEX));
@@ -227,6 +257,30 @@ public class DataManager {
                 entyList.add(memEnty);
             } while (cursor.moveToNext()) ;
             cursor.close();
+        }
+        return entyList;
+    }
+
+    public static ArrayList<PartyEnty> getUserPartyList(GameDbAdapter dbAdapter, String username){
+        ArrayList<PartyEnty> entyList = new ArrayList<>();
+        Cursor partyCursor = dbAdapter.getCursor(GameDbAdapter.PLAYER_PARTY_TABLE, GameDbAdapter.KEY_USERNAME, username);
+        if(partyCursor!=null) {
+            partyCursor.moveToFirst();
+            do {
+                PartyEnty enty = new PartyEnty();
+                enty.partyName = partyCursor.getString(partyCursor.getColumnIndex(GameDbAdapter.KEY_PARTYTITLE));
+                enty.partyId = partyCursor.getString(partyCursor.getColumnIndex(GameDbAdapter.KEY_PARTYID));
+                enty.birthTime = partyCursor.getString(partyCursor.getColumnIndex(GameDbAdapter.KEY_PARTYBIRTH));
+                enty.questTime = partyCursor.getString(partyCursor.getColumnIndex(GameDbAdapter.KEY_QUESTTIME));
+                enty.party_exp = partyCursor.getString(partyCursor.getColumnIndex(GameDbAdapter.KEY_PARTY_EXP));
+                enty.party_gold = partyCursor.getString(partyCursor.getColumnIndex(GameDbAdapter.KEY_PARTY_GOLD));
+                enty.questId = partyCursor.getString(partyCursor.getColumnIndex(GameDbAdapter.KEY_QUESTID));
+                for(int i=0;i<enty.memberPos.length;i++){
+                    enty.memberPos[i] = partyCursor.getString(partyCursor.getColumnIndex("party_pos"+(i+1)));
+                }
+                entyList.add(enty);
+            } while (partyCursor.moveToNext()) ;
+            partyCursor.close();
         }
         return entyList;
     }
@@ -419,6 +473,25 @@ public class DataManager {
         return enty;
     }
 
+    public static PartyEnty getPartyData(GameDbAdapter dbAdapter, String username, int partyNum) {
+        String partyID = username+"_"+partyNum;
+        Cursor partyCursor = getPartyCursorFromId(dbAdapter, partyID);
+        PartyEnty enty = new PartyEnty();
+        enty.partyName = partyCursor.getString(partyCursor.getColumnIndex(GameDbAdapter.KEY_PARTYTITLE));
+        enty.partyId = partyID;
+        enty.birthTime = partyCursor.getString(partyCursor.getColumnIndex(GameDbAdapter.KEY_PARTYBIRTH));
+        enty.questTime = partyCursor.getString(partyCursor.getColumnIndex(GameDbAdapter.KEY_QUESTTIME));
+        enty.party_exp = partyCursor.getString(partyCursor.getColumnIndex(GameDbAdapter.KEY_PARTY_EXP));
+        enty.party_gold = partyCursor.getString(partyCursor.getColumnIndex(GameDbAdapter.KEY_PARTY_GOLD));
+        enty.questId = partyCursor.getString(partyCursor.getColumnIndex(GameDbAdapter.KEY_QUESTID));
+        for(int i=0;i<enty.memberPos.length;i++){
+            enty.memberPos[i] = partyCursor.getString(partyCursor.getColumnIndex("party_pos"+(i+1)));
+        }
+
+        partyCursor.close();
+        return enty;
+    }
+
     /**
      * quest table에서 quest 리스트를 불러옴
      * @param eventQuest
@@ -507,6 +580,18 @@ public class DataManager {
         return row_id;
     }
 
+    public static long insertUserParty(GameDbAdapter dbAdapter, PartyEnty partyEnty, String userName){
+        String TableName = GameDbAdapter.PLAYER_PARTY_TABLE;
+        String[] columns = {
+                partyEnty.partyId, partyEnty.partyName, Integer.toString(partyEnty.num), userName, partyEnty.birthTime,
+                partyEnty.questId, partyEnty.questTime, partyEnty.party_exp, partyEnty.party_gold, partyEnty.memberPos[0],
+                partyEnty.memberPos[1], partyEnty.memberPos[2], partyEnty.memberPos[3], partyEnty.memberPos[4],
+                partyEnty.memberPos[5],partyEnty.memberPos[6],partyEnty.memberPos[7],partyEnty.memberPos[8]};
+
+        long row_id = dbAdapter.insertDATA(TableName, columns);
+        return row_id;
+    }
+
     /**
      * UserDB의 user정보를 갱신
      * @param userEnty
@@ -529,7 +614,7 @@ public class DataManager {
      * user 길드의 member정보 갱신
      * @param memEnty
      */
-    public static void updateUserMember(GameDbAdapter dbAdapter, String userName, MemberEnty memEnty){
+    public static void updateUserMember(GameDbAdapter dbAdapter, String memberId, MemberEnty memEnty){
         String TableName = GameDbAdapter.PLAYER_MEMBER_TABLE;
         ContentValues values = new ContentValues();
         values.put(GameDbAdapter.KEY_MEMBEREXP, memEnty.status.EXP);
@@ -547,7 +632,55 @@ public class DataManager {
         values.put(GameDbAdapter.KEY_MEMBERITEM3, memEnty.equip.equipID_etc);
         values.put(GameDbAdapter.KEY_MEMBERARM1, memEnty.equip.equipID_main_arms);
         values.put(GameDbAdapter.KEY_MEMBERARM2, memEnty.equip.equipID_sub_arms);
-        dbAdapter.updateData(TableName, values, GameDbAdapter.KEY_USERNAME, userName);
+        dbAdapter.updateData(TableName, values, GameDbAdapter.KEY_MEMBERID, memberId);
+    }
+
+    /**
+     * partyNum party 정보를 갱신
+     * @param dbAdapter
+     * @param partyNum
+     * @param partyEnty
+     */
+    public static void updateUserParty(GameDbAdapter dbAdapter, String partyNum, PartyEnty partyEnty){
+        String TableName = GameDbAdapter.PLAYER_PARTY_TABLE;
+        ContentValues values = new ContentValues();
+//        values.put(GameDbAdapter.KEY_PARTYID, partyEnty.partyId);
+        values.put(GameDbAdapter.KEY_PARTYTITLE, partyEnty.partyName);
+//        values.put(GameDbAdapter.KEY_USERNAME, userName);
+        values.put(GameDbAdapter.KEY_QUESTID, partyEnty.questId);
+        values.put(GameDbAdapter.KEY_QUESTTIME, partyEnty.questTime);
+        values.put(GameDbAdapter.KEY_PARTYBIRTH, partyEnty.birthTime);
+        values.put(GameDbAdapter.KEY_PARTY_EXP, partyEnty.party_exp);
+        values.put(GameDbAdapter.KEY_PARTY_GOLD, partyEnty.party_gold);
+        for(int i=0;i<partyEnty.memberPos.length;i++){
+            values.put("party_pos"+(i+1), partyEnty.memberPos[i]);
+        }
+
+        dbAdapter.updateData(TableName, values, GameDbAdapter.KEY_PARTYNUM, partyNum);
+    }
+
+    public static void updateUserPartyMember(GameDbAdapter dbAdapter, String memberID, String userName, int partyNum, int position){
+        String TableName = GameDbAdapter.PLAYER_PARTY_TABLE;
+        PartyEnty partyEnty = getPartyData(dbAdapter, userName , partyNum);
+
+        ContentValues values = new ContentValues();
+//        values.put(GameDbAdapter.KEY_PARTYID, partyEnty.partyId);
+        values.put(GameDbAdapter.KEY_PARTYTITLE, partyEnty.partyName);
+//        values.put(GameDbAdapter.KEY_USERNAME, userName);
+        values.put(GameDbAdapter.KEY_QUESTID, partyEnty.questId);
+        values.put(GameDbAdapter.KEY_QUESTTIME, partyEnty.questTime);
+        values.put(GameDbAdapter.KEY_PARTYBIRTH, partyEnty.birthTime);
+        values.put(GameDbAdapter.KEY_PARTY_EXP, partyEnty.party_exp);
+        values.put(GameDbAdapter.KEY_PARTY_GOLD, partyEnty.party_gold);
+        for(int i=0;i<partyEnty.memberPos.length;i++){
+            if(i == position){
+                values.put("party_pos"+(i+1), memberID);
+            }else {
+                values.put("party_pos" + (i + 1), partyEnty.memberPos[i]);
+            }
+        }
+
+        dbAdapter.updateData(TableName, values, GameDbAdapter.KEY_PARTYNUM, Integer.toString(partyNum));
     }
 
     /**
@@ -592,5 +725,12 @@ public class DataManager {
         return dbAdapter.deleteROW(GameDbAdapter.PLAYER_QUEST_TABLE, -1, null, questId);
     }
 
-
+    /**
+     * partyId의 party를 삭제한다
+     * @param partyId
+     * @return true
+     */
+    public static boolean deleteUserParty(GameDbAdapter dbAdapter, String partyId){
+        return dbAdapter.deleteROW(GameDbAdapter.PLAYER_PARTY_TABLE, -1, null, partyId);
+    }
 }

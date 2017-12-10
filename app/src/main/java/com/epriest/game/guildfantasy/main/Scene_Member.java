@@ -34,7 +34,7 @@ public class Scene_Member extends Scene {
 
     @Override
     public void recycleScene() {
-        recycleBitmap(gameMember.bg);
+        recycleBitmap(gameMember.img_bg);
         recycleBitmap(gameMember.img_memberSheet);
         recycleBitmap(gameMember.img_membercard);
         for (int i = 0; i < gameMember.img_member.size(); i++) {
@@ -51,7 +51,7 @@ public class Scene_Member extends Scene {
 
     @Override
     public void draw(Canvas mCanvas) {
-        CanvasUtil.drawBitmap(gameMember.bg, mCanvas, 0, 0);
+        CanvasUtil.drawBitmap(gameMember.img_bg, mCanvas, 0, 0);
 
         if (gameMember.img_member.size() == 0)
             return;
@@ -72,8 +72,8 @@ public class Scene_Member extends Scene {
                 drawMemberCard(mCanvas, i, cx, cy, chrImgX, chrImgY, cardTextBoxY);
             }
         }
-//        CanvasUtil.drawString(mCanvas, "" + gameMember.scrollY, 30, Color.YELLOW, Paint.Align.LEFT, 300, 300);
-        CanvasUtil.drawString(mCanvas, "" + gameMember.gameMain.selectCardNum, 30, Color.YELLOW, Paint.Align.LEFT, 300, 300);
+
+        CanvasUtil.drawString(mCanvas, "" + gameMember.gameMain.selectCardNum, 30, Color.YELLOW, Paint.Align.LEFT, 300, 120);
 
         drawPartyButton(mCanvas);
         gameMember.gameMain.drawStatusTab(mCanvas);

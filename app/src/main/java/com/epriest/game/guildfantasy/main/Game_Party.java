@@ -8,6 +8,8 @@ import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
+import com.epriest.game.guildfantasy.main.enty.PartyEnty;
+import com.epriest.game.guildfantasy.main.play.DataManager;
 import com.epriest.game.guildfantasy.util.INN;
 
 import java.util.ArrayList;
@@ -24,11 +26,11 @@ public class Game_Party extends Game {
 
     public ArrayList<ButtonEnty> PartyNumButtonList = new ArrayList<>();
     public ArrayList<ButtonEnty> PartyCardList = new ArrayList<>();
-    public ArrayList<MemberEnty> PartyMemberList = new ArrayList<>();
-    public ArrayList<Bitmap> CardImgList = new ArrayList<>();
-    //    public PartyEnty currentParty = new PartyEnty();
-//    public ButtonEnty backBtn;
-//    public ButtonEnty startBtn;
+//    public ArrayList<Bitmap> CardImgList = new ArrayList<>();
+    public PartyEnty currentParty = new PartyEnty();
+
+    public ButtonEnty backBtn;
+    public ButtonEnty okBtn;
 //    public ButtonEnty supplyBtn;
 
     /**
@@ -69,26 +71,50 @@ public class Game_Party extends Game {
 //        img_memberFrame = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member_frame.png", null);
 //        img_questPaper = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/guildpaper.png", null);
 
+        currentParty = DataManager.getPartyData(gameMain.dbAdapter, gameMain.userEnty.Name, gameMain.getSelectPartyNum());
 
-        gameMain.setCardListFromSelectParty(0,0);
+        gameMain.setCardListFromSelectParty(0, 0);
+
+        backBtn = new ButtonEnty();
+        backBtn.clipW = 102;
+        backBtn.clipH = 53;
+        backBtn.clipX = 121;
+        backBtn.clipY = 0;
+        backBtn.name = "back";
+        backBtn.drawX = gameMain.canvasW - backBtn.clipW - 15;
+        backBtn.drawY = (gameMain.statusBarH - backBtn.clipH) / 2;
+
+        okBtn = new ButtonEnty();
+        okBtn.clipW = 102;
+        okBtn.clipH = 53;
+        okBtn.clipX = 121;
+        okBtn.clipY = 0;
+        okBtn.name = "back";
+        okBtn.drawX = gameMain.canvasW - okBtn.clipW * 2 - 20;
+        okBtn.drawY = (gameMain.statusBarH - okBtn.clipH) / 2;
 
         // party card 위치
         int cardY = 300;
         for (int i = 0; i < 9; i++) {
-            ButtonEnty mBtn = new ButtonEnty();
-            mBtn.num = i;
-            mBtn.name = "card" + (i + 1);
-            mBtn.clipW = 212;
-            mBtn.clipH = 280;
-            mBtn.clipX = 0;
-            mBtn.clipY = 0;
-            mBtn.drawX = 34 + (i % 3) * (mBtn.clipW + 8);
-            mBtn.drawY = cardY + (i / 3) * (mBtn.clipH + 10);
-            PartyCardList.add(mBtn);
+            ButtonEnty mCard = new ButtonEnty();
+            mCard.num = i;
+//            mCard.name = "card" + (i + 1);
+            mCard.clipW = 212;
+            mCard.clipH = 280;
+            mCard.clipX = 0;
+            mCard.clipY = 0;
+            mCard.drawX = 34 + (i % 3) * (mCard.clipW + 8);
+            mCard.drawY = cardY + (i / 3) * (mCard.clipH + 10);
+            mCard.name = currentParty.memberPos[i];
+            if(!mCard.name.equals("0")) {
+                String imgPath = DataManager.getMemberData(gameMain.dbAdapter, mCard.name).image;
+                mCard.bitmap = GLUtil.loadAssetsBitmap(gameMain.appClass, "member/" + imgPath, null, 2);
+            }
+            PartyCardList.add(mCard);
         }
 
         int partyBtnH = 115;
-        int bottomMenuY = gameMain.canvasH-partyBtnH;
+        int bottomMenuY = gameMain.canvasH - partyBtnH;
         // party button 위치
         for (int i = 0; i < 5; i++) {
             ButtonEnty mBtn = new ButtonEnty();
@@ -115,18 +141,27 @@ public class Game_Party extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-        if(gameMain.onTouchEvent())
-            return;
 
-//        if (GameUtil.equalsTouch(gameMain.appClass.touch, backBtn.drawX, backBtn.drawY,
-//                backBtn.clipW, backBtn.clipH)) {
-//            backBtn.clickState = ButtonEnty.ButtonClickOn;
-//            if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
-//                backBtn.clickState = ButtonEnty.ButtonClickOff;
-//                gameMain.mainButtonAct(INN.GAME_HOME, 0);
-//            }
-//            return;
-//        }
+        if (GameUtil.equalsTouch(gameMain.appClass.touch, okBtn.drawX, okBtn.drawY,
+                okBtn.clipW, okBtn.clipH)) {
+            okBtn.clickState = ButtonEnty.ButtonClickOn;
+            if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
+                okBtn.clickState = ButtonEnty.ButtonClickOff;
+                //파티설정 저장
+            }
+            return;
+        }
+
+        if (GameUtil.equalsTouch(gameMain.appClass.touch, backBtn.drawX, backBtn.drawY,
+                backBtn.clipW, backBtn.clipH)) {
+            backBtn.clickState = ButtonEnty.ButtonClickOn;
+            if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
+                backBtn.clickState = ButtonEnty.ButtonClickOff;
+                gameMain.mainButtonAct(INN.GAME_HOME, 0);
+            }
+            return;
+        }
+
 
         for (int i = 0; i < PartyNumButtonList.size(); i++) {
             ButtonEnty btn = PartyNumButtonList.get(i);
@@ -161,4 +196,6 @@ public class Game_Party extends Game {
         }
 
     }
+
+
 }

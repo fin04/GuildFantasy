@@ -61,6 +61,7 @@ public class GameDbAdapter {
     public static final String KEY_QUESTTITLE = "quest_title";
     public static final String KEY_QUESTTYPE = "quest_type";
     public static final String KEY_QUESTMAP = "quest_map";
+    public static final String KEY_QUESTTIME = "quest_time";
     public static final String KEY_QUESTMONSTER1 = "quest_monster1";
     public static final String KEY_QUESTMONSTER2 = "quest_monster2";
     public static final String KEY_QUESTDIFFICULT = "quest_difficult";
@@ -110,13 +111,18 @@ public class GameDbAdapter {
     public static final String KEY_MEMBERARM2 = "member_arm2";
 
     public static final String KEY_PARTYID = "party_id";
+    public static final String KEY_PARTYNUM = "party_num";
     public static final String KEY_PARTYTITLE = "party_title";
     public static final String KEY_PARTYBIRTH = "party_birth";
-    public static final String KEY_MEMBER1_ID = "party_member1";
-    public static final String KEY_MEMBER2_ID = "party_member2";
-    public static final String KEY_MEMBER3_ID = "party_member3";
-    public static final String KEY_MEMBER4_ID = "party_member4";
-    public static final String KEY_MEMBER5_ID = "party_member5";
+    public static final String KEY_PARTYPOS_1 = "party_pos1";
+    public static final String KEY_PARTYPOS_2 = "party_pos2";
+    public static final String KEY_PARTYPOS_3 = "party_pos3";
+    public static final String KEY_PARTYPOS_4 = "party_pos4";
+    public static final String KEY_PARTYPOS_5 = "party_pos5";
+    public static final String KEY_PARTYPOS_6 = "party_pos6";
+    public static final String KEY_PARTYPOS_7 = "party_pos7";
+    public static final String KEY_PARTYPOS_8 = "party_pos8";
+    public static final String KEY_PARTYPOS_9 = "party_pos9";
     public static final String KEY_PARTY_GOLD = "party_gold";
     public static final String KEY_PARTY_EXP = "party_exp";
 
@@ -169,9 +175,10 @@ public class GameDbAdapter {
     };
 
     private static String[] PlayerPartyColumns = new String[]{
-            KEY_PARTYID, KEY_USERNAME, KEY_PARTYTITLE, KEY_PARTYBIRTH, KEY_QUESTID,
-            KEY_MEMBER1_ID, KEY_MEMBER2_ID, KEY_MEMBER3_ID, KEY_MEMBER4_ID, KEY_MEMBER5_ID,
-            KEY_PARTY_GOLD, KEY_PARTY_EXP
+            KEY_PARTYID, KEY_PARTYTITLE, KEY_PARTYNUM, KEY_USERNAME, KEY_PARTYBIRTH,
+            KEY_QUESTID, KEY_QUESTTIME, KEY_PARTY_EXP, KEY_PARTY_GOLD, KEY_PARTYPOS_1,
+            KEY_PARTYPOS_2, KEY_PARTYPOS_3, KEY_PARTYPOS_4, KEY_PARTYPOS_5, KEY_PARTYPOS_6,
+            KEY_PARTYPOS_7, KEY_PARTYPOS_8, KEY_PARTYPOS_9
     };
 
     private static final String TAG = "GameDbAdapter";

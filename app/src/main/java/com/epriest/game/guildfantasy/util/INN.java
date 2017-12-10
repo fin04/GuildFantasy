@@ -17,8 +17,8 @@ public interface INN {
     public final static int GAME_PARTY = 9;
     public final static int GAME_OPTION = 10;
 
+    public final static int MODE_DEFAULT = 0;
     public final static int MODE_PARTY_SELECT = 1;
-    public final static int MODE_PARTY_INFO = 0;
     public final static int MODE_MEMBER_RECRUIT = 2;
     public final static int MODE_MEMBER_SELECT = 3;
 
@@ -32,8 +32,8 @@ public interface INN {
 
     public final static String[] classNameArr = {"All", "Knight", "Warrior", "Cleric", "Mage", "Ranger", "Rogue"};
 
-    public final static String[] menuIconName = {"Inn", "Bar", "Temple", "Shop", "Guild", "Gate"};
-    public final static int[] menuIconNum = {4, 1, 2, 3, 0, 5};
+    public final static String[] menuIconName = {"Inn", "Bar", "Guild", "Shop", "Temple", "Gate"};
+    public final static int[] menuIconNum = {4, 1, 0, 3, 2, 5};
     //    public final static int statusBarH = 45;
     public final static String[] tileName = {
             "Field", "Hill", "Mountine", "Sand", "Forest",

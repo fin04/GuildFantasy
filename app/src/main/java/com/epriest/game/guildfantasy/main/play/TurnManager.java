@@ -74,7 +74,7 @@ public class TurnManager {
                 enty.status.LEVEL++;
                 enty.status.EXP = enty.status.MAX_EXP - enty.status.EXP;
                 enty.status.MAX_EXP = mathMaxExp(enty.status.LEVEL);
-                DataManager.updateUserMember(game_main.dbAdapter, game_main.userEnty.Name, enty);
+                DataManager.updateUserMember(game_main.dbAdapter, enty.memberId, enty);
             }
         }
     }

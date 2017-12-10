@@ -22,5 +22,5 @@ public class UserEnty {
     public ArrayList<QuestEnty> QUESTLIST;
     public ArrayList<MemberEnty> MEMBERLIST;
 //    public ArrayList<String> PARTY_MEMBERID_LIST;
-    public ArrayList<PartyEnty> PARTYLIST;
+//    public ArrayList<PartyEnty> PARTYLIST;
 }
