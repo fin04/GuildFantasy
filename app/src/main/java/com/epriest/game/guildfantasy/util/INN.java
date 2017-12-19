@@ -19,7 +19,7 @@ public interface INN {
 
     public final static int MODE_DEFAULT = 0;
     public final static int MODE_PARTY_SELECT = 1;
-    public final static int MODE_MEMBER_RECRUIT = 2;
+    public final static int MODE_MEMBER_PARTY = 2;
     public final static int MODE_MEMBER_SELECT = 3;
 
     public final static int MAPTILE_VILLAGE = 12;
@@ -56,6 +56,7 @@ public interface INN {
     public final static int ALERT_TYPE_GETNEWMEMBER = 3;
     public final static int ALERT_TYPE_MAXMEMBER = 4;
     public final static int ALERT_TYPE_GEMNOTENOUGH = 5;
+    public final static int ALERT_TYPE_VIEWMEMBER = 6;
 
     public final static boolean setTempImg = false;
 }

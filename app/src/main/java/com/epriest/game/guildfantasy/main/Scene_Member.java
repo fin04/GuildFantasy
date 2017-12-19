@@ -12,6 +12,7 @@ import com.epriest.game.CanvasGL.util.Scene;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.ImageEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
+import com.epriest.game.guildfantasy.util.INN;
 
 import static com.epriest.game.CanvasGL.graphics.CanvasUtil.*;
 
@@ -73,20 +74,28 @@ public class Scene_Member extends Scene {
             }
         }
 
-        CanvasUtil.drawString(mCanvas, "" + gameMember.gameMain.selectCardNum, 30, Color.YELLOW, Paint.Align.LEFT, 300, 120);
+        CanvasUtil.drawString(mCanvas, "" + gameMember.gameMain.selectCardNum, 30,
+                Color.YELLOW, Paint.Align.LEFT, 300, 120);
 
         drawPartyButton(mCanvas);
         gameMember.gameMain.drawStatusTab(mCanvas);
+
+        if(gameMember.gameMain.showAlertType == INN.ALERT_TYPE_VIEWMEMBER) {
+            gameMember.gameMain.drawMemberAlert(mCanvas, gameMember.img_member.get(gameMember.selectMember),
+                    gameMember.memberList.get(gameMember.selectMember));
+        }
     }
 
-    private void drawMemberCard(Canvas mCanvas, int i, int cx, int cy, int chrImgX, int chrImgY, int cardTextBoxY) {
+    private void drawMemberCard(Canvas mCanvas, int i, int cx, int cy, int chrImgX, int chrImgY,
+                                int cardTextBoxY) {
         MemberEnty enty = gameMember.memberList.get(i);
 
         //draw cardBG
         CanvasUtil.drawClip(gameMember.img_membercard, mCanvas, 0, 0,
                 gameMember.cardW, gameMember.cardH, cx, cy);
         //draw Character
-        CanvasUtil.drawClip(gameMember.img_member.get(i), mCanvas, (gameMember.img_member.get(i).getWidth() - gameMember.cardW) / 2, 80,
+        CanvasUtil.drawClip(gameMember.img_member.get(i), mCanvas,
+                (gameMember.img_member.get(i).getWidth() - gameMember.cardW) / 2, 80,
                 gameMember.cardW - 10, gameMember.cardH - 10, cx + 5, cy + 5);
         //draw cardNameBG
         CanvasUtil.drawClip(gameMember.img_membercard, mCanvas, 176, 283,
@@ -95,8 +104,10 @@ public class Scene_Member extends Scene {
         CanvasUtil.drawClip(gameMember.img_membercard, mCanvas, 35, 283,
                 gameMember.cardTextBoxW, gameMember.cardTextBoxH, cx + 35, cy + cardTextBoxY);
 
-        CanvasUtil.drawString(mCanvas, enty.name, 20, Color.WHITE, Paint.Align.CENTER, cx + gameMember.cardW / 2, cy + 7);
-        CanvasUtil.drawString(mCanvas, "LV." + Integer.toString(enty.status.LEVEL), 20, Color.DKGRAY, Paint.Align.LEFT, cx + 15, cy + 3);
+        CanvasUtil.drawString(mCanvas, enty.name, 20, Color.WHITE, Paint.Align.CENTER,
+                cx + gameMember.cardW / 2, cy + 7);
+        CanvasUtil.drawString(mCanvas, "LV." + Integer.toString(enty.status.LEVEL), 20,
+                Color.DKGRAY, Paint.Align.LEFT, cx + 15, cy + 3);
 
 
 //        int cardY = gameMember.img_title_bg.getHeight()+300+30;

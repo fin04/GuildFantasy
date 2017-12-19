@@ -328,7 +328,7 @@ public class Game_Main {
                     if (mBtn.name.equals(INN.menuIconName[0]))
                         mainButtonAct(INN.GAME_MEMBER, 0);
                     else if (mBtn.name.equals(INN.menuIconName[1]))
-                        mainButtonAct(INN.GAME_RECRUIT, INN.MODE_MEMBER_RECRUIT);
+                        mainButtonAct(INN.GAME_RECRUIT, 0);
                     else if (mBtn.name.equals(INN.menuIconName[2]))
                         mainButtonAct(INN.GAME_PARTY, 0);
                     else if (mBtn.name.equals(INN.menuIconName[3]))

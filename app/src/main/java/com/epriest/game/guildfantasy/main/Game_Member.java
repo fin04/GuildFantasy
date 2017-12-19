@@ -61,14 +61,14 @@ public class Game_Member extends Game {
         cardH = 280;
         cardRowNum = gameMain.canvasW / cardW;
 
-        cardX = (gameMain.canvasW-(cardW+10)*cardRowNum+10)/2;
-        cardY = gameMain.statusBarH+200;
+        cardX = (gameMain.canvasW - (cardW + 10) * cardRowNum + 10) / 2;
+        cardY = gameMain.statusBarH + 200;
 
         cardTextBoxW = 140;
         cardTextBoxH = 90;
 
         int memberBtnH = 84;
-        int bottomMenuY = gameMain.canvasH-memberBtnH;
+        int bottomMenuY = gameMain.canvasH - memberBtnH;
         // party button 위치
         for (int i = 0; i < 5; i++) {
             ButtonEnty mBtn = new ButtonEnty();
@@ -100,35 +100,40 @@ public class Game_Member extends Game {
         if (gameMain.onTouchEvent())
             return;
 
-        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
             prevScrollY = scrollY;
-        }else if(event.getAction() == MotionEvent.ACTION_UP) {
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
             if (prevScrollY == scrollY) {
-                selectMember = (((int)gameMain.appClass.touch.mLastTouchX-cardX) / cardW)
-                        + (((int)gameMain.appClass.touch.mLastTouchY+scrollY-cardY)/cardH)*cardRowNum;
+                selectMember = (((int) gameMain.appClass.touch.mLastTouchX - cardX) / cardW)
+                        + (((int) gameMain.appClass.touch.mLastTouchY + scrollY - cardY) / cardH) * cardRowNum;
 //                gameMain.userEnty.MEMBERLIST.get(selectMember).party_number = gameMain.selectCardNum;
 //                String partyID = gameMain.userEnty.Name+"_"+gameMain.getSelectPartyNum();
-                String memberID = memberList.get(selectMember).memberId;
-                DataManager.updateUserPartyMember(gameMain.dbAdapter, memberID,
-                        gameMain.userEnty.Name, gameMain.getSelectPartyNum(), gameMain.getSelectPosition());
 
-                if(gameMain.appClass.stateMode == INN.MODE_MEMBER_SELECT) {
-                    gameMain.appClass.stateMode = INN.MODE_DEFAULT;
-                    gameMain.mainButtonAct(INN.GAME_PARTY, 0);
-                }else{
-                    //멤버 상세
+                if (selectMember != -1) {
+                    String memberID = memberList.get(selectMember).memberId;
+                    DataManager.updateUserPartyMember(gameMain.dbAdapter, memberID,
+                            gameMain.userEnty.Name, gameMain.getSelectPartyNum(), gameMain.getSelectPosition());
+
+                    if (gameMain.appClass.stateMode == INN.MODE_MEMBER_PARTY) {
+                        gameMain.appClass.stateMode = INN.MODE_DEFAULT;
+                        gameMain.mainButtonAct(INN.GAME_PARTY, 0);
+                    } else {
+                        //멤버 상세
+                    }
+                } else if (gameMain.appClass.stateMode == INN.MODE_MEMBER_SELECT) {
+                    gameMain.showAlertType = INN.ALERT_TYPE_VIEWMEMBER;
                 }
                 return;
-            }else{
+            } else {
             }
         }
-        scrollY = prevScrollY - (int)(gameMain.appClass.touch.mLastTouchY - gameMain.appClass.touch.mDownY);
-        int maxScrollY = (gameMain.userEnty.MEMBERLIST.size()/cardRowNum) * (cardH+30) - (gameMain.canvasH-cardY);
-        if(maxScrollY < 0 )
+        scrollY = prevScrollY - (int) (gameMain.appClass.touch.mLastTouchY - gameMain.appClass.touch.mDownY);
+        int maxScrollY = (gameMain.userEnty.MEMBERLIST.size() / cardRowNum) * (cardH + 30) - (gameMain.canvasH - cardY);
+        if (maxScrollY < 0)
             maxScrollY = 0;
-        if(scrollY < 0)
+        if (scrollY < 0)
             scrollY = 0;
-        else if(scrollY > maxScrollY)
+        else if (scrollY > maxScrollY)
             scrollY = maxScrollY;
 
 //        if(event.getAction() == MotionEvent.ACTION_UP) {
