@@ -27,11 +27,12 @@ public class Game_Member extends Game {
     public Bitmap img_membercard;
     public Bitmap img_bg;
 
-    public ArrayList<ButtonEnty> MemberButtonList = new ArrayList<>();
+    public ArrayList<ButtonEnty> PartyButtonList = new ArrayList<>();
+    public ArrayList<ButtonEnty> addMemberButtonList = new ArrayList<>();
     public ArrayList<MemberEnty> memberList;
     public ArrayList<Bitmap> img_member;
 
-    public int cardW, cardH;
+        public int cardW, cardH;
     public int cardRowNum;
     public int cardTextBoxW, cardTextBoxH;
     public int scrollY, prevScrollY;
@@ -61,29 +62,59 @@ public class Game_Member extends Game {
         cardH = 280;
         cardRowNum = gameMain.canvasW / cardW;
 
-        cardX = (gameMain.canvasW - (cardW + 10) * cardRowNum + 10) / 2;
+        cardX = 34;
         cardY = gameMain.statusBarH + 200;
+
+        if (gameMain.appClass.stateMode == INN.MODE_MEMBER_PARTY) {
+            setAddMemberCardList();
+        }
+
+        setPartyButton();
+    }
+
+    private void setAddMemberCardList() {
+        int btnW = 47;
+        int btnH = 47;
 
         cardTextBoxW = 140;
         cardTextBoxH = 90;
 
-        int memberBtnH = 84;
-        int bottomMenuY = gameMain.canvasH - memberBtnH;
-        // party button 위치
-        for (int i = 0; i < 5; i++) {
+//        int cardY = 300;
+        for (int i = 0; i < 9; i++) {
             ButtonEnty mBtn = new ButtonEnty();
             mBtn.num = i;
-            mBtn.name = "party" + (i + 1);
-            mBtn.clipW = 95;
-            mBtn.clipH = memberBtnH;
-            mBtn.clipX = 0;
+//            mCard.name = "card" + (i + 1);
+            mBtn.clipW = btnW;
+            mBtn.clipH = btnH;
+            mBtn.clipX = 213;
             mBtn.clipY = 0;
-            mBtn.drawX = 30 + (mBtn.clipW + 10) * i;
-            mBtn.drawY = bottomMenuY + 1;
-            MemberButtonList.add(mBtn);
+            mBtn.drawX = 34 + (i % cardRowNum) * (cardW + 8) + cardW - mBtn.clipW;
+            mBtn.drawY = cardY + (i / cardRowNum) * (cardH + 10) + cardH - mBtn.clipH;
+            mBtn.name = memberList.get(i).name;
+            if (!mBtn.name.equals("0")) {
+                String imgPath = memberList.get(i).image;
+                mBtn.bitmap = GLUtil.loadAssetsBitmap(gameMain.appClass, "member/" + imgPath, null, 2);
+            }
+            addMemberButtonList.add(mBtn);
         }
     }
 
+    private void setPartyButton() {
+        int memberBtnH = 84;
+        int bottomMenuY = gameMain.canvasH - memberBtnH;
+        for (int i = 0; i < 5; i++) {
+            ButtonEnty mParty = new ButtonEnty();
+            mParty.num = i;
+            mParty.name = "party" + (i + 1);
+            mParty.clipW = 95;
+            mParty.clipH = memberBtnH;
+            mParty.clipX = 0;
+            mParty.clipY = 0;
+            mParty.drawX = 30 + (mParty.clipW + 10) * i;
+            mParty.drawY = bottomMenuY + 1;
+            PartyButtonList.add(mParty);
+        }
+    }
 
     @Override
     public void gStop() {
@@ -100,6 +131,39 @@ public class Game_Member extends Game {
         if (gameMain.onTouchEvent())
             return;
 
+        //party 편성용 버튼
+        if (gameMain.appClass.stateMode == INN.MODE_MEMBER_PARTY) {
+            for (int i = 0; i < addMemberButtonList.size(); i++) {
+                ButtonEnty btn = addMemberButtonList.get(i);
+                if (GameUtil.equalsTouch(gameMain.appClass.touch, btn.drawX, btn.drawY, btn.clipW, btn.clipH+scrollY)) {
+                    switch (gameMain.appClass.touch.action) {
+                        case MotionEvent.ACTION_DOWN:
+                            btn.clickState = ButtonEnty.ButtonClickOn;
+                            prevScrollY = scrollY;
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            btn.clickState = ButtonEnty.ButtonClickOff;
+                            if (prevScrollY == scrollY) {
+                                selectMember = btn.num;
+                                if (selectMember != -1) {
+                                    String memberID = memberList.get(selectMember).memberId;
+                                    DataManager.updateUserPartyMember(gameMain.dbAdapter, memberID,
+                                            gameMain.userEnty.Name, gameMain.getSelectPartyNum(),
+                                            gameMain.getSelectPosition());
+
+                                    gameMain.appClass.stateMode = INN.MODE_DEFAULT;
+                                    gameMain.mainButtonAct(INN.GAME_PARTY, 0);
+                                }
+
+                            }
+                            break;
+                    }
+                    return;
+                }
+            }
+        }
+
+        //멤버 상세
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             prevScrollY = scrollY;
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -114,12 +178,9 @@ public class Game_Member extends Game {
                     DataManager.updateUserPartyMember(gameMain.dbAdapter, memberID,
                             gameMain.userEnty.Name, gameMain.getSelectPartyNum(), gameMain.getSelectPosition());
 
-                    if (gameMain.appClass.stateMode == INN.MODE_MEMBER_PARTY) {
-                        gameMain.appClass.stateMode = INN.MODE_DEFAULT;
-                        gameMain.mainButtonAct(INN.GAME_PARTY, 0);
-                    } else {
+
                         //멤버 상세
-                    }
+
                 } else if (gameMain.appClass.stateMode == INN.MODE_MEMBER_SELECT) {
                     gameMain.showAlertType = INN.ALERT_TYPE_VIEWMEMBER;
                 }
@@ -135,6 +196,7 @@ public class Game_Member extends Game {
             scrollY = 0;
         else if (scrollY > maxScrollY)
             scrollY = maxScrollY;
+
 
 //        if(event.getAction() == MotionEvent.ACTION_UP) {
 //            if(prevScrollY == scrollY){
@@ -153,7 +215,7 @@ public class Game_Member extends Game {
 //        else if(scrollY > maxScrollY)
 //            scrollY = maxScrollY;
 
-        if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
+        /*if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
             for (int i = 0; i < memberList.size(); i++) {
                 int cx = cardX + i % cardRowNum * (cardW + 10);
                 int cy = cardY + i / cardRowNum * (cardH + 30);
@@ -163,6 +225,6 @@ public class Game_Member extends Game {
                     return;
                 }
             }
-        }
+        }*/
     }
 }

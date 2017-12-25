@@ -71,9 +71,8 @@ public class Game_Party extends Game {
 //        img_memberFrame = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member_frame.png", null);
 //        img_questPaper = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/guildpaper.png", null);
 
+//        gameMain.setCardListFromSelectParty(0, 0);
         currentParty = DataManager.getPartyData(gameMain.dbAdapter, gameMain.userEnty.Name, gameMain.getSelectPartyNum());
-
-        gameMain.setCardListFromSelectParty(0, 0);
 
         backBtn = new ButtonEnty();
         backBtn.clipW = 102;
@@ -89,11 +88,34 @@ public class Game_Party extends Game {
         okBtn.clipH = 53;
         okBtn.clipX = 121;
         okBtn.clipY = 0;
-        okBtn.name = "back";
+        okBtn.name = "ok";
         okBtn.drawX = gameMain.canvasW - okBtn.clipW * 2 - 20;
         okBtn.drawY = (gameMain.statusBarH - okBtn.clipH) / 2;
 
         // party card 위치
+        setPartyCardList();
+
+        int partyBtnH = 115;
+        int bottomMenuY = gameMain.canvasH - partyBtnH;
+        // party button 위치
+        for (int i = 0; i < 5; i++) {
+            ButtonEnty mBtn = new ButtonEnty();
+            mBtn.num = i;
+            mBtn.name = "party" + (i + 1);
+            mBtn.clipW = 115;
+            mBtn.clipH = partyBtnH;
+            mBtn.clipX = 0;
+            mBtn.clipY = 172;
+            mBtn.drawX = 40 + (mBtn.clipW + 10) * i;
+            mBtn.drawY = bottomMenuY - 5;
+            PartyNumButtonList.add(mBtn);
+        }
+    }
+
+    /**
+     * Card Setting
+     */
+    private void setPartyCardList(){
         int cardY = 300;
         for (int i = 0; i < 9; i++) {
             ButtonEnty mCard = new ButtonEnty();
@@ -111,22 +133,6 @@ public class Game_Party extends Game {
                 mCard.bitmap = GLUtil.loadAssetsBitmap(gameMain.appClass, "member/" + imgPath, null, 2);
             }
             PartyCardList.add(mCard);
-        }
-
-        int partyBtnH = 115;
-        int bottomMenuY = gameMain.canvasH - partyBtnH;
-        // party button 위치
-        for (int i = 0; i < 5; i++) {
-            ButtonEnty mBtn = new ButtonEnty();
-            mBtn.num = i;
-            mBtn.name = "party" + (i + 1);
-            mBtn.clipW = 115;
-            mBtn.clipH = partyBtnH;
-            mBtn.clipX = 0;
-            mBtn.clipY = 172;
-            mBtn.drawX = 40 + (mBtn.clipW + 10) * i;
-            mBtn.drawY = bottomMenuY - 5;
-            PartyNumButtonList.add(mBtn);
         }
     }
 
@@ -171,6 +177,9 @@ public class Game_Party extends Game {
                     btn.clickState = ButtonEnty.ButtonClickOff;
                     gameMain.setSelectPartyNum(i);
 //                    currentParty = gameMain.userEnty.PARTYLIST.get(selectPartyNum);
+                    currentParty = DataManager.getPartyData(gameMain.dbAdapter,
+                            gameMain.userEnty.Name, gameMain.getSelectPartyNum());
+                    setPartyCardList();
                 }
                 return;
             } else {

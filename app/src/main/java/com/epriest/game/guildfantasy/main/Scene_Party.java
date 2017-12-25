@@ -67,6 +67,8 @@ public class Scene_Party extends Scene {
 
         //draw card
         drawPartyCard(mCanvas);
+
+        CanvasUtil.drawString(mCanvas, "PartyNum = "+gameParty.gameMain.getSelectPartyNum(), 30, Color.WHITE, Paint.Align.LEFT, 20,200);
     }
 
     public void drawStatusTab(Canvas mCanvas) {
@@ -185,7 +187,10 @@ public class Scene_Party extends Scene {
         int cardTextBoxH = 90;
         int cardTextBoxY = cardH - cardTextBoxH - 15;
         //draw Character
-        CanvasUtil.drawBitmap(mBtn.bitmap, mCanvas, mBtn.drawX + 5, mBtn.drawY + 5);
+        CanvasUtil.drawClip(mBtn.bitmap, mCanvas,
+                (mBtn.bitmap.getWidth() - mBtn.clipW) / 2, 80,
+                mBtn.clipW - 10, mBtn.clipH - 10, mBtn.drawX + 5, mBtn.drawY + 5);
+//        CanvasUtil.drawBitmap(mBtn.bitmap, mCanvas, mBtn.drawX + 5, mBtn.drawY + 5);
         //draw cardNameBG
         CanvasUtil.drawClip(gameParty.img_membercard, mCanvas, 176, 283,
                 127, 26, mBtn.drawX + (cardW - 127) / 2, mBtn.drawY + 10);
