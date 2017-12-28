@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
+import com.epriest.game.guildfantasy.main.play.AlertManager;
 import com.epriest.game.guildfantasy.util.INN;
 
 /**
@@ -46,8 +47,8 @@ public class Scene_Home extends Scene {
 
         gameHome.gameMain.drawMenu(mCanvas);
 
-        if (gameHome.gameMain.showAlertType == INN.ALERT_TYPE_TURNSTART)
-            gameHome.gameMain.drawTurnStartAlert(mCanvas);
+        if (gameHome.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_TURNSTART)
+            gameHome.gameMain.alertManager.drawTurnStartAlert(mCanvas);
 
     }
 

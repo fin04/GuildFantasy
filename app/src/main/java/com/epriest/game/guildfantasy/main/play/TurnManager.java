@@ -56,7 +56,7 @@ public class TurnManager {
 //        turnEnty.GOLD = getGold(game_main.userEnty.MEMBERLIST.size(), game_main.userEnty.TURN);
 
         AddQuest();
-        game_main.showAlertType = INN.ALERT_TYPE_TURNSTART;
+        game_main.alertManager.showAlertType = AlertManager.ALERT_TYPE_TURNSTART;
 //        game_main.userEnty.isStartTurnAlert = true;
         game_main.userEnty.eventEnty.changeView = true;
         if(game_main.userEnty.eventEnty.ImageList.size() > 0)

@@ -8,6 +8,7 @@ import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
+import com.epriest.game.guildfantasy.main.play.AlertManager;
 import com.epriest.game.guildfantasy.main.play.DataManager;
 import com.epriest.game.guildfantasy.util.INN;
 
@@ -182,7 +183,7 @@ public class Game_Member extends Game {
                         //멤버 상세
 
                 } else if (gameMain.appClass.stateMode == INN.MODE_MEMBER_SELECT) {
-                    gameMain.showAlertType = INN.ALERT_TYPE_VIEWMEMBER;
+                    gameMain.alertManager.showAlertType = AlertManager.ALERT_TYPE_VIEWMEMBER;
                 }
                 return;
             } else {

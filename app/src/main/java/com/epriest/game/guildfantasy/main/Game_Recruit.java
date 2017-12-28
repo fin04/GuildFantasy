@@ -11,6 +11,7 @@ import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.CanvasGL.util.TouchData;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
+import com.epriest.game.guildfantasy.main.play.AlertManager;
 import com.epriest.game.guildfantasy.main.play.DataManager;
 import com.epriest.game.guildfantasy.util.INN;
 
@@ -92,12 +93,12 @@ public class Game_Recruit extends Game {
 
     private void activeNewCard(String type) {
         if(gameMain.userEnty.MEMBERLIST.size() >= maxMember){
-            gameMain.showAlertType = INN.ALERT_TYPE_MAXMEMBER;
+            gameMain.alertManager.showAlertType = AlertManager.ALERT_TYPE_MAXMEMBER;
             return;
         }
         if (type.equals("covenant")) {
             if (gameMain.userEnty.GOLD < 10) {
-                gameMain.showAlertType = INN.ALERT_TYPE_EMPTYGOLD;
+                gameMain.alertManager.showAlertType = AlertManager.ALERT_TYPE_EMPTYGOLD;
             } else {
                 gameMain.userEnty.GOLD -= 10;
                 ArrayList<MemberEnty> entyList = DataManager.getGradeMemberDataList(gameMain.dbAdapter, "1");
@@ -105,7 +106,7 @@ public class Game_Recruit extends Game {
             }
         }else if (type.equals("summon")) {
             if(gameMain.userEnty.GEM_RED == 0 || gameMain.userEnty.GEM_GREEN == 0 || gameMain.userEnty.GEM_BLUE == 0){
-                gameMain.showAlertType = INN.ALERT_TYPE_GEMNOTENOUGH;
+                gameMain.alertManager.showAlertType = AlertManager.ALERT_TYPE_GEMNOTENOUGH;
             }else{
                 gameMain.userEnty.GEM_RED--;
                 gameMain.userEnty.GEM_GREEN--;
@@ -130,7 +131,7 @@ public class Game_Recruit extends Game {
 
         recruitImg = GLUtil.loadAssetsBitmap(gameMain.appClass, "member/"+recruitEnty.image, null, 2);
 //                Toast.makeText(gameMain.appClass, enty.name, Toast.LENGTH_SHORT).show();
-        gameMain.showAlertType = INN.ALERT_TYPE_GETNEWMEMBER;
+        gameMain.alertManager.showAlertType = AlertManager.ALERT_TYPE_GETNEWMEMBER;
     }
 
     @Override

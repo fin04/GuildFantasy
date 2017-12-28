@@ -30,10 +30,23 @@ public interface INN {
     public final static int MAPTILE_RUIN = 17;
     public final static int MAPTILE_NEST = 18;
 
-    public final static String[] classNameArr = {"All", "Knight", "Warrior", "Cleric", "Mage", "Ranger", "Rogue"};
+    public final static String CLASS_KNIGHT = "Knight";
+    public final static String CLASS_WARRIOR = "Warrior";
+    public final static String CLASS_CLERIC = "Cleric";
+    public final static String CLASS_MAGE = "Mage";
+    public final static String CLASS_RANGER = "Ranger";
+    public final static String CLASS_ROGUE = "Rogue";
+    public final static String[] classNameArr = {"All", CLASS_KNIGHT, CLASS_WARRIOR, CLASS_CLERIC, CLASS_MAGE, CLASS_RANGER, CLASS_ROGUE};
 
-    public final static String[] menuIconName = {"Inn", "Bar", "Guild", "Shop", "Temple", "Gate"};
+    public final static String MENU_INN = "Inn";
+    public final static String MENU_BAR = "Bar";
+    public final static String MENU_GUILD = "Guild";
+    public final static String MENU_SHOP = "Shop";
+    public final static String MENU_TEMPLE = "Temple";
+    public final static String MENU_GATE = "Gate";
+    public final static String[] menuIconName = {MENU_INN, MENU_BAR, MENU_GUILD, MENU_SHOP, MENU_TEMPLE, MENU_GATE};
     public final static int[] menuIconNum = {4, 1, 0, 3, 2, 5};
+
     //    public final static int statusBarH = 45;
     public final static String[] tileName = {
             "Field", "Hill", "Mountine", "Sand", "Forest",
@@ -49,14 +62,6 @@ public interface INN {
     public final static int USER_START_GEM = 1;
 
     public final static int CREATE_PLAYER_LIMITED = 3;
-
-    public final static int ALERT_TYPE_NONE = 0;
-    public final static int ALERT_TYPE_TURNSTART = 1;
-    public final static int ALERT_TYPE_EMPTYGOLD = 2;
-    public final static int ALERT_TYPE_GETNEWMEMBER = 3;
-    public final static int ALERT_TYPE_MAXMEMBER = 4;
-    public final static int ALERT_TYPE_GEMNOTENOUGH = 5;
-    public final static int ALERT_TYPE_VIEWMEMBER = 6;
 
     public final static boolean setTempImg = false;
 }

@@ -12,6 +12,7 @@ import com.epriest.game.CanvasGL.util.Scene;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.ImageEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
+import com.epriest.game.guildfantasy.main.play.AlertManager;
 import com.epriest.game.guildfantasy.util.INN;
 
 import static com.epriest.game.CanvasGL.graphics.CanvasUtil.*;
@@ -81,8 +82,8 @@ public class Scene_Member extends Scene {
         drawPartyButton(mCanvas);
         gameMember.gameMain.drawStatusTab(mCanvas);
 
-        if (gameMember.gameMain.showAlertType == INN.ALERT_TYPE_VIEWMEMBER) {
-            gameMember.gameMain.drawMemberAlert(mCanvas, gameMember.img_member.get(gameMember.selectMember),
+        if (gameMember.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_VIEWMEMBER) {
+            gameMember.gameMain.alertManager.drawMemberAlert(mCanvas, gameMember.img_member.get(gameMember.selectMember),
                     gameMember.memberList.get(gameMember.selectMember));
         }
     }
