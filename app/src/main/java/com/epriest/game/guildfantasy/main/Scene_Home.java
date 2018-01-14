@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
+import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.play.AlertManager;
 import com.epriest.game.guildfantasy.util.INN;
 
@@ -33,6 +34,7 @@ public class Scene_Home extends Scene {
     @Override
     public void recycleScene() {
         CanvasUtil.recycleBitmap(gameHome.bg);
+        CanvasUtil.recycleBitmap(gameHome.img_homeBtn);
 //        CanvasUtil.recycleBitmap(gameHome.img_char_01);
     }
 
@@ -44,9 +46,8 @@ public class Scene_Home extends Scene {
     @Override
     public void draw(Canvas mCanvas) {
         drawBG(mCanvas);
-
-        gameHome.gameMain.drawMenu(mCanvas);
-
+        gameHome.gameMain.drawStatusTab(mCanvas);
+        drawMenuButton(mCanvas);
         if (gameHome.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_TURNSTART)
             gameHome.gameMain.alertManager.drawTurnStartAlert(mCanvas);
 
@@ -64,6 +65,39 @@ public class Scene_Home extends Scene {
 //                    gameHome.gameMain.statusBarW, gameHome.gameMain.statusBarH,
 //                    gameHome.gameMain.statusBarW * i, gameHome.gameMain.mMenuTabBarY);
 //        }
+    }
+
+    private void drawMenuButton(Canvas mCanvas) {
+//        int btnArea = (canvasH - statusBarH)/ gameMain.menuButtonList.size();
+        for (ButtonEnty mBtn : gameHome.menuButtonList) {
+            int clipX = mBtn.clipX;
+            int clipY = mBtn.clipY;
+            if (mBtn.clickState == ButtonEnty.ButtonClickOn) {
+                if (mBtn.num == gameHome.menuButtonList.size() - 1)
+                    clipX += mBtn.clipW;
+                else
+                    clipY += mBtn.clipH;
+            }
+            //Button Image
+            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, clipX, clipY,
+                    mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
+
+            int btnNameX = mBtn.drawX + (mBtn.clipW - 180) / 2;
+            int btnNameY = mBtn.drawY + (mBtn.clipH - 50) / 2;
+            //Button Title
+            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 220, mBtn.iconImgNum * 50,
+                    180, 50, btnNameX, btnNameY);
+            btnNameX = mBtn.drawX + (mBtn.clipW - 130);
+            btnNameY = mBtn.drawY;
+            //Button Subtitle
+            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 400, mBtn.iconImgNum * 50,
+                    130, 50, btnNameX, btnNameY);
+            //Button Subtitle HanGul
+//            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 531, mBtn.iconImgNum*50,
+//                    130, 50, btnNameX, btnNameY);
+//            CanvasUtil.drawClip(menu_icon, mCanvas, null, (iconNum%5)*mBtn.w, (iconNum/5)*mBtn.h,
+//                    mBtn.w, mBtn.h, mBtn.x+(btnArea-mBtn.w)/2, mBtn.y);
+        }
     }
 
 }

@@ -81,30 +81,30 @@ public class AlertManager {
         return false;
     }
 
-    public boolean onTurnAlertTouch() {
-        if (showAlertType == AlertManager.ALERT_TYPE_NONE)
-            return false;
-        int turnBtnNum = game_main.menuButtonList.size() - 1;
-        if (GameUtil.equalsTouch(game_main.appClass.touch,
-                game_main.menuButtonList.get(turnBtnNum).drawX, game_main.menuButtonList.get(turnBtnNum).drawY,
-                game_main.menuButtonList.get(turnBtnNum).clipW, game_main.menuButtonList.get(turnBtnNum).clipH)) {
-            if (game_main.appClass.touch.action == MotionEvent.ACTION_UP) {
-                game_main.menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOff;
-                switch (game_main.appClass.gameState) {
-                    case INN.GAME_HOME:
-                        game_main.turnManager.turnCycle(game_main.userEnty.TURN++);
-                        break;
-                }
-                showAlertType = AlertManager.ALERT_TYPE_NONE;
-                return true;
-            } else {
-                game_main.menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOn;
-            }
-        } else {
-            game_main.menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOff;
-        }
-        return false;
-    }
+//    public boolean onTurnAlertTouch() {
+//        if (showAlertType == AlertManager.ALERT_TYPE_NONE)
+//            return false;
+//        int turnBtnNum = game_main.menuButtonList.size() - 1;
+//        if (GameUtil.equalsTouch(game_main.appClass.touch,
+//                game_main.menuButtonList.get(turnBtnNum).drawX, game_main.menuButtonList.get(turnBtnNum).drawY,
+//                game_main.menuButtonList.get(turnBtnNum).clipW, game_main.menuButtonList.get(turnBtnNum).clipH)) {
+//            if (game_main.appClass.touch.action == MotionEvent.ACTION_UP) {
+//                game_main.menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOff;
+//                switch (game_main.appClass.gameState) {
+//                    case INN.GAME_HOME:
+//                        game_main.turnManager.turnCycle(game_main.userEnty.TURN++);
+//                        break;
+//                }
+//                showAlertType = AlertManager.ALERT_TYPE_NONE;
+//                return true;
+//            } else {
+//                game_main.menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOn;
+//            }
+//        } else {
+//            game_main.menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOff;
+//        }
+//        return false;
+//    }
 
 
     public void drawAlert(Canvas mCanvas, String title, String text) {

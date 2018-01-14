@@ -40,12 +40,11 @@ public class Game_Main {
 
     public UserEnty userEnty;
 
-    public ArrayList<ButtonEnty> menuButtonList;
+
 
     public ImageEnty managerImg;
 
     public Bitmap img_mainBtn;
-    public Bitmap img_homeBtn;
     public Bitmap img_statusBar;
     public Bitmap img_classMark;
 
@@ -89,7 +88,7 @@ public class Game_Main {
 
         loadMenuIcon();
         loadManager();
-        setMenuIcon();
+        setStatusIcon();
         setManager();
         alertManager.init();
 
@@ -167,36 +166,12 @@ public class Game_Main {
     }
 
     public void loadMenuIcon() {
-        img_homeBtn = GLUtil.loadAssetsBitmap(appClass, "main/home_btn.png", null);
         img_mainBtn = GLUtil.loadAssetsBitmap(appClass, "main/main_btn.png", null);
         img_statusBar = GLUtil.loadAssetsBitmap(appClass, "main/statusbar.png", null);
         img_classMark = GLUtil.loadAssetsBitmap(appClass, "main/classes_mark.png", null);
     }
 
-    public void setMenuIcon() {
-        menuButtonList = new ArrayList<>();
-
-        for (int i = 0; i < INN.menuIconName.length; i++) {
-            ButtonEnty mBtn = new ButtonEnty();
-            mBtn.num = i;
-            mBtn.name = INN.menuIconName[i];
-            mBtn.iconImgNum = INN.menuIconNum[i];
-//                    mBtn.clipW = 96;
-//                    mBtn.clipH = 84;
-//                    mBtn.clipX = 0;
-//                    mBtn.clipY = 0;
-            mBtn.clipW = 220;
-            mBtn.clipH = 150;
-            mBtn.clipX = 0;
-            mBtn.clipY = 0;
-//                    mBtn.drawX = canvasW - 110 - (4 - i) * (mBtn.clipW + 10);
-//                    mBtn.drawY = canvasH - mBtn.clipH - 10;
-
-            mBtn.drawX = 20 + ((mBtn.clipW + 5) * (i % 3));
-            mBtn.drawY = canvasH - (mBtn.clipH * 2) + mBtn.clipH * (i / 3);
-            menuButtonList.add(mBtn);
-        }
-
+    public void setStatusIcon() {
         optionBtn = new ButtonEnty();
         optionBtn.clipW = 102;
         optionBtn.clipH = 53;
@@ -235,14 +210,14 @@ public class Game_Main {
     }
 
     public boolean onTouchMenu() {
-        if (alertManager.onAlertTouch() || alertManager.onTurnAlertTouch())
-            return true;
+//        if (alertManager.onAlertTouch() || alertManager.onTurnAlertTouch())
+//            return true;
 
-        if (appClass.gameState == INN.GAME_HOME) {
-            if (onMeunTouch()) {
-                return true;
-            }
-        }
+//        if (appClass.gameState == INN.GAME_HOME) {
+//            if (onMeunTouch()) {
+//                return true;
+//            }
+//        }
 
         if (onStatusTouch()) {
             return true;
@@ -260,35 +235,7 @@ public class Game_Main {
         return false;
     }
 
-    public boolean onMeunTouch() {
-        for (ButtonEnty mBtn : menuButtonList) {
-            if (GameUtil.equalsTouch(appClass.touch, mBtn.drawX, mBtn.drawY, mBtn.clipW, mBtn.clipH)) {
-                mBtn.clickState = ButtonEnty.ButtonClickOn;
-                if (appClass.touch.action == MotionEvent.ACTION_UP) {
-                    mBtn.clickState = ButtonEnty.ButtonClickOff;
 
-                    if (mBtn.name.equals(INN.menuIconName[0]))
-                        mainButtonAct(INN.GAME_MEMBER, 0);
-                    else if (mBtn.name.equals(INN.menuIconName[1]))
-                        mainButtonAct(INN.GAME_RECRUIT, 0);
-                    else if (mBtn.name.equals(INN.menuIconName[2]))
-                        mainButtonAct(INN.GAME_PARTY, 0);
-                    else if (mBtn.name.equals(INN.menuIconName[3]))
-                        mainButtonAct(INN.GAME_ITEM, 0);
-                    else if (mBtn.name.equals(INN.menuIconName[4]))
-                        mainButtonAct(INN.GAME_SKILL, 0);
-                    else if (mBtn.name.equals(INN.menuIconName[5]))
-                        mainButtonAct(INN.GAME_MOVE, 0);
-                    else if (mBtn.name.equals("Menu"))
-                        mainButtonAct(INN.GAME_OPTION, 0);
-                    return true;
-                }
-            } else {
-                mBtn.clickState = ButtonEnty.ButtonClickOff;
-            }
-        }
-        return false;
-    }
 
     public boolean onStatusTouch() {
         if (GameUtil.equalsTouch(appClass.touch,
@@ -296,7 +243,17 @@ public class Game_Main {
             if (appClass.touch.action == MotionEvent.ACTION_UP) {
                 optionBtn.clickState = ButtonEnty.ButtonClickOff;
                 if (optionBtn.name.equals("back")) {
-                    mainButtonAct(INN.GAME_HOME, 0);
+                    switch(appClass.stateMode){
+                        case INN.MODE_MEMBER_PARTY:
+                            appClass.stateMode = INN.MODE_DEFAULT;
+                            mainButtonAct(INN.GAME_PARTY, 0);
+                            break;
+                        default:
+                            mainButtonAct(INN.GAME_HOME, 0);
+                            break;
+                    }
+                }else if (optionBtn.name.equals("menu")) {
+
                 }
                 return true;
             } else {
@@ -310,7 +267,6 @@ public class Game_Main {
 
     public void recycleScene() {
         CanvasUtil.recycleBitmap(img_mainBtn);
-        CanvasUtil.recycleBitmap(img_homeBtn);
         CanvasUtil.recycleBitmap(img_statusBar);
         CanvasUtil.recycleBitmap(img_classMark);
         CanvasUtil.recycleBitmap(managerImg.bitmap);
@@ -321,47 +277,12 @@ public class Game_Main {
 
     }
 
-    public void drawMenu(Canvas mCanvas) {
-        drawMenuButton(mCanvas);
-
-        drawStatusTab(mCanvas);
-
-        //manager mode
-//        drawManager(mCanvas);
-    }
-
-    private void drawMenuButton(Canvas mCanvas) {
-//        int btnArea = (canvasH - statusBarH)/ gameMain.menuButtonList.size();
-        for (ButtonEnty mBtn : menuButtonList) {
-            int clipX = mBtn.clipX;
-            int clipY = mBtn.clipY;
-            if (mBtn.clickState == ButtonEnty.ButtonClickOn) {
-                if (mBtn.num == menuButtonList.size() - 1)
-                    clipX += mBtn.clipW;
-                else
-                    clipY += mBtn.clipH;
-            }
-            //Button Image
-            CanvasUtil.drawClip(img_homeBtn, mCanvas, clipX, clipY,
-                    mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
-
-            int btnNameX = mBtn.drawX + (mBtn.clipW - 180) / 2;
-            int btnNameY = mBtn.drawY + (mBtn.clipH - 50) / 2;
-            //Button Title
-            CanvasUtil.drawClip(img_homeBtn, mCanvas, 220, mBtn.iconImgNum * 50,
-                    180, 50, btnNameX, btnNameY);
-            btnNameX = mBtn.drawX + (mBtn.clipW - 130);
-            btnNameY = mBtn.drawY;
-            //Button Subtitle
-            CanvasUtil.drawClip(img_homeBtn, mCanvas, 400, mBtn.iconImgNum * 50,
-                    130, 50, btnNameX, btnNameY);
-            //Button Subtitle HanGul
-//            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 531, mBtn.iconImgNum*50,
-//                    130, 50, btnNameX, btnNameY);
-//            CanvasUtil.drawClip(menu_icon, mCanvas, null, (iconNum%5)*mBtn.w, (iconNum/5)*mBtn.h,
-//                    mBtn.w, mBtn.h, mBtn.x+(btnArea-mBtn.w)/2, mBtn.y);
-        }
-    }
+//    public void drawMenu(Canvas mCanvas) {
+//        drawStatusTab(mCanvas);
+//
+//        //manager mode
+////        drawManager(mCanvas);
+//    }
 
     public void drawBarGage(Canvas mCanvas, int bgColor, int color, String title,
                             int num, int maxNum, int x, int y, int w, int h) {
@@ -445,7 +366,7 @@ public class Game_Main {
     }
 
     private void drawManager(Canvas mCanvas) {
-        int managerBottomY = menuButtonList.get(3).drawY - 484;
+        int managerBottomY = canvasH - 484;
         CanvasUtil.drawClip(managerImg.bitmap, mCanvas, 490, 156,
                 228, 484, 50, managerBottomY);
 

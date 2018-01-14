@@ -21,6 +21,8 @@ public class Game_Event extends Game {
     public void gStart() {
         gameMain.userEnty.eventEnty.changeView = true;
         gameMain.userEnty.eventEnty.currentViewNum = 0;
+
+        gameMain.turnManager.turnCycle(gameMain.userEnty.TURN++);
     }
 
     @Override
