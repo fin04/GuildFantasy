@@ -9,6 +9,7 @@ import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.CanvasGL.util.TextUtil;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
+import com.epriest.game.guildfantasy.main.play.AlertManager;
 import com.epriest.game.guildfantasy.util.INN;
 
 import java.io.IOException;
@@ -30,6 +31,7 @@ public class Game_Home extends Game {
     public int mMainScreenHeight;
 
     public ArrayList<ButtonEnty> menuButtonList;
+    public ButtonEnty turnButton;
 
     public Bitmap bg;
     public Bitmap img_homeBtn;
@@ -58,6 +60,14 @@ public class Game_Home extends Game {
         mMainScreenY = 0;
         setMenuIcon(gameMain.canvasW, gameMain.canvasH);
 
+        turnButton = new ButtonEnty();
+        turnButton.name = INN.MENU_TURNEND;
+        turnButton.clipW = 220;
+        turnButton.clipH = 150;
+        turnButton.clipX = 0;
+        turnButton.clipY = 0;
+        turnButton.drawX = gameMain.canvasW - (turnButton.clipW + 5);
+        turnButton.drawY = gameMain.canvasH - (turnButton.clipH * 3);
     }
 
     private void setMenuIcon(int canvasW, int canvasH) {
@@ -83,6 +93,8 @@ public class Game_Home extends Game {
             mBtn.drawY = canvasH - (mBtn.clipH * 2) + mBtn.clipH * (i / 3);
             menuButtonList.add(mBtn);
         }
+
+
 
         /*ArrayList<ButtonEnty> menuButtonList = new ArrayList<>();
         switch (gameMain.appClass.gameState) {
@@ -184,16 +196,42 @@ public class Game_Home extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-        if(onMeunTouch()){
+        // 홈메뉴 버튼
+        if (onMeunButtonTouch())
             return;
+
+        // 스테이터스 버튼
+        if (gameMain.onStatusTouch())
+            return;
+
+        // 턴 버튼
+        if (onTurnButtonTouch())
+            return;
+
+        // 턴 시작 알림
+        if (gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_NEXT_TURNSTART) {
+            if(gameMain.alertManager.onAlertTouch())
+                return;
         }
-
-
-        if (gameMain.onTouchMenu())
-            return;
     }
 
-    public boolean onMeunTouch() {
+    public boolean onTurnButtonTouch() {
+        if (GameUtil.equalsTouch(gameMain.appClass.touch, turnButton.drawX, turnButton.drawY,
+                turnButton.clipW, turnButton.clipH)) {
+            turnButton.clickState = ButtonEnty.ButtonClickOn;
+            if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
+                turnButton.clickState = ButtonEnty.ButtonClickOff;
+                gameMain.alertManager.showAlertType = AlertManager.ALERT_TYPE_CURRENT_TURNEND;
+                gameMain.alertManager.onAlertTouch();
+                return true;
+            }
+        } else {
+            turnButton.clickState = ButtonEnty.ButtonClickOff;
+        }
+        return false;
+    }
+
+    public boolean onMeunButtonTouch() {
         for (ButtonEnty mBtn : menuButtonList) {
             if (GameUtil.equalsTouch(gameMain.appClass.touch, mBtn.drawX, mBtn.drawY, mBtn.clipW, mBtn.clipH)) {
                 mBtn.clickState = ButtonEnty.ButtonClickOn;

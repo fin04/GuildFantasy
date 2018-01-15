@@ -38,6 +38,10 @@ public interface INN {
     public final static String CLASS_ROGUE = "Rogue";
     public final static String[] classNameArr = {"All", CLASS_KNIGHT, CLASS_WARRIOR, CLASS_CLERIC, CLASS_MAGE, CLASS_RANGER, CLASS_ROGUE};
 
+    public final static String MENU_OPTION = "option";
+    public final static String MENU_TURNEND = "turn";
+    public final static String MENU_BACK = "back";
+
     public final static String MENU_INN = "Inn";
     public final static String MENU_BAR = "Bar";
     public final static String MENU_GUILD = "Guild";

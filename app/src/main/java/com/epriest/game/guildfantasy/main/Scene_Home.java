@@ -2,6 +2,8 @@ package com.epriest.game.guildfantasy.main;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
@@ -48,8 +50,11 @@ public class Scene_Home extends Scene {
         drawBG(mCanvas);
         gameHome.gameMain.drawStatusTab(mCanvas);
         drawMenuButton(mCanvas);
-        if (gameHome.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_TURNSTART)
-            gameHome.gameMain.alertManager.drawTurnStartAlert(mCanvas);
+        if(gameHome.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_CURRENT_TURNEND)
+            gameHome.gameMain.alertManager.drawAlert(mCanvas, "턴 종료", "현재 턴을 끝내겠습니까?");
+
+        if (gameHome.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_NEXT_TURNSTART)
+            drawTurnStartAlert(mCanvas);
 
     }
 
@@ -69,6 +74,14 @@ public class Scene_Home extends Scene {
 
     private void drawMenuButton(Canvas mCanvas) {
 //        int btnArea = (canvasH - statusBarH)/ gameMain.menuButtonList.size();
+
+        CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas,
+                gameHome.turnButton.clipX, gameHome.turnButton.clipY,
+                gameHome.turnButton.clipW, gameHome.turnButton.clipH,
+                gameHome.turnButton.drawX, gameHome.turnButton.drawY);
+        CanvasUtil.drawString(mCanvas, gameHome.turnButton.name, 50, Color.WHITE, Paint.Align.CENTER,
+                gameHome.turnButton.drawX+gameHome.turnButton.clipW/2,gameHome.turnButton.drawY+30);
+
         for (ButtonEnty mBtn : gameHome.menuButtonList) {
             int clipX = mBtn.clipX;
             int clipY = mBtn.clipY;
@@ -98,6 +111,21 @@ public class Scene_Home extends Scene {
 //            CanvasUtil.drawClip(menu_icon, mCanvas, null, (iconNum%5)*mBtn.w, (iconNum/5)*mBtn.h,
 //                    mBtn.w, mBtn.h, mBtn.x+(btnArea-mBtn.w)/2, mBtn.y);
         }
+    }
+
+    public void drawTurnStartAlert(Canvas mCanvas) {
+        StringBuilder sb = new StringBuilder("Turn : ");
+        sb.append(gameHome.gameMain.userEnty.TURN);
+        sb.append("\n");
+        sb.append("Clear Quest : ");
+        sb.append("\n");
+        sb.append("Income : ");
+        sb.append(gameHome.gameMain.userEnty.eventEnty.Gold + "Gold");
+        sb.append("\n");
+        sb.append("New Quest : ");
+        sb.append(gameHome.gameMain.userEnty.eventEnty.QuestIDList.size());
+
+        gameHome.gameMain.alertManager.drawAlert(mCanvas, gameHome.gameMain.userEnty.TURN + " Turn", sb.toString());
     }
 
 }

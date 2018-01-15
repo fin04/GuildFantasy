@@ -136,7 +136,7 @@ public class Game_Recruit extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-        if (gameMain.onTouchEvent())
+        if (gameMain.onStatusTouch())
             return;
 
         TouchData.Touch touch = gameMain.appClass.touch;

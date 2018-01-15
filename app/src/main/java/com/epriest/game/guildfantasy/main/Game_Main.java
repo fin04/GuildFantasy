@@ -209,33 +209,21 @@ public class Game_Main {
         goldIcon.clipY = 126;
     }
 
-    public boolean onTouchMenu() {
-//        if (alertManager.onAlertTouch() || alertManager.onTurnAlertTouch())
+//    public boolean onMainTouch() {
+////        if (alertManager.onAlertTouch() || alertManager.onTurnAlertTouch())
+////            return true;
+//
+////        if (appClass.gameState == INN.GAME_HOME) {
+////            if (onMeunTouch()) {
+////                return true;
+////            }
+////        }
+//
+//        if (onStatusTouch()) {
 //            return true;
-
-//        if (appClass.gameState == INN.GAME_HOME) {
-//            if (onMeunTouch()) {
-//                return true;
-//            }
 //        }
-
-        if (onStatusTouch()) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean onTouchEvent() {
-        if (onStatusTouch())
-            return true;
-
-        if (alertManager.onAlertTouch()) {
-            return true;
-        }
-        return false;
-    }
-
-
+//        return false;
+//    }
 
     public boolean onStatusTouch() {
         if (GameUtil.equalsTouch(appClass.touch,

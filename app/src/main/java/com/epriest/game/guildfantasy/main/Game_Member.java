@@ -129,7 +129,7 @@ public class Game_Member extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-        if (gameMain.onTouchEvent())
+        if (gameMain.onStatusTouch())
             return;
 
         //party 편성용 버튼

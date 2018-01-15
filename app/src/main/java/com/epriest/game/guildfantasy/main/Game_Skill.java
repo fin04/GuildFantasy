@@ -33,7 +33,7 @@ public class Game_Skill extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-        if(gameMain.onTouchEvent())
+        if(gameMain.onStatusTouch())
             return;
     }
 }

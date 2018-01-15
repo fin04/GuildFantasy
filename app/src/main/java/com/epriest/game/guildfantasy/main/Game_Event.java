@@ -37,7 +37,7 @@ public class Game_Event extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-        if (gameMain.onTouchEvent())
+        if (gameMain.onStatusTouch())
             return;
         if (event.getAction() == MotionEvent.ACTION_UP && gameMain.userEnty.eventEnty.changeView == false) {
             if (gameMain.userEnty.eventEnty.currentViewNum < gameMain.userEnty.eventEnty.ImageList.size()-1) {

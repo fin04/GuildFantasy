@@ -22,12 +22,13 @@ import static com.epriest.game.CanvasGL.graphics.CanvasUtil.drawClip;
 
 public class AlertManager {
     public final static int ALERT_TYPE_NONE = 0;
-    public final static int ALERT_TYPE_TURNSTART = 1;
-    public final static int ALERT_TYPE_EMPTYGOLD = 2;
-    public final static int ALERT_TYPE_GETNEWMEMBER = 3;
-    public final static int ALERT_TYPE_MAXMEMBER = 4;
-    public final static int ALERT_TYPE_GEMNOTENOUGH = 5;
-    public final static int ALERT_TYPE_VIEWMEMBER = 6;
+    public final static int ALERT_TYPE_CURRENT_TURNEND = 1;
+    public final static int ALERT_TYPE_NEXT_TURNSTART = 2;
+    public final static int ALERT_TYPE_EMPTYGOLD = 3;
+    public final static int ALERT_TYPE_GETNEWMEMBER = 4;
+    public final static int ALERT_TYPE_MAXMEMBER = 5;
+    public final static int ALERT_TYPE_GEMNOTENOUGH = 6;
+    public final static int ALERT_TYPE_VIEWMEMBER = 7;
 
     private Game_Main game_main;
 
@@ -41,7 +42,7 @@ public class AlertManager {
         this.game_main = game_main;
     }
 
-    public void init(){
+    public void init() {
         canvasW = game_main.canvasW;
         canvasH = game_main.canvasH;
         img_alertBox = GLUtil.loadAssetsBitmap(game_main.appClass, "main/alertbox.png", null);
@@ -60,18 +61,40 @@ public class AlertManager {
     }
 
     public boolean onAlertTouch() {
-        if (showAlertType == AlertManager.ALERT_TYPE_NONE)
-            return false;
+        boolean isResult = false;
+        switch (showAlertType) {
+            case ALERT_TYPE_NONE:
+                break;
+            case ALERT_TYPE_CURRENT_TURNEND:
+                isResult = onTurnFinishAlert();
+                break;
+            case ALERT_TYPE_NEXT_TURNSTART:
+                isResult = onTurnStartAlert();
+                break;
+            case ALERT_TYPE_EMPTYGOLD:
+                break;
+            case ALERT_TYPE_GETNEWMEMBER:
+                break;
+            case ALERT_TYPE_MAXMEMBER:
+                break;
+            case ALERT_TYPE_GEMNOTENOUGH:
+                break;
+            case ALERT_TYPE_VIEWMEMBER:
+                break;
+        }
+        return isResult;
+    }
+
+    /**
+     * 턴종료 알림
+     * @return
+     */
+    public boolean onTurnFinishAlert() {
         if (GameUtil.equalsTouch(game_main.appClass.touch,
                 alertBtn.drawX, alertBtn.drawY, alertBtn.clipW, alertBtn.clipH)) {
             if (game_main.appClass.touch.action == MotionEvent.ACTION_UP) {
                 alertBtn.clickState = ButtonEnty.ButtonClickOff;
-                switch (showAlertType) {
-                    case AlertManager.ALERT_TYPE_TURNSTART:
-                        game_main.userEnty.GOLD += game_main.userEnty.eventEnty.Gold;
-                        break;
-                }
-                showAlertType = AlertManager.ALERT_TYPE_NONE;
+                game_main.turnManager.turnCycle(game_main.userEnty.TURN++);
                 return true;
             } else {
                 alertBtn.clickState = ButtonEnty.ButtonClickOn;
@@ -81,31 +104,24 @@ public class AlertManager {
         return false;
     }
 
-//    public boolean onTurnAlertTouch() {
-//        if (showAlertType == AlertManager.ALERT_TYPE_NONE)
-//            return false;
-//        int turnBtnNum = game_main.menuButtonList.size() - 1;
-//        if (GameUtil.equalsTouch(game_main.appClass.touch,
-//                game_main.menuButtonList.get(turnBtnNum).drawX, game_main.menuButtonList.get(turnBtnNum).drawY,
-//                game_main.menuButtonList.get(turnBtnNum).clipW, game_main.menuButtonList.get(turnBtnNum).clipH)) {
-//            if (game_main.appClass.touch.action == MotionEvent.ACTION_UP) {
-//                game_main.menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOff;
-//                switch (game_main.appClass.gameState) {
-//                    case INN.GAME_HOME:
-//                        game_main.turnManager.turnCycle(game_main.userEnty.TURN++);
-//                        break;
-//                }
-//                showAlertType = AlertManager.ALERT_TYPE_NONE;
-//                return true;
-//            } else {
-//                game_main.menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOn;
-//            }
-//        } else {
-//            game_main.menuButtonList.get(turnBtnNum).clickState = ButtonEnty.ButtonClickOff;
-//        }
-//        return false;
-//    }
-
+    /**
+     * 턴시작 알림
+     * @return
+     */
+    public boolean onTurnStartAlert() {
+        if (GameUtil.equalsTouch(game_main.appClass.touch,
+                alertBtn.drawX, alertBtn.drawY, alertBtn.clipW, alertBtn.clipH)) {
+            if (game_main.appClass.touch.action == MotionEvent.ACTION_UP) {
+                alertBtn.clickState = ButtonEnty.ButtonClickOff;
+                game_main.userEnty.GOLD += game_main.userEnty.eventEnty.Gold;
+                return true;
+            } else {
+                alertBtn.clickState = ButtonEnty.ButtonClickOn;
+            }
+        } else
+            alertBtn.clickState = ButtonEnty.ButtonClickOn;
+        return false;
+    }
 
     public void drawAlert(Canvas mCanvas, String title, String text) {
         int alertY = (canvasH - img_alertBox.getHeight()) / 2;
@@ -137,20 +153,7 @@ public class AlertManager {
         CanvasUtil.drawString(mCanvas, text, paint, canvasW / 2 - 150, alertY + 70);
     }
 
-    public void drawTurnStartAlert(Canvas mCanvas) {
-        StringBuilder sb = new StringBuilder("Turn : ");
-        sb.append(game_main.userEnty.TURN);
-        sb.append("\n");
-        sb.append("Clear Quest : ");
-        sb.append("\n");
-        sb.append("Income : ");
-        sb.append(game_main.userEnty.eventEnty.Gold + "Gold");
-        sb.append("\n");
-        sb.append("New Quest : ");
-        sb.append(game_main.userEnty.eventEnty.QuestIDList.size());
 
-        drawAlert(mCanvas, game_main.userEnty.TURN + " Turn", sb.toString());
-    }
 
     public void drawMemberAlert(Canvas mCanvas, Bitmap profileImg, MemberEnty enty) {
         int alertY = (canvasH - img_alertBox.getHeight()) / 2;
