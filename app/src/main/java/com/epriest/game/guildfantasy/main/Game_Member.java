@@ -183,7 +183,7 @@ public class Game_Member extends Game {
                         //멤버 상세
 
                 } else if (gameMain.appClass.stateMode == INN.MODE_MEMBER_SELECT) {
-                    gameMain.alertManager.showAlertType = AlertManager.ALERT_TYPE_VIEWMEMBER;
+//                    gameMain.alertManager.showAlertType = AlertManager.ALERT_TYPE_VIEWMEMBER;
                 }
                 return;
             } else {

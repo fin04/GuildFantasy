@@ -21,14 +21,14 @@ import static com.epriest.game.CanvasGL.graphics.CanvasUtil.drawClip;
  */
 
 public class AlertManager {
-    public final static int ALERT_TYPE_NONE = 0;
-    public final static int ALERT_TYPE_CURRENT_TURNEND = 1;
-    public final static int ALERT_TYPE_NEXT_TURNSTART = 2;
-    public final static int ALERT_TYPE_EMPTYGOLD = 3;
-    public final static int ALERT_TYPE_GETNEWMEMBER = 4;
-    public final static int ALERT_TYPE_MAXMEMBER = 5;
-    public final static int ALERT_TYPE_GEMNOTENOUGH = 6;
-    public final static int ALERT_TYPE_VIEWMEMBER = 7;
+//    public final static int ALERT_TYPE_NONE = 0;
+//    public final static int ALERT_TYPE_CURRENT_TURNEND = 1;
+//    public final static int ALERT_TYPE_NEXT_TURNSTART = 2;
+//    public final static int ALERT_TYPE_EMPTYGOLD = 3;
+//    public final static int ALERT_TYPE_GETNEWMEMBER = 4;
+//    public final static int ALERT_TYPE_MAXMEMBER = 5;
+//    public final static int ALERT_TYPE_GEMNOTENOUGH = 6;
+//    public final static int ALERT_TYPE_VIEWMEMBER = 7;
 
     private Game_Main game_main;
 
@@ -60,30 +60,30 @@ public class AlertManager {
         CanvasUtil.recycleBitmap(img_alertBox);
     }
 
-    public boolean onAlertTouch() {
-        boolean isResult = false;
-        switch (showAlertType) {
-            case ALERT_TYPE_NONE:
-                break;
-            case ALERT_TYPE_CURRENT_TURNEND:
-                isResult = onTurnFinishAlert();
-                break;
-            case ALERT_TYPE_NEXT_TURNSTART:
-                isResult = onTurnStartAlert();
-                break;
-            case ALERT_TYPE_EMPTYGOLD:
-                break;
-            case ALERT_TYPE_GETNEWMEMBER:
-                break;
-            case ALERT_TYPE_MAXMEMBER:
-                break;
-            case ALERT_TYPE_GEMNOTENOUGH:
-                break;
-            case ALERT_TYPE_VIEWMEMBER:
-                break;
-        }
-        return isResult;
-    }
+//    public boolean onAlertTouch() {
+//        boolean isResult = false;
+//        switch (showAlertType) {
+//            case ALERT_TYPE_NONE:
+//                break;
+//            case ALERT_TYPE_CURRENT_TURNEND:
+//                isResult = onTurnFinishAlert();
+//                break;
+//            case ALERT_TYPE_NEXT_TURNSTART:
+//                isResult = onTurnStartAlert();
+//                break;
+//            case ALERT_TYPE_EMPTYGOLD:
+//                break;
+//            case ALERT_TYPE_GETNEWMEMBER:
+//                break;
+//            case ALERT_TYPE_MAXMEMBER:
+//                break;
+//            case ALERT_TYPE_GEMNOTENOUGH:
+//                break;
+//            case ALERT_TYPE_VIEWMEMBER:
+//                break;
+//        }
+//        return isResult;
+//    }
 
     /**
      * 턴종료 알림

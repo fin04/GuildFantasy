@@ -82,10 +82,10 @@ public class Scene_Member extends Scene {
         drawPartyButton(mCanvas);
         gameMember.gameMain.drawStatusTab(mCanvas);
 
-        if (gameMember.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_VIEWMEMBER) {
-            gameMember.gameMain.alertManager.drawMemberAlert(mCanvas, gameMember.img_member.get(gameMember.selectMember),
-                    gameMember.memberList.get(gameMember.selectMember));
-        }
+//        if (gameMember.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_VIEWMEMBER) {
+//            gameMember.gameMain.alertManager.drawMemberAlert(mCanvas, gameMember.img_member.get(gameMember.selectMember),
+//                    gameMember.memberList.get(gameMember.selectMember));
+//        }
     }
 
     private void drawMemberCard(Canvas mCanvas, int num, int cx, int cy, int chrImgX, int chrImgY,

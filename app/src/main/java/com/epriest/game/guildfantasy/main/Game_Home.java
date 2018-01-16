@@ -10,6 +10,7 @@ import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.CanvasGL.util.TextUtil;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.play.AlertManager;
+import com.epriest.game.guildfantasy.main.play.GameDialog;
 import com.epriest.game.guildfantasy.util.INN;
 
 import java.io.IOException;
@@ -35,6 +36,8 @@ public class Game_Home extends Game {
 
     public Bitmap bg;
     public Bitmap img_homeBtn;
+    public GameDialog turnEndDialog;
+    public GameDialog turnStartDialog;
 //    public Bitmap img_char_01;
 //    private Bitmap img_card;
 
@@ -68,6 +71,46 @@ public class Game_Home extends Game {
         turnButton.clipY = 0;
         turnButton.drawX = gameMain.canvasW - (turnButton.clipW + 5);
         turnButton.drawY = gameMain.canvasH - (turnButton.clipH * 3);
+
+        turnEndDialog = new GameDialog(gameMain.appClass);
+        turnEndDialog.setTitle("다음 턴");
+        turnEndDialog.setText("현재 턴을 끝내겠습니까?");
+        turnEndDialog.setOnButtonListener(new GameDialog.onClickListener() {
+            @Override
+            public void onPositiveClick() {
+                gameMain.turnManager.turnCycle(gameMain.userEnty.TURN++);
+            }
+
+            @Override
+            public void onCancelClick() {
+                gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+            }
+        });
+
+//        turnStartDialog = new GameDialog(gameMain.appClass);
+//        turnStartDialog.setTitle(gameMain.userEnty.TURN + "턴 시작");
+//        StringBuilder sb = new StringBuilder("Turn : ");
+//        sb.append(gameMain.userEnty.TURN);
+//        sb.append("\n");
+//        sb.append("Clear Quest : ");
+//        sb.append("\n");
+//        sb.append("Income : ");
+//        sb.append(gameMain.userEnty.eventEnty.Gold + "Gold");
+//        sb.append("\n");
+//        sb.append("New Quest : ");
+//        sb.append(gameMain.userEnty.eventEnty.QuestIDList.size());
+//        turnStartDialog.setText(sb.toString());
+//        turnStartDialog.setOnButtonListener(new GameDialog.onClickListener() {
+//            @Override
+//            public void onPositiveClick() {
+//                gameMain.userEnty.GOLD += gameMain.userEnty.eventEnty.Gold;
+//            }
+//
+//            @Override
+//            public void onCancelClick() {
+//                gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+//            }
+//        });
     }
 
     private void setMenuIcon(int canvasW, int canvasH) {
@@ -93,53 +136,6 @@ public class Game_Home extends Game {
             mBtn.drawY = canvasH - (mBtn.clipH * 2) + mBtn.clipH * (i / 3);
             menuButtonList.add(mBtn);
         }
-
-
-
-        /*ArrayList<ButtonEnty> menuButtonList = new ArrayList<>();
-        switch (gameMain.appClass.gameState) {
-            default:
-*//*                //play button
-                ButtonEnty mBtn = new ButtonEnty();
-//                mBtn.num = menuIconName.length - 2;
-                mBtn.name = INN.menuIconName[INN.menuIconName.length - 2];
-//                mBtn.iconImgNum = menuIconNum[mBtn.num];
-                mBtn.clipW = 116;
-                mBtn.clipH = 116;
-                mBtn.clipX = 0;
-                mBtn.clipY = 172;
-                mBtn.drawX = canvasW - (mBtn.clipW + 5);
-                mBtn.drawY = canvasH - (mBtn.clipH + 5);
-                menuButtonList.add(mBtn);*//*
-
-
-
-                break;
-
-            case INN.GAME_MEMBER:
-                ButtonEnty mBtn1 = new ButtonEnty();
-                mBtn1.num = 0;
-                mBtn1.name = "start";
-                mBtn1.clipW = 117;
-                mBtn1.clipH = 117;
-                mBtn1.clipX = 1;
-                mBtn1.clipY = 172;
-                mBtn1.drawX = canvasW - mBtn1.clipW - 20;
-                mBtn1.drawY = canvasH - mBtn1.clipH - 10;
-                menuButtonList.add(mBtn1);
-
-                ButtonEnty mBtn2 = new ButtonEnty();
-                mBtn2.num = 1;
-                mBtn2.name = "back";
-                mBtn2.clipW = 90;
-                mBtn2.clipH = 90;
-                mBtn2.clipX = 230;
-                mBtn2.clipY = 172;
-                mBtn2.drawX = canvasW - mBtn1.clipW - 20;
-                mBtn2.drawY = 90;
-                menuButtonList.add(mBtn2);
-                break;
-        }*/
     }
 
 
@@ -208,11 +204,16 @@ public class Game_Home extends Game {
         if (onTurnButtonTouch())
             return;
 
-        // 턴 시작 알림
-        if (gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_NEXT_TURNSTART) {
-            if(gameMain.alertManager.onAlertTouch())
+        // 턴 종료 알림
+        if (gameMain.showAlertType == turnStartDialog.ALERT_TYPE_CURRENT_TURNEND){
+            if(turnEndDialog.onTouch())
                 return;
         }
+//
+//        if (gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_NEXT_TURNSTART) {
+//            if(gameMain.alertManager.onAlertTouch())
+//                return;
+//        }
     }
 
     public boolean onTurnButtonTouch() {
@@ -221,8 +222,8 @@ public class Game_Home extends Game {
             turnButton.clickState = ButtonEnty.ButtonClickOn;
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 turnButton.clickState = ButtonEnty.ButtonClickOff;
-                gameMain.alertManager.showAlertType = AlertManager.ALERT_TYPE_CURRENT_TURNEND;
-                gameMain.alertManager.onAlertTouch();
+                gameMain.showAlertType = GameDialog.ALERT_TYPE_CURRENT_TURNEND;
+//                gameMain.alertManager.onAlertTouch();
                 return true;
             }
         } else {

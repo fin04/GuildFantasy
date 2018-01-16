@@ -10,6 +10,7 @@ import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.play.AlertManager;
+import com.epriest.game.guildfantasy.main.play.GameDialog;
 import com.epriest.game.guildfantasy.util.INN;
 
 /**
@@ -37,7 +38,6 @@ public class Scene_Home extends Scene {
     public void recycleScene() {
         CanvasUtil.recycleBitmap(gameHome.bg);
         CanvasUtil.recycleBitmap(gameHome.img_homeBtn);
-//        CanvasUtil.recycleBitmap(gameHome.img_char_01);
     }
 
     @Override
@@ -50,11 +50,14 @@ public class Scene_Home extends Scene {
         drawBG(mCanvas);
         gameHome.gameMain.drawStatusTab(mCanvas);
         drawMenuButton(mCanvas);
-        if(gameHome.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_CURRENT_TURNEND)
-            gameHome.gameMain.alertManager.drawAlert(mCanvas, "턴 종료", "현재 턴을 끝내겠습니까?");
 
-        if (gameHome.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_NEXT_TURNSTART)
-            drawTurnStartAlert(mCanvas);
+        if (gameHome.gameMain.showAlertType == GameDialog.ALERT_TYPE_CURRENT_TURNEND) {
+            gameHome.turnEndDialog.draw(mCanvas, gameHome.gameMain.img_mainBtn);
+        }else
+        if (gameHome.gameMain.showAlertType == GameDialog.ALERT_TYPE_NEXT_TURNSTART) {
+            gameHome.turnStartDialog.draw(mCanvas, gameHome.gameMain.img_mainBtn);
+        }
+
 
     }
 
@@ -111,21 +114,6 @@ public class Scene_Home extends Scene {
 //            CanvasUtil.drawClip(menu_icon, mCanvas, null, (iconNum%5)*mBtn.w, (iconNum/5)*mBtn.h,
 //                    mBtn.w, mBtn.h, mBtn.x+(btnArea-mBtn.w)/2, mBtn.y);
         }
-    }
-
-    public void drawTurnStartAlert(Canvas mCanvas) {
-        StringBuilder sb = new StringBuilder("Turn : ");
-        sb.append(gameHome.gameMain.userEnty.TURN);
-        sb.append("\n");
-        sb.append("Clear Quest : ");
-        sb.append("\n");
-        sb.append("Income : ");
-        sb.append(gameHome.gameMain.userEnty.eventEnty.Gold + "Gold");
-        sb.append("\n");
-        sb.append("New Quest : ");
-        sb.append(gameHome.gameMain.userEnty.eventEnty.QuestIDList.size());
-
-        gameHome.gameMain.alertManager.drawAlert(mCanvas, gameHome.gameMain.userEnty.TURN + " Turn", sb.toString());
     }
 
 }

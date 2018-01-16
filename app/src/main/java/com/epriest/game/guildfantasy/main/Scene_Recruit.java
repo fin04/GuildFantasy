@@ -57,14 +57,14 @@ public class Scene_Recruit extends Scene {
 
         drawBtn(mCanvas);
 
-        if(gameRecruit.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_GETNEWMEMBER) {
-            gameRecruit.gameMain.alertManager.drawMemberAlert(mCanvas, gameRecruit.recruitImg, gameRecruit.recruitEnty);
-        }else if(gameRecruit.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_EMPTYGOLD)
-            gameRecruit.gameMain.alertManager.drawAlert(mCanvas, "", "Gold가 없습니다.");
-        else if(gameRecruit.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_MAXMEMBER)
-            gameRecruit.gameMain.alertManager.drawAlert(mCanvas, "", "멤버가 찼습니다.");
-        else if(gameRecruit.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_GEMNOTENOUGH)
-            gameRecruit.gameMain.alertManager.drawAlert(mCanvas, "", "보석이 모자랍니다.");
+//        if(gameRecruit.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_GETNEWMEMBER) {
+//            gameRecruit.gameMain.alertManager.drawMemberAlert(mCanvas, gameRecruit.recruitImg, gameRecruit.recruitEnty);
+//        }else if(gameRecruit.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_EMPTYGOLD)
+//            gameRecruit.gameMain.alertManager.drawAlert(mCanvas, "", "Gold가 없습니다.");
+//        else if(gameRecruit.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_MAXMEMBER)
+//            gameRecruit.gameMain.alertManager.drawAlert(mCanvas, "", "멤버가 찼습니다.");
+//        else if(gameRecruit.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_GEMNOTENOUGH)
+//            gameRecruit.gameMain.alertManager.drawAlert(mCanvas, "", "보석이 모자랍니다.");
     }
 
     private void drawBG(Canvas mCanvas) {

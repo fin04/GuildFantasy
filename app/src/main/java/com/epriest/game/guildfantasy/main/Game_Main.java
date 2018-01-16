@@ -34,7 +34,6 @@ public class Game_Main {
 
     public ApplicationClass appClass;
     public TurnManager turnManager;
-    public AlertManager alertManager;
     public GameDbAdapter dbAdapter;
 //    public Scene_Main sceneMain;
 
@@ -53,9 +52,7 @@ public class Game_Main {
     public ButtonEnty feedIcon;
     public ButtonEnty goldIcon;
 
-    //    public int mMainScreenY;
-//    public int mMainScreenHeight;
-//    public int mMenuTabBarY;
+    public int showAlertType;
 
     public final int statusBarW = 120;
     public final int statusBarH = 75;
@@ -72,7 +69,6 @@ public class Game_Main {
 //        sceneMain = new Scene_Main(this);
         this.dbAdapter = dbAdapter;
         turnManager = new TurnManager(this);
-        alertManager = new AlertManager(this);
     }
 
     public void Init() {
@@ -90,7 +86,6 @@ public class Game_Main {
         loadManager();
         setStatusIcon();
         setManager();
-        alertManager.init();
 
         setCardListFromSelectParty(0, 0);
     }
@@ -258,7 +253,6 @@ public class Game_Main {
         CanvasUtil.recycleBitmap(img_statusBar);
         CanvasUtil.recycleBitmap(img_classMark);
         CanvasUtil.recycleBitmap(managerImg.bitmap);
-        alertManager.recycleScene();
     }
 
     public void drawMain(Canvas mCanvas, boolean viewMenuButton) {
