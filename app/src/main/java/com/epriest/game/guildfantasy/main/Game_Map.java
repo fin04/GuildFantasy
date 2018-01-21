@@ -18,6 +18,14 @@ import java.util.ArrayList;
  */
 
 public class Game_Map extends Game {
+    public final static int MAPTILE_VILLAGE = 12;
+    public final static int MAPTILE_TOWN = 13;
+    public final static int MAPTILE_CASTLE = 14;
+    public final static int MAPTILE_FORT = 15;
+    public final static int MAPTILE_MINE = 16;
+    public final static int MAPTILE_RUIN = 17;
+    public final static int MAPTILE_NEST = 18;
+
     public Game_Main gameMain;
 
     public int mapDrawW, mapDrawH;
@@ -81,7 +89,7 @@ public class Game_Map extends Game {
                 int index = i * rowNum + j;
                 mRowArray_t[j] = mapLayer.getLayers().get(0).getDataList().get(index);
                 mRowArray_b[j] = mapLayer.getLayers().get(1).getDataList().get(index);
-                if(mRowArray_b[j] == INN.MAPTILE_TOWN){
+                if(mRowArray_b[j] == Game_Map.MAPTILE_TOWN){
                     mapLayer.cursor.curTile.x = j;
                     mapLayer.cursor.curTile.y = i;
                 }
@@ -109,7 +117,7 @@ public class Game_Map extends Game {
     @Override
     public void gUpdate() {
         switch(mapLayer.cursor.state){
-            case INN.MAPTILE_TOWN:
+            case Game_Map.MAPTILE_TOWN:
                 break;
             default:
                 break;
@@ -177,7 +185,7 @@ public class Game_Map extends Game {
 //                    else
 //                        gameMain.mapLayer.cursor.state = -1;
                     switch(mapLayer.cursor.state) {
-                        case INN.MAPTILE_TOWN:
+                        case Game_Map.MAPTILE_TOWN:
                             //temp party list에서 파티리스트를 불러온다
                             break;
                         default:

@@ -10,12 +10,12 @@ import com.epriest.game.CanvasGL.util.Scene;
  * Created by darka on 2017-08-07.
  */
 
-public class Scene_Guild extends Scene {
+public class Scene_Shop extends Scene {
 
-    private Game_Guild gameGuild;
+    private Game_Shop gameShop;
 
-    public Scene_Guild(Game_Guild gameGuild, Scene_Main sceneMain) {
-        this.gameGuild = gameGuild;
+    public Scene_Shop(Game_Shop gameShop, Scene_Main sceneMain) {
+        this.gameShop = gameShop;
 //        this.sceneMain = sceneMain;
     }
 

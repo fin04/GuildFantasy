@@ -39,8 +39,6 @@ public class Game_Main {
 
     public UserEnty userEnty;
 
-
-
     public ImageEnty managerImg;
 
     public Bitmap img_mainBtn;
@@ -98,7 +96,7 @@ public class Game_Main {
         appClass.isGameInit = true;
         appClass.isSceneInit = true;
         appClass.gameState = state;
-        appClass.stateMode = mode;
+//        appClass.stateMode = mode;
         setCardListFromSelectParty(0, 0);
 
 //        new PPreference(appClass.getBaseContext()).writePlayer("player", userEnty);
@@ -108,7 +106,7 @@ public class Game_Main {
         appClass.isGameInit = true;
         appClass.isSceneInit = true;
         appClass.gameState = state;
-        appClass.stateMode = mode;
+//        appClass.stateMode = mode;
         selectCardNum = cardNum;
 
 //        new PPreference(appClass.getBaseContext()).writePlayer("player", userEnty);
@@ -226,9 +224,11 @@ public class Game_Main {
             if (appClass.touch.action == MotionEvent.ACTION_UP) {
                 optionBtn.clickState = ButtonEnty.ButtonClickOff;
                 if (optionBtn.name.equals("back")) {
-                    switch(appClass.stateMode){
-                        case INN.MODE_MEMBER_PARTY:
-                            appClass.stateMode = INN.MODE_DEFAULT;
+                    switch(appClass.gameState){
+                        case INN.GAME_MEMBER_FROM_PARTY:
+                            mainButtonAct(INN.GAME_MEMBER, 0);
+                            break;
+                        case INN.GAME_PARTY_FROM_QUEST:
                             mainButtonAct(INN.GAME_PARTY, 0);
                             break;
                         default:
@@ -254,17 +254,6 @@ public class Game_Main {
         CanvasUtil.recycleBitmap(img_classMark);
         CanvasUtil.recycleBitmap(managerImg.bitmap);
     }
-
-    public void drawMain(Canvas mCanvas, boolean viewMenuButton) {
-
-    }
-
-//    public void drawMenu(Canvas mCanvas) {
-//        drawStatusTab(mCanvas);
-//
-//        //manager mode
-////        drawManager(mCanvas);
-//    }
 
     public void drawBarGage(Canvas mCanvas, int bgColor, int color, String title,
                             int num, int maxNum, int x, int y, int w, int h) {

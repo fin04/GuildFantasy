@@ -3,6 +3,7 @@ package com.epriest.game.guildfantasy.main;
 import android.view.MotionEvent;
 
 import com.epriest.game.CanvasGL.util.Game;
+import com.epriest.game.guildfantasy.main.play.GameDialog;
 import com.epriest.game.guildfantasy.util.INN;
 
 /**
@@ -21,8 +22,6 @@ public class Game_Event extends Game {
     public void gStart() {
         gameMain.userEnty.eventEnty.changeView = true;
         gameMain.userEnty.eventEnty.currentViewNum = 0;
-
-        gameMain.turnManager.turnCycle(gameMain.userEnty.TURN++);
     }
 
     @Override
@@ -45,8 +44,10 @@ public class Game_Event extends Game {
                 gameMain.userEnty.eventEnty.currentViewNum++;
             }else{
                 gameMain.mainButtonAct(INN.GAME_HOME, 0);
+                gameMain.showAlertType = GameDialog.ALERT_TYPE_NEXT_TURNSTART;
             }
 
         }
     }
+
 }

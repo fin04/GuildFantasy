@@ -185,6 +185,7 @@ public class DataManager {
      */
     public static UserEnty getUserInfo(GameDbAdapter dbAdapter, String userName) {
         UserEnty userEnty = new UserEnty();
+        userEnty.eventEnty = new EventEnty();
         Cursor cursor = getUserMainCursor(dbAdapter, userName);
         userEnty.Name = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USERNAME));
         userEnty.EXP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_USEREXP)));
@@ -521,6 +522,8 @@ public class DataManager {
         for(QuestEnty enty : userEnty.QUESTLIST){
             insertUserQuest(dbAdapter, enty, userEnty.Name);
         }
+        userEnty.GOLD += userEnty.eventEnty.Gold;
+
         return userEnty;
     }
 

@@ -21,8 +21,6 @@ import java.util.ArrayList;
 public class Game_Member extends Game {
 
     public Game_Main gameMain;
-    public View_Member viewMember;
-//    public int viewMode;
 
     public Bitmap img_memberSheet;
     public Bitmap img_membercard;
@@ -44,7 +42,6 @@ public class Game_Member extends Game {
 
     public Game_Member(Game_Main gameMain) {
         this.gameMain = gameMain;
-//        this.viewMode = viewMode;
     }
 
 
@@ -66,7 +63,7 @@ public class Game_Member extends Game {
         cardX = 34;
         cardY = gameMain.statusBarH + 200;
 
-        if (gameMain.appClass.stateMode == INN.MODE_MEMBER_PARTY) {
+        if (gameMain.appClass.gameState == INN.GAME_MEMBER_FROM_PARTY) {
             setAddMemberCardList();
         }
 
@@ -133,7 +130,7 @@ public class Game_Member extends Game {
             return;
 
         //party 편성용 버튼
-        if (gameMain.appClass.stateMode == INN.MODE_MEMBER_PARTY) {
+        if (gameMain.appClass.gameState == INN.GAME_MEMBER_FROM_PARTY) {
             for (int i = 0; i < addMemberButtonList.size(); i++) {
                 ButtonEnty btn = addMemberButtonList.get(i);
                 if (GameUtil.equalsTouch(gameMain.appClass.touch, btn.drawX, btn.drawY, btn.clipW, btn.clipH+scrollY)) {
@@ -151,11 +148,8 @@ public class Game_Member extends Game {
                                     DataManager.updateUserPartyMember(gameMain.dbAdapter, memberID,
                                             gameMain.userEnty.Name, gameMain.getSelectPartyNum(),
                                             gameMain.getSelectPosition());
-
-                                    gameMain.appClass.stateMode = INN.MODE_DEFAULT;
                                     gameMain.mainButtonAct(INN.GAME_PARTY, 0);
                                 }
-
                             }
                             break;
                     }
@@ -171,6 +165,9 @@ public class Game_Member extends Game {
             if (prevScrollY == scrollY) {
                 selectMember = (((int) gameMain.appClass.touch.mLastTouchX - cardX) / cardW)
                         + (((int) gameMain.appClass.touch.mLastTouchY + scrollY - cardY) / cardH) * cardRowNum;
+                if(gameMain.userEnty.MEMBERLIST.size() < selectMember) {
+                    selectMember = -1;
+                }
 //                gameMain.userEnty.MEMBERLIST.get(selectMember).party_number = gameMain.selectCardNum;
 //                String partyID = gameMain.userEnty.Name+"_"+gameMain.getSelectPartyNum();
 
@@ -178,12 +175,6 @@ public class Game_Member extends Game {
                     String memberID = memberList.get(selectMember).memberId;
                     DataManager.updateUserPartyMember(gameMain.dbAdapter, memberID,
                             gameMain.userEnty.Name, gameMain.getSelectPartyNum(), gameMain.getSelectPosition());
-
-
-                        //멤버 상세
-
-                } else if (gameMain.appClass.stateMode == INN.MODE_MEMBER_SELECT) {
-//                    gameMain.alertManager.showAlertType = AlertManager.ALERT_TYPE_VIEWMEMBER;
                 }
                 return;
             } else {
@@ -197,7 +188,6 @@ public class Game_Member extends Game {
             scrollY = 0;
         else if (scrollY > maxScrollY)
             scrollY = maxScrollY;
-
 
 //        if(event.getAction() == MotionEvent.ACTION_UP) {
 //            if(prevScrollY == scrollY){

@@ -5,14 +5,14 @@ import android.view.MotionEvent;
 import com.epriest.game.CanvasGL.util.Game;
 
 /**
- * Created by darka on 2017-08-07.
+ * Created by darka on 2017-03-26.
  */
 
-public class Game_Guild extends Game{
+public class Game_Temple extends Game {
 
     public Game_Main gameMain;
 
-    public Game_Guild(Game_Main gameMain) {
+    public Game_Temple(Game_Main gameMain){
         this.gameMain = gameMain;
     }
 
@@ -33,6 +33,7 @@ public class Game_Guild extends Game{
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-
+        if(gameMain.onStatusTouch())
+            return;
     }
 }

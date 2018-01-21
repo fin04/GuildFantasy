@@ -69,14 +69,14 @@ public class Scene_Map extends Scene {
                 20, 8);
 
         switch (gameMap.mapLayer.cursor.state ) {
-            case INN.MAPTILE_TOWN:
+            case Game_Map.MAPTILE_TOWN:
                 drawPartyControl(mCanvas);
                 break;
             default:
                 break;
         }
 
-        gameMap.gameMain.drawMain(mCanvas, true);
+        gameMap.gameMain.drawStatusTab(mCanvas);
     }
 
     private void drawMapCursor(Canvas mCanvas) {

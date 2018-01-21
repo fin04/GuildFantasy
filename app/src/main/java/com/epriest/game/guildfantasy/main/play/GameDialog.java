@@ -77,6 +77,10 @@ public class GameDialog {
         cancelBtn.drawY = (canvasH - img_alertBox.getHeight()) / 2 + img_alertBox.getHeight() - cancelBtn.clipH - 30;
     }
 
+    public void dissmiss(){
+        CanvasUtil.recycleBitmap(img_alertBox);
+    }
+
     public boolean onTouch() {
         if (GameUtil.equalsTouch(appClass.touch,
                 alertBtn.drawX, alertBtn.drawY, alertBtn.clipW, alertBtn.clipH)) {
@@ -92,7 +96,6 @@ public class GameDialog {
             if (appClass.touch.action == MotionEvent.ACTION_UP) {
                 cancelBtn.clickState = ButtonEnty.ButtonClickOff;
                 mListener.onCancelClick();
-                CanvasUtil.recycleBitmap(img_alertBox);
                 return true;
             } else {
                 cancelBtn.clickState = ButtonEnty.ButtonClickOn;

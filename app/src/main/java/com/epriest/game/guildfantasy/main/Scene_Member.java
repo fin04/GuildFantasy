@@ -111,7 +111,7 @@ public class Scene_Member extends Scene {
         CanvasUtil.drawString(mCanvas, "LV." + Integer.toString(enty.status.LEVEL), 20,
                 Color.DKGRAY, Paint.Align.LEFT, cx + 15, cy + 3);
 
-        if (gameMember.gameMain.appClass.stateMode == INN.MODE_MEMBER_PARTY) {
+        if (gameMember.gameMain.appClass.gameState == INN.GAME_MEMBER_FROM_PARTY) {
             for (int i = 0; i < gameMember.addMemberButtonList.size(); i++) {
                 ButtonEnty mBtn = gameMember.addMemberButtonList.get(i);
                 int clipY = 0;

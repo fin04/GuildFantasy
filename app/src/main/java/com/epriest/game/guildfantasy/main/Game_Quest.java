@@ -62,13 +62,10 @@ public class Game_Quest extends Game {
                 enty.btnEnty.clickState = ButtonEnty.ButtonClickOn;
                 if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                     enty.btnEnty.clickState = ButtonEnty.ButtonClickOff;
-//                    selectQuestId = Integer.parseInt(enty.id);
-//                    gameMain.selectQuestEnty = enty;
                     if(enty.actPartyNum > 0){
-                        gameMain.mainButtonAct(INN.GAME_MEMBER, INN.MODE_DEFAULT);
+//                        gameMain.mainButtonAct(INN.GAME_MEMBER, INN.MODE_DEFAULT);
                     }else {
-                        gameMain.mainButtonAct(INN.GAME_MEMBER, INN.MODE_PARTY_SELECT);
-
+                        gameMain.mainButtonAct(INN.GAME_PARTY_FROM_QUEST, 0);
                     }
                 }
                 return;

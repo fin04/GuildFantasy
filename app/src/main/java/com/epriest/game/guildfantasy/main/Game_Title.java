@@ -160,7 +160,7 @@ public class Game_Title extends Game {
             return;
         }
 
-        if (GameUtil.equalsTouch(appClass.touch, btn_Load.drawX, btn_Load.drawY, btn_Load.drawW, btn_Load.drawH)) {
+        /*if (GameUtil.equalsTouch(appClass.touch, btn_Load.drawX, btn_Load.drawY, btn_Load.drawW, btn_Load.drawH)) {
             btn_Load.clickState = ButtonEnty.ButtonClickOn;
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 btn_Load.clickState = ButtonEnty.ButtonClickOff;
@@ -172,7 +172,7 @@ public class Game_Title extends Game {
                 }
             }
             return;
-        }
+        }*/
 
         for(ButtonEnty enty : btn_NameList){
             if (GameUtil.equalsTouch(appClass.touch, enty.drawX, enty.drawY, enty.drawW, enty.drawH)){

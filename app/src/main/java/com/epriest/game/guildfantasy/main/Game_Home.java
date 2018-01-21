@@ -63,54 +63,60 @@ public class Game_Home extends Game {
         mMainScreenY = 0;
         setMenuIcon(gameMain.canvasW, gameMain.canvasH);
 
-        turnButton = new ButtonEnty();
-        turnButton.name = INN.MENU_TURNEND;
-        turnButton.clipW = 220;
-        turnButton.clipH = 150;
-        turnButton.clipX = 0;
-        turnButton.clipY = 0;
-        turnButton.drawX = gameMain.canvasW - (turnButton.clipW + 5);
-        turnButton.drawY = gameMain.canvasH - (turnButton.clipH * 3);
+        try {
+            turnButton = new ButtonEnty();
+            turnButton.name = INN.MENU_TURNEND;
+            turnButton.clipW = 220;
+            turnButton.clipH = 150;
+            turnButton.clipX = 0;
+            turnButton.clipY = 0;
+            turnButton.drawX = gameMain.canvasW - (turnButton.clipW + 5);
+            turnButton.drawY = gameMain.canvasH - (turnButton.clipH * 3);
 
-        turnEndDialog = new GameDialog(gameMain.appClass);
-        turnEndDialog.setTitle("다음 턴");
-        turnEndDialog.setText("현재 턴을 끝내겠습니까?");
-        turnEndDialog.setOnButtonListener(new GameDialog.onClickListener() {
-            @Override
-            public void onPositiveClick() {
-                gameMain.turnManager.turnCycle(gameMain.userEnty.TURN++);
-            }
+            turnEndDialog = new GameDialog(gameMain.appClass);
+            turnEndDialog.setOnButtonListener(new GameDialog.onClickListener() {
+                @Override
+                public void onPositiveClick() {
+                    gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+                    gameMain.turnManager.turnCycle(gameMain.userEnty.TURN++);
+                }
 
-            @Override
-            public void onCancelClick() {
-                gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
-            }
-        });
+                @Override
+                public void onCancelClick() {
+                    gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+                }
+            });
+            turnEndDialog.setTitle("다음 턴");
+            turnEndDialog.setText("현재 턴을 끝내겠습니까?");
+        } catch (Exception e) {
+        }
+        try {
+            turnStartDialog = new GameDialog(gameMain.appClass);
+            turnStartDialog.setOnButtonListener(new GameDialog.onClickListener() {
+                @Override
+                public void onPositiveClick() {
+                    gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+                }
 
-//        turnStartDialog = new GameDialog(gameMain.appClass);
-//        turnStartDialog.setTitle(gameMain.userEnty.TURN + "턴 시작");
-//        StringBuilder sb = new StringBuilder("Turn : ");
-//        sb.append(gameMain.userEnty.TURN);
-//        sb.append("\n");
-//        sb.append("Clear Quest : ");
-//        sb.append("\n");
-//        sb.append("Income : ");
-//        sb.append(gameMain.userEnty.eventEnty.Gold + "Gold");
-//        sb.append("\n");
-//        sb.append("New Quest : ");
-//        sb.append(gameMain.userEnty.eventEnty.QuestIDList.size());
-//        turnStartDialog.setText(sb.toString());
-//        turnStartDialog.setOnButtonListener(new GameDialog.onClickListener() {
-//            @Override
-//            public void onPositiveClick() {
-//                gameMain.userEnty.GOLD += gameMain.userEnty.eventEnty.Gold;
-//            }
-//
-//            @Override
-//            public void onCancelClick() {
-//                gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
-//            }
-//        });
+                @Override
+                public void onCancelClick() {
+                    gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+                }
+            });
+            turnStartDialog.setTitle(gameMain.userEnty.TURN + "턴 시작");
+            StringBuilder sb = new StringBuilder("Turn : ");
+            sb.append(gameMain.userEnty.TURN);
+            sb.append("\n");
+            sb.append("Clear Quest : ");
+            sb.append("\n");
+            sb.append("Income : ");
+            sb.append(gameMain.userEnty.eventEnty.Gold + "Gold");
+            sb.append("\n");
+            sb.append("New Quest : ");
+            sb.append(gameMain.userEnty.eventEnty.QuestIDList.size());
+            turnStartDialog.setText(sb.toString());
+        } catch (Exception e) {
+        }
     }
 
     private void setMenuIcon(int canvasW, int canvasH) {
@@ -205,8 +211,11 @@ public class Game_Home extends Game {
             return;
 
         // 턴 종료 알림
-        if (gameMain.showAlertType == turnStartDialog.ALERT_TYPE_CURRENT_TURNEND){
-            if(turnEndDialog.onTouch())
+        if (gameMain.showAlertType == GameDialog.ALERT_TYPE_CURRENT_TURNEND) {
+            if (turnEndDialog.onTouch())
+                return;
+        }else if (gameMain.showAlertType == GameDialog.ALERT_TYPE_NEXT_TURNSTART) {
+            if (turnStartDialog.onTouch())
                 return;
         }
 //
@@ -244,11 +253,11 @@ public class Game_Home extends Game {
                     else if (mBtn.name.equals(INN.MENU_BAR))
                         gameMain.mainButtonAct(INN.GAME_RECRUIT, 0);
                     else if (mBtn.name.equals(INN.MENU_GUILD))
-                        gameMain.mainButtonAct(INN.GAME_PARTY, 0);
+                        gameMain.mainButtonAct(INN.GAME_QUEST, 0);
                     else if (mBtn.name.equals(INN.MENU_SHOP))
-                        gameMain.mainButtonAct(INN.GAME_ITEM, 0);
+                        gameMain.mainButtonAct(INN.GAME_SHOP, 0);
                     else if (mBtn.name.equals(INN.MENU_TEMPLE))
-                        gameMain.mainButtonAct(INN.GAME_SKILL, 0);
+                        gameMain.mainButtonAct(INN.GAME_TEMPLE, 0);
                     else if (mBtn.name.equals(INN.MENU_GATE))
                         gameMain.mainButtonAct(INN.GAME_MOVE, 0);
 //                    else if (mBtn.name.equals("Menu"))

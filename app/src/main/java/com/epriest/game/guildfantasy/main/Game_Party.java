@@ -195,7 +195,7 @@ public class Game_Party extends Game {
                 if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                     btn.clickState = ButtonEnty.ButtonClickOff;
                     gameMain.setSelectCardNum(i);
-                    gameMain.mainButtonAct(INN.GAME_MEMBER, INN.MODE_MEMBER_PARTY, gameMain.selectCardNum);
+                    gameMain.mainButtonAct(INN.GAME_MEMBER_FROM_PARTY, 0);
                 }
                 return;
             } else {

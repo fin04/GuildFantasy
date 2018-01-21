@@ -67,8 +67,6 @@ public class Scene_Quest extends Scene {
 
     @Override
     public void draw(Canvas mCanvas) {
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
 //        mCanvas.drawColor(Color.BLACK);
 
 //        mCanvas.drawBitmap(bg, 0, 0, null);
@@ -78,7 +76,7 @@ public class Scene_Quest extends Scene {
         //manager mode
 //        drawManager(mCanvas, paint);
 
-        gameQuest.gameMain.drawMain(mCanvas, true);
+        gameQuest.gameMain.drawStatusTab(mCanvas);
     }
 
     private void drawQuestList(Canvas mCanvas) {

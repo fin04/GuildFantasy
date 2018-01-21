@@ -13,9 +13,9 @@ import com.epriest.game.guildfantasy.main.enty.ImageEnty;
  * Created by darka on 2017-03-26.
  */
 
-public class Scene_Skill extends Scene {
+public class Scene_Temple extends Scene {
 
-    private Game_Skill gameTown;
+    private Game_Temple gameTown;
     private Scene_Main sceneMain;
     private int canvasW, canvasH;
 
@@ -25,7 +25,7 @@ public class Scene_Skill extends Scene {
 
     private ImageEnty managerImg;
 
-    public Scene_Skill(Game_Skill gameTown, Scene_Main sceneMain) {
+    public Scene_Temple(Game_Temple gameTown, Scene_Main sceneMain) {
         this.gameTown = gameTown;
         this.sceneMain = sceneMain;
     }
@@ -57,6 +57,6 @@ public class Scene_Skill extends Scene {
         //manager mode
 //        drawManager(mCanvas, paint);
 
-        gameTown.gameMain.drawMain(mCanvas, true);
+        gameTown.gameMain.drawStatusTab(mCanvas);
     }
 }

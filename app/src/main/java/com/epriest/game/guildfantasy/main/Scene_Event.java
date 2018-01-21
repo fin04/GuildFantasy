@@ -37,14 +37,14 @@ public class Scene_Event extends Scene {
 
     private void loadEventImage(int num) {
         int size = gameEvent.gameMain.userEnty.eventEnty.ImageList.size();
-        if(size >= num) {
+        if(num < size) {
             String imagePath = gameEvent.gameMain.userEnty.eventEnty.ImageList.get(num);
             CanvasUtil.recycleBitmap(eventBitmap);
             eventBitmap = GLUtil.loadAssetsBitmap(gameEvent.gameMain.appClass.getBaseContext(), "" +
                     "event/" + imagePath, null);
         }
         size = gameEvent.gameMain.userEnty.eventEnty.TextList.size();
-        if(size >= num){
+        if(num < size){
             textList = TextUtil.setMultiLineText(gameEvent.gameMain.userEnty.eventEnty.TextList.get(num), 25, 600);
         }
         gameEvent.gameMain.userEnty.eventEnty.changeView = false;
@@ -65,12 +65,18 @@ public class Scene_Event extends Scene {
         if(gameEvent.gameMain.userEnty.eventEnty.changeView)
             loadEventImage(gameEvent.gameMain.userEnty.eventEnty.currentViewNum);
         CanvasUtil.drawBgBitmap(eventBitmap, mCanvas);
-        int paperX = 30;
-        int paperY = 50;
+
+        CanvasUtil.drawBox(mCanvas, Color.argb(150, 50, 50,50), true, 50, 50,
+                gameEvent.gameMain.canvasW-100, gameEvent.gameMain.canvasH-100);
+
+        int textsize = 25;
+        int textHeight = textList.size()*25;
+        int paperX = 60;
+        int paperY = (gameEvent.gameMain.canvasH - textHeight)/2;
         Paint paint = new Paint();
         paint.setTextSize(25);
         paint.setAntiAlias(true);
-        paint.setColor(Color.argb(255,90,90,90));
+        paint.setColor(Color.argb(255,220,220,220));
         paint.setTextAlign(Paint.Align.LEFT);
         for(int i =0; i< textList.size(); i++){
             CanvasUtil.drawString(mCanvas, textList.get(i), paint,
