@@ -10,7 +10,7 @@ public class QuestEnty {
 	public String type;
 	public String title;
 	public String text;
-	public ArrayList<String> textArr;
+	public ArrayList<String> textArr = new ArrayList<>();
     public String tip;
 	public String map;
 	public String image;

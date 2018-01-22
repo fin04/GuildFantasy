@@ -43,6 +43,9 @@
 
 
 [유저메뉴][GUILD]--의뢰관리
+[유저메뉴][GUILD][QuestList]--의뢰목록
+[유저메뉴][GUILD][QuestList][Quest]--의뢰상세
+[유저메뉴][GUILD][QuestList][Quest][PartyList]--파티선택
 
 [유저메뉴][SHOP]--거래
 

@@ -18,6 +18,9 @@ public interface INN {
     public final static int GAME_OPTION = 10;
     public final static int GAME_MEMBER_FROM_PARTY = 11;
     public final static int GAME_PARTY_FROM_QUEST = 12;
+    public final static int GAME_DUNGEON = 13;
+    public final static int GAME_BATTLE = 14;
+    public final static int GAME_MEMBER_FROM_DUNGEON = 15;
 
 //    public final static int MODE_DEFAULT = 0;
 //    public final static int MODE_PARTY_SELECT = 1;
