@@ -2,14 +2,12 @@ package com.epriest.game.guildfantasy.main;
 
 import android.graphics.Bitmap;
 import android.view.MotionEvent;
-import android.widget.Toast;
 
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.CanvasGL.util.TextUtil;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
-import com.epriest.game.guildfantasy.main.play.AlertManager;
 import com.epriest.game.guildfantasy.main.play.GameDialog;
 import com.epriest.game.guildfantasy.util.INN;
 
@@ -253,7 +251,7 @@ public class Game_Home extends Game {
                     else if (mBtn.name.equals(INN.MENU_BAR))
                         gameMain.mainButtonAct(INN.GAME_RECRUIT, 0);
                     else if (mBtn.name.equals(INN.MENU_GUILD))
-                        gameMain.mainButtonAct(INN.GAME_QUEST, 0);
+                        gameMain.mainButtonAct(INN.GAME_QUESTLIST, 0);
                     else if (mBtn.name.equals(INN.MENU_SHOP))
                         gameMain.mainButtonAct(INN.GAME_SHOP, 0);
                     else if (mBtn.name.equals(INN.MENU_TEMPLE))

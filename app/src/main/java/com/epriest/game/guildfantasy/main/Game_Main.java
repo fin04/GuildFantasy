@@ -52,6 +52,8 @@ public class Game_Main {
 
     public int showAlertType;
 
+    public String selectQuestId;
+
     public final int statusBarW = 120;
     public final int statusBarH = 75;
 
@@ -92,24 +94,26 @@ public class Game_Main {
         return new PPreference(appClass.getBaseContext()).readPlayer("player");
     }
 
-    public void mainButtonAct(int state, int mode) {
+    public void mainButtonAct(int state, int val) {
         appClass.isGameInit = true;
         appClass.isSceneInit = true;
         appClass.gameState = state;
-//        appClass.stateMode = mode;
         setCardListFromSelectParty(0, 0);
-
-//        new PPreference(appClass.getBaseContext()).writePlayer("player", userEnty);
     }
 
-    public void mainButtonAct(int state, int mode, String cardNum) {
+    public void mainButtonAct(int state, String val) {
         appClass.isGameInit = true;
         appClass.isSceneInit = true;
         appClass.gameState = state;
-//        appClass.stateMode = mode;
-        selectCardNum = cardNum;
-
-//        new PPreference(appClass.getBaseContext()).writePlayer("player", userEnty);
+        selectCardNum = val;
+        switch (state) {
+            case INN.GAME_MEMBER:
+                selectCardNum = val;
+                break;
+            case INN.GAME_QUEST:
+                selectQuestId = val;
+                break;
+        }
     }
 
 //    public boolean onTouchEvent(MotionEvent event) {
@@ -224,7 +228,7 @@ public class Game_Main {
             if (appClass.touch.action == MotionEvent.ACTION_UP) {
                 optionBtn.clickState = ButtonEnty.ButtonClickOff;
                 if (optionBtn.name.equals("back")) {
-                    switch(appClass.gameState){
+                    switch (appClass.gameState) {
                         case INN.GAME_MEMBER_FROM_PARTY:
                             mainButtonAct(INN.GAME_MEMBER, 0);
                             break;
@@ -235,7 +239,7 @@ public class Game_Main {
                             mainButtonAct(INN.GAME_HOME, 0);
                             break;
                     }
-                }else if (optionBtn.name.equals("menu")) {
+                } else if (optionBtn.name.equals("menu")) {
 
                 }
                 return true;

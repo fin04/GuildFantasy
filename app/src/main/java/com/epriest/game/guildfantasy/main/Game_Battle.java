@@ -9,6 +9,13 @@ import com.epriest.game.CanvasGL.util.Game;
  */
 
 public class Game_Battle extends Game{
+
+    public Game_Main gameMain;
+
+    public Game_Battle(Game_Main gameMain) {
+        this.gameMain = gameMain;
+    }
+
     @Override
     public void gStart() {
 

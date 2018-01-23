@@ -356,6 +356,16 @@ public class GameDbAdapter {
         return mCursor;
     }
 
+    public Cursor getCursor(String tableName, String selectKey1, String selectName1, String selectKey2, String selectName2) throws SQLException {
+        Cursor mCursor = mDb.rawQuery("SELECT * FROM " + tableName + " WHERE " + selectKey1 + " ='" + selectName1 + "' AND "+ selectKey2 + " ='" + selectName2 + "'", null);
+
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+
+        return mCursor;
+    }
+
     public String[] getColumns(String TableName) {
         if (TableName.equals(DB_MEMBER_TABLE))
             return MemberColumns;
@@ -404,26 +414,33 @@ public class GameDbAdapter {
     }
 
     public long updateData(String TableName, ContentValues values, String columnName,
-                           String columnData){
-        String whereClause = columnName+"= '" + columnData+"'";
+                           String columnData) {
+        String whereClause = columnName + "= '" + columnData + "'";
         return mDb.update(TableName, values, whereClause, null);
     }
 
     /**
-     *
      * @param TableName
-     * @param rowId -1 이면 모든 ROW 제거
+     * @param rowId     -1 이면 모든 ROW 제거
      * @return
      */
-    public boolean deleteROW(String TableName, long rowId, String username, String id) {
+    public boolean deleteUserROW(String TableName, long rowId, String username) {
 //        Log.i("Delete called", "value__" + rowId);
         String whereClause = null;
-        if(rowId != -1){
+        if (rowId != -1) {
             whereClause = KEY_ROWID + "=" + rowId;
-        } else if(username != null){
-            whereClause = KEY_USERNAME + "= '" + username+"'";
+        } else if (username != null) {
+            whereClause = KEY_USERNAME + "= '" + username + "'";
         }
-        return mDb.delete(TableName, whereClause, null) > 0;
+        int count = mDb.delete(TableName, whereClause, null);
+        return count > 0;
+    }
+
+    public boolean deleteROW(String TableName, long rowId, String username, String row_key, String row_id) {
+        String whereClause = KEY_USERNAME + "=? AND " + row_key + "=?";
+        String[] whereArgs = new String[]{username, row_id};
+        int count = mDb.delete(TableName, whereClause, whereArgs);
+        return count > 0;
     }
 
     public long insertDATA(String TableName, String[] columnData) {

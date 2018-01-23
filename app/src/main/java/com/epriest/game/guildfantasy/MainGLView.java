@@ -13,22 +13,26 @@ import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.graphics.GLView;
 import com.epriest.game.CanvasGL.util.Scene;
+import com.epriest.game.guildfantasy.main.Game_Battle;
 import com.epriest.game.guildfantasy.main.Game_Main;
 import com.epriest.game.guildfantasy.main.Game_Event;
 import com.epriest.game.guildfantasy.main.Game_Home;
 import com.epriest.game.guildfantasy.main.Game_Party;
 import com.epriest.game.guildfantasy.main.Game_Member;
 import com.epriest.game.guildfantasy.main.Game_Quest;
+import com.epriest.game.guildfantasy.main.Game_QuestList;
 import com.epriest.game.guildfantasy.main.Game_Recruit;
 import com.epriest.game.guildfantasy.main.Game_Shop;
 import com.epriest.game.guildfantasy.main.Game_Temple;
 import com.epriest.game.guildfantasy.main.Game_Title;
+import com.epriest.game.guildfantasy.main.Scene_Battle;
 import com.epriest.game.guildfantasy.main.Scene_Event;
 import com.epriest.game.guildfantasy.main.Scene_Home;
 import com.epriest.game.guildfantasy.main.Scene_Main;
 import com.epriest.game.guildfantasy.main.Scene_Member;
 import com.epriest.game.guildfantasy.main.Scene_Party;
 import com.epriest.game.guildfantasy.main.Scene_Quest;
+import com.epriest.game.guildfantasy.main.Scene_QuestList;
 import com.epriest.game.guildfantasy.main.Scene_Recruit;
 import com.epriest.game.guildfantasy.main.Scene_Shop;
 import com.epriest.game.guildfantasy.main.Scene_Title;
@@ -51,7 +55,9 @@ public class MainGLView extends GLView {
     private Game_Party gameParty;
     private Game_Shop gameShop;
     private Game_Temple gameTemple;
+    private Game_QuestList gameQuestList;
     private Game_Quest gameQuest;
+    private Game_Battle gameBattle;
 
 
     private Bitmap mCanvasBitmap;
@@ -97,6 +103,8 @@ public class MainGLView extends GLView {
             gameTitle = null;
             gameHome = null;
             gameQuest = null;
+            gameQuestList = null;
+            gameBattle = null;
             gameMember = null;
             gameTemple = null;
             gameRecruit = null;
@@ -170,6 +178,14 @@ public class MainGLView extends GLView {
                 }
                 gameTemple.gUpdate();
                 break;
+            case INN.GAME_QUESTLIST:
+                if (appClass.isGameInit) {
+                    gameQuestList = new Game_QuestList(gameMain);
+                    gameQuestList.Start();
+                    appClass.isGameInit = false;
+                }
+                gameQuestList.gUpdate();
+                break;
             case INN.GAME_QUEST:
                 if (appClass.isGameInit) {
                     gameQuest = new Game_Quest(gameMain);
@@ -177,6 +193,14 @@ public class MainGLView extends GLView {
                     appClass.isGameInit = false;
                 }
                 gameQuest.gUpdate();
+                break;
+            case INN.GAME_BATTLE:
+                if (appClass.isGameInit) {
+                    gameBattle = new Game_Battle(gameMain);
+                    gameBattle.Start();
+                    appClass.isGameInit = false;
+                }
+                gameBattle.gUpdate();
                 break;
             case INN.GAME_PARTY:
             case INN.GAME_PARTY_FROM_QUEST:
@@ -251,8 +275,18 @@ public class MainGLView extends GLView {
                     mScene.initScene(appClass);
                     appClass.isSceneInit = false;
                     break;
+                case INN.GAME_QUESTLIST:
+                    mScene = new Scene_QuestList(gameQuestList, sceneMain);
+                    mScene.initScene(appClass);
+                    appClass.isSceneInit = false;
+                    break;
                 case INN.GAME_QUEST:
                     mScene = new Scene_Quest(gameQuest, sceneMain);
+                    mScene.initScene(appClass);
+                    appClass.isSceneInit = false;
+                    break;
+                case INN.GAME_BATTLE:
+                    mScene = new Scene_Battle(gameBattle, sceneMain);
                     mScene.initScene(appClass);
                     appClass.isSceneInit = false;
                     break;
@@ -370,8 +404,15 @@ public class MainGLView extends GLView {
                 break;
             case INN.GAME_TEMPLE:
                 gameTemple.gOnTouchEvent(event);
+                break;
+            case INN.GAME_BATTLE:
+                gameBattle.gOnTouchEvent(event);
+                break;
             case INN.GAME_QUEST:
                 gameQuest.gOnTouchEvent(event);
+                break;
+            case INN.GAME_QUESTLIST:
+                gameQuestList.gOnTouchEvent(event);
                 break;
             case INN.GAME_PARTY:
             case INN.GAME_PARTY_FROM_QUEST:

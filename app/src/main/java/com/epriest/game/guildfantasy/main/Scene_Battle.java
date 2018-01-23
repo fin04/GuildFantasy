@@ -1,5 +1,6 @@
 package com.epriest.game.guildfantasy.main;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
@@ -11,6 +12,15 @@ import com.epriest.game.CanvasGL.util.Scene;
  */
 
 public class Scene_Battle extends Scene{
+
+    private Context context;
+    private Game_Battle gameBattle;
+
+    public Scene_Battle(Game_Battle gameBattle, Scene_Main sceneMain) {
+        this.gameBattle = gameBattle;
+//        this.sceneMain = sceneMain;
+    }
+
     @Override
     public void initScene(ApplicationClass appClass) {
 

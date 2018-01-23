@@ -11,14 +11,14 @@ public interface INN {
     public final static int GAME_RECRUIT = 3;
     public final static int GAME_TEMPLE = 4;
     public final static int GAME_SHOP = 5;
-    public final static int GAME_QUEST = 6;
+    public final static int GAME_QUESTLIST = 6;
     public final static int GAME_MOVE = 7;
     public final static int GAME_EVENT = 8;
     public final static int GAME_PARTY = 9;
     public final static int GAME_OPTION = 10;
     public final static int GAME_MEMBER_FROM_PARTY = 11;
     public final static int GAME_PARTY_FROM_QUEST = 12;
-    public final static int GAME_DUNGEON = 13;
+    public final static int GAME_QUEST = 13;
     public final static int GAME_BATTLE = 14;
     public final static int GAME_MEMBER_FROM_DUNGEON = 15;
 

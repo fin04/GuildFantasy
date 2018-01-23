@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class TurnManager {
 
-    public class TurnEnty{
+    public class TurnEnty {
         public int AP;
         public int GOLD;
         public ArrayList<QuestEnty> questEnty = new ArrayList<>();
@@ -36,8 +36,8 @@ public class TurnManager {
         // 모든 퀘스트를 제거한다.
         if (gameMain.userEnty.QUESTLIST.size() > 0) {
             QuestLife();
-            for(QuestEnty enty : gameMain.userEnty.QUESTLIST){
-                DataManager.deleteUserQuest(gameMain.dbAdapter, enty.id);
+            for (QuestEnty enty : gameMain.userEnty.QUESTLIST) {
+                DataManager.deleteUserQuest(gameMain.dbAdapter, gameMain.userEnty.Name, enty.id);
             }
 
         }
@@ -58,20 +58,20 @@ public class TurnManager {
 
         //이벤트 뷰
         gameMain.userEnty.eventEnty.changeView = true;
-        if(gameMain.userEnty.eventEnty.ImageList.size() > 0)
+        if (gameMain.userEnty.eventEnty.ImageList.size() > 0)
             gameMain.mainButtonAct(INN.GAME_EVENT, 0);
         else
             gameMain.showAlertType = GameDialog.ALERT_TYPE_NEXT_TURNSTART;
     }
 
-    private void QuestLife(){
+    private void QuestLife() {
 
     }
 
-    private void MemberLife(){
-        for(MemberEnty enty : gameMain.userEnty.MEMBERLIST) {
+    private void MemberLife() {
+        for (MemberEnty enty : gameMain.userEnty.MEMBERLIST) {
             //exp가 full이면 level up, max_exp를 갱신.
-            if(enty.status.EXP >= enty.status.MAX_EXP){
+            if (enty.status.EXP >= enty.status.MAX_EXP) {
                 enty.status.LEVEL++;
                 enty.status.EXP = enty.status.MAX_EXP - enty.status.EXP;
                 enty.status.MAX_EXP = mathMaxExp(enty.status.LEVEL);
@@ -80,29 +80,29 @@ public class TurnManager {
         }
     }
 
-    private int mathMaxExp(int level){
-        return (int)(Math.pow((double)level, 2));
+    private int mathMaxExp(int level) {
+        return (int) (Math.pow((double) level, 2));
     }
 
-    private void PlayEvent(int turn){
+    private void PlayEvent(int turn) {
 
     }
 
-    private int getAP(int level, int turn){
-        if(turn == 1)
+    private int getAP(int level, int turn) {
+        if (turn == 1)
             return 30;
-        int ap = (int) ((level/5) * 1.5f + 10);
+        int ap = (int) ((level / 5) * 1.5f + 10);
         return ap;
     }
 
-    private int getGold(int member, int turn){
-        if(turn == 1)
+    private int getGold(int member, int turn) {
+        if (turn == 1)
             return 300;
         int gold = member * guildTax;
         return gold;
     }
 
-    private void AddQuest(){
+    private void AddQuest() {
 
     }
 }
