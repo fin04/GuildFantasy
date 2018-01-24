@@ -43,29 +43,47 @@ public class Scene_Quest extends Scene {
     public void draw(Canvas mCanvas) {
         CanvasUtil.drawBgBitmap(gameQuest.bg, mCanvas);
         drawQuestInfo(mCanvas);
+        drawParty(mCanvas);
 
         gameQuest.gameMain.drawStatusTab(mCanvas);
     }
 
     private void drawQuestInfo(Canvas mCanvas) {
-        CanvasUtil.drawClipResize(gameQuest.paper, mCanvas, 0, 0, gameQuest.paper.getWidth(), gameQuest.paper.getHeight(),
-                20, gameQuest.gameMain.statusBarH, gameQuest.canvasW-40, gameQuest.canvasH-300);
-
+        int drawX = 75;
         int drawY = gameQuest.gameMain.statusBarH;
 
-        CanvasUtil.drawString(mCanvas, gameQuest.questEnty.title, 40, Color.argb(210, 10, 10, 25),
-                Paint.Align.CENTER, gameQuest.canvasW/2, drawY + 30);
+        // quest paper
+        CanvasUtil.drawClipResize(gameQuest.paper, mCanvas, 0, 0,
+                gameQuest.paper.getWidth(), gameQuest.paper.getHeight(),
+                drawX, drawY, gameQuest.canvasW-150, gameQuest.canvasH-550);
 
-        CanvasUtil.drawBitmap(gameQuest.questBitmap, mCanvas, (gameQuest.canvasW-gameQuest.questBitmap.getWidth())/2, drawY + 80);
+        // quest image
+        CanvasUtil.drawBitmap(gameQuest.questBitmap, mCanvas,
+                (gameQuest.canvasW-gameQuest.questBitmap.getWidth())/2, drawY + 70);
+
+        // title
+        CanvasUtil.drawString(mCanvas, gameQuest.questEnty.title, 40,
+                Color.argb(235, 140, 20, 25),
+                Paint.Align.CENTER, gameQuest.canvasW/2, drawY + 480);
 
         //text
         for (int j = 0; j < gameQuest.questEnty.textArr.size(); j++) {
             if (j < gameQuest.textLineLimit) {
-                CanvasUtil.drawString(mCanvas, gameQuest.questEnty.textArr.get(j), 24, Color.argb(210, 10, 10, 25),
-                        Paint.Align.LEFT, gameQuest.questEnty.btnEnty.drawX + 45, drawY + 500 + j * 27);
+                CanvasUtil.drawString(mCanvas, gameQuest.questEnty.textArr.get(j), 25, Color.argb(235, 40, 20, 25),
+                        Paint.Align.LEFT, drawX + 40, drawY + 540 + j * 30);
             } else {
                 break;
             }
         }
+
+        //quest difficult stemp
+//        for (int j = 0; j < gameQuest.questEnty.difficult; j++) {
+//            CanvasUtil.drawClip(gameQuest.questcard, mCanvas, 100, 250,
+//                    50, 50, drawX + j * 35, drawY + 660);
+//        }
+    }
+
+    private void drawParty(Canvas mCanvas){
+
     }
 }

@@ -20,7 +20,7 @@ public class Game_Quest extends Game {
 
     public int canvasW, canvasH;
 
-    public final int textLimit = 30;
+    public final int textLimit = 25;
     public final int textLineLimit = 5;
 
     public Bitmap bg;
