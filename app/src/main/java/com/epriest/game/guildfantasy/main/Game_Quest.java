@@ -40,7 +40,7 @@ public class Game_Quest extends Game {
 
         questEnty = DataManager.getUserQuestEnty(gameMain.dbAdapter, gameMain.userEnty.Name, gameMain.selectQuestId);
 
-        bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/quest.jpg", null);
+        bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/bg_guild.jpg", null);
         paper = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/guildpaper.png", null);
         questBitmap = GLUtil.loadAssetsBitmap(gameMain.appClass, "quest/" + questEnty.image, null);
 

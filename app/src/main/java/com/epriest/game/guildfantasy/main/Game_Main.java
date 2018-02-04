@@ -55,7 +55,7 @@ public class Game_Main {
     public String selectQuestId;
 
     public final int statusBarW = 120;
-    public final int statusBarH = 75;
+    static public final int statusBarH = 75;
 
     public int canvasW, canvasH;
 

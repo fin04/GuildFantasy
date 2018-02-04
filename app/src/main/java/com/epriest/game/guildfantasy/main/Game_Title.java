@@ -40,8 +40,9 @@ public class Game_Title extends Game {
     public ButtonEnty btn_New;
     public ButtonEnty btn_Load;
 
-    public Bitmap btn_Name;
-    public Bitmap btn_Name_clk;
+    public Bitmap btnName;
+//    public Bitmap btn_Name;
+//    public Bitmap btn_Name_clk;
     public ArrayList<ButtonEnty> btn_NameList;
 
     public ArrayList<String> UserList;
@@ -81,8 +82,8 @@ public class Game_Title extends Game {
         btn_New.bitmap_clk = GLUtil.loadAssetsBitmap(appClass, "title_new1.png", null);
         btn_Load.bitmap = GLUtil.loadAssetsBitmap(appClass, "title_load0.png", null);
         btn_Load.bitmap_clk = GLUtil.loadAssetsBitmap(appClass, "title_load1.png", null);
-        btn_Name = GLUtil.loadAssetsBitmap(appClass, "main/btnname_0.png", null);
-        btn_Name_clk = GLUtil.loadAssetsBitmap(appClass, "main/btnname_1.png", null);
+        btnName = GLUtil.loadAssetsBitmap(appClass, "main/btn_def.png", null);
+//        btn_Name_clk = GLUtil.loadAssetsBitmap(appClass, "main/btnname_1.png", null);
 
         int btnY = gameMain.canvasH / 2 + 100;
         btn_New.drawW = btn_New.bitmap.getWidth();
@@ -108,8 +109,12 @@ public class Game_Title extends Game {
                 ButtonEnty enty = new ButtonEnty();
                 enty.num = num;
                 enty.name = UserList.get(num);
-                enty.drawW = btn_Name.getWidth();
-                enty.drawH = btn_Name.getHeight();
+                enty.clipW = 209;
+                enty.clipH = 70;
+                enty.clipX = 0;
+                enty.clipY = 0;
+                enty.drawW = enty.clipW;
+                enty.drawH = enty.clipH;
                 enty.drawX = gameMain.canvasW / 2 - enty.drawW/2;
                 enty.drawY = btn_Load.drawY + btn_Load.drawH + 50 + enty.num*(enty.drawH+10);
                 btn_NameList.add(enty);

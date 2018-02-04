@@ -44,7 +44,7 @@ public class Game_Recruit extends Game {
 
     @Override
     public void gStart() {
-        bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member.jpg", null);
+        bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/bg_tavern.jpg", null);
         img_value = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/banner_value.jpg", null);
         summonBtn = new ButtonEnty();
         summonBtn.bitmap = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/banner_summon.png", null);

@@ -50,7 +50,7 @@ public class Game_Member extends Game {
         memberList = DataManager.getUserMemberList(gameMain.dbAdapter, gameMain.userEnty.Name);
         img_memberSheet = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member_sheet.png", null);
         img_membercard = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/membercard.png", null);
-        img_bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member.jpg", null);
+        img_bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/bg_inn.jpg", null);
         img_member = new ArrayList<>();
         for (int i = 0; i < memberList.size(); i++) {
             img_member.add(GLUtil.loadAssetsBitmap(gameMain.appClass, "member/" + memberList.get(i).image, null, 2));

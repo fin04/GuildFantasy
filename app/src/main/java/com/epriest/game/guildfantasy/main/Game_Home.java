@@ -8,6 +8,7 @@ import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.CanvasGL.util.TextUtil;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
+import com.epriest.game.guildfantasy.main.play.DataManager;
 import com.epriest.game.guildfantasy.main.play.GameDialog;
 import com.epriest.game.guildfantasy.util.INN;
 
@@ -26,6 +27,7 @@ public class Game_Home extends Game {
     public int maxChar = 18;
     public boolean isNext;
 
+    public int scrollX, prevScrollX;
     public int mMainScreenY;
     public int mMainScreenHeight;
 
@@ -53,7 +55,7 @@ public class Game_Home extends Game {
 //        }
 //        menuButtonList = new ArrayList();
 
-        bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/town.jpg", null);
+        bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/bg_town.jpg", null);
         img_homeBtn = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/home_btn.png", null);
 //        img_card = GLUtil.loadAssetsBitmap(appClass, "main/membercard.png", null);
 
@@ -221,6 +223,9 @@ public class Game_Home extends Game {
 //            if(gameMain.alertManager.onAlertTouch())
 //                return;
 //        }
+
+        // scroll
+        onScrollBg();
     }
 
     public boolean onTurnButtonTouch() {
@@ -267,6 +272,19 @@ public class Game_Home extends Game {
             }
         }
         return false;
+    }
+
+    public void onScrollBg(){
+        if (gameMain.appClass.touch.action == MotionEvent.ACTION_DOWN) {
+            prevScrollX = scrollX;
+        }
+        scrollX = prevScrollX - (int) (gameMain.appClass.touch.mLastTouchX - gameMain.appClass.touch.mDownX);
+        int maxScrollX = bg.getWidth()/2;
+        if (scrollX < -maxScrollX) {
+            scrollX = -maxScrollX;
+        }else if (scrollX > maxScrollX) {
+            scrollX = maxScrollX;
+        }
     }
 }
 

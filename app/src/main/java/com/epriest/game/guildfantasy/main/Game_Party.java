@@ -67,7 +67,7 @@ public class Game_Party extends Game {
 //        img_statusBar = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/statusbar.png", null);
 //        img_mainBtn = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/main_btn.png", null);
         img_membercard = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/membercard.png", null);
-        img_title_bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/party_cr.jpg", null);
+        img_title_bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/bg_party.jpg", null);
 //        img_memberFrame = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member_frame.png", null);
 //        img_questPaper = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/guildpaper.png", null);
 

@@ -11,6 +11,7 @@ import com.epriest.game.CanvasGL.util.Scene;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.play.AlertManager;
 import com.epriest.game.guildfantasy.main.play.GameDialog;
+import com.epriest.game.guildfantasy.util.DrawUtil;
 import com.epriest.game.guildfantasy.util.INN;
 
 /**
@@ -62,7 +63,7 @@ public class Scene_Home extends Scene {
     }
 
     private void drawBG(Canvas mCanvas) {
-        CanvasUtil.drawBgBitmap(gameHome.bg, mCanvas);
+        DrawUtil.drawBgBitmap(gameHome.bg, mCanvas, gameHome.scrollX);
 //        CanvasUtil.drawBox(mCanvas, Color.argb(255, 50,50,50),true,
 //                0, 0,
 //                gameHome.gameMain.appClass.getGameCanvasWidth(), gameHome.mMainScreenY);

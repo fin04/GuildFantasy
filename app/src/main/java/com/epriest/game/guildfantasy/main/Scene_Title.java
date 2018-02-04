@@ -37,8 +37,7 @@ public class Scene_Title extends Scene {
         CanvasUtil.recycleBitmap(game_title.btn_New.bitmap_clk);
         CanvasUtil.recycleBitmap(game_title.btn_Load.bitmap);
         CanvasUtil.recycleBitmap(game_title.btn_Load.bitmap_clk);
-        CanvasUtil.recycleBitmap(game_title.btn_Name);
-        CanvasUtil.recycleBitmap(game_title.btn_Name_clk);
+        CanvasUtil.recycleBitmap(game_title.btnName);
     }
 
     @Override
@@ -94,11 +93,11 @@ public class Scene_Title extends Scene {
 
         for(ButtonEnty enty : game_title.btn_NameList){
             if(enty.clickState == ButtonEnty.ButtonClickOff)
-                CanvasUtil.drawBitmap(game_title.btn_Name, mCanvas,
-                        enty.drawX, enty.drawY);
+                CanvasUtil.drawClip(game_title.btnName, mCanvas, enty.clipX, enty.clipY,
+                        enty.clipW, enty.clipH, enty.drawX, enty.drawY);
             else if(enty.clickState == ButtonEnty.ButtonClickOn)
-                CanvasUtil.drawBitmap(game_title.btn_Name_clk, mCanvas,
-                        enty.drawX, enty.drawY);
+                CanvasUtil.drawClip(game_title.btnName, mCanvas, enty.clipX, enty.clipY+enty.clipH,
+                        enty.clipW, enty.clipH, enty.drawX, enty.drawY);
 
             CanvasUtil.drawString(mCanvas, enty.name, 45,
                     Color.argb(255,180,180,220), Paint.Align.LEFT,

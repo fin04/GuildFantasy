@@ -41,7 +41,7 @@ public class Game_QuestList extends Game {
         this.canvasW = gameMain.appClass.getGameCanvasWidth();
         this.canvasH = gameMain.appClass.getGameCanvasHeight();
 
-        bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/quest.jpg", null);
+        bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/bg_guild.jpg", null);
         questcard = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/questcard.png", null);
 
 //            for (QuestEnty enty : questList) {
