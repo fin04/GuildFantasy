@@ -3,11 +3,11 @@ package com.epriest.game.guildfantasy.main;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
-import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
 import com.epriest.game.guildfantasy.main.enty.ImageEnty;
+import com.epriest.game.guildfantasy.util.DrawUtil;
 
 /**
  * Created by darka on 2017-03-26.
@@ -41,8 +41,8 @@ public class Scene_Temple extends Scene {
 
     @Override
     public void recycleScene() {
-        CanvasUtil.recycleBitmap(bg);
-        CanvasUtil.recycleBitmap(char_01);
+        DrawUtil.recycleBitmap(bg);
+        DrawUtil.recycleBitmap(char_01);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class Scene_Temple extends Scene {
 
     @Override
     public void draw(Canvas mCanvas) {
-        CanvasUtil.drawBgBitmap(bg, mCanvas);
+        DrawUtil.drawBgBitmap(bg, mCanvas);
 
         //manager mode
 //        drawManager(mCanvas, paint);

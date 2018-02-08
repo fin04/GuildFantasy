@@ -7,24 +7,20 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.MotionEvent;
 
-import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.ClipImageEnty;
 import com.epriest.game.guildfantasy.main.enty.ImageEnty;
-import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 import com.epriest.game.guildfantasy.main.enty.UserEnty;
-import com.epriest.game.guildfantasy.main.play.AlertManager;
 import com.epriest.game.guildfantasy.main.play.GameDbAdapter;
 import com.epriest.game.guildfantasy.main.play.TurnManager;
+import com.epriest.game.guildfantasy.util.DrawUtil;
 import com.epriest.game.guildfantasy.util.INN;
 import com.epriest.game.guildfantasy.util.PPreference;
 
 import java.util.ArrayList;
-
-import static com.epriest.game.CanvasGL.graphics.CanvasUtil.drawClip;
 
 /**
  * Created by darka on 2017-03-26.
@@ -44,6 +40,7 @@ public class Game_Main {
     public Bitmap img_mainBtn;
     public Bitmap img_statusBar;
     public Bitmap img_classMark;
+    public Bitmap img_defBtn;
 
     public ButtonEnty optionBtn;
     public ButtonEnty menIcon;
@@ -62,7 +59,8 @@ public class Game_Main {
     /**
      * partyNumber.cardNumber
      */
-    public String selectCardNum;
+    public int selectCardNum;
+    public int selectPartyNum;
 
     public Game_Main(Context context, GameDbAdapter dbAdapter) {
         appClass = (ApplicationClass) context.getApplicationContext();
@@ -87,29 +85,38 @@ public class Game_Main {
         setStatusIcon();
         setManager();
 
-        setCardListFromSelectParty(0, 0);
+        selectCardNum = 0;
+        selectPartyNum = 0;
     }
 
     private UserEnty checkPlayerData() {
         return new PPreference(appClass.getBaseContext()).readPlayer("player");
     }
 
+    public void mainButtonAct(int state) {
+        appClass.isGameInit = true;
+        appClass.isSceneInit = true;
+        appClass.gameState = state;
+        selectCardNum = 0;
+        selectPartyNum = 0;
+    }
+
     public void mainButtonAct(int state, int val) {
         appClass.isGameInit = true;
         appClass.isSceneInit = true;
         appClass.gameState = state;
-        setCardListFromSelectParty(0, 0);
+        switch (state) {
+            case INN.GAME_MEMBER:
+                selectCardNum = val;
+                break;
+        }
     }
 
     public void mainButtonAct(int state, String val) {
         appClass.isGameInit = true;
         appClass.isSceneInit = true;
         appClass.gameState = state;
-        selectCardNum = val;
         switch (state) {
-            case INN.GAME_MEMBER:
-                selectCardNum = val;
-                break;
             case INN.GAME_QUEST:
                 selectQuestId = val;
                 break;
@@ -166,6 +173,7 @@ public class Game_Main {
         img_mainBtn = GLUtil.loadAssetsBitmap(appClass, "main/main_btn.png", null);
         img_statusBar = GLUtil.loadAssetsBitmap(appClass, "main/statusbar.png", null);
         img_classMark = GLUtil.loadAssetsBitmap(appClass, "main/classes_mark.png", null);
+        img_defBtn = GLUtil.loadAssetsBitmap(appClass, "main/btn_def.png", null);
     }
 
     public void setStatusIcon() {
@@ -229,14 +237,17 @@ public class Game_Main {
                 optionBtn.clickState = ButtonEnty.ButtonClickOff;
                 if (optionBtn.name.equals("back")) {
                     switch (appClass.gameState) {
+                        case INN.GAME_QUEST:
+                            mainButtonAct(INN.GAME_QUESTLIST);
+                            break;
                         case INN.GAME_MEMBER_FROM_PARTY:
-                            mainButtonAct(INN.GAME_MEMBER, 0);
+                            mainButtonAct(INN.GAME_MEMBER);
                             break;
                         case INN.GAME_PARTY_FROM_QUEST:
-                            mainButtonAct(INN.GAME_PARTY, 0);
+                            mainButtonAct(INN.GAME_PARTY);
                             break;
                         default:
-                            mainButtonAct(INN.GAME_HOME, 0);
+                            mainButtonAct(INN.GAME_HOME);
                             break;
                     }
                 } else if (optionBtn.name.equals("menu")) {
@@ -253,10 +264,11 @@ public class Game_Main {
     }
 
     public void recycleScene() {
-        CanvasUtil.recycleBitmap(img_mainBtn);
-        CanvasUtil.recycleBitmap(img_statusBar);
-        CanvasUtil.recycleBitmap(img_classMark);
-        CanvasUtil.recycleBitmap(managerImg.bitmap);
+        DrawUtil.recycleBitmap(img_mainBtn);
+        DrawUtil.recycleBitmap(img_statusBar);
+        DrawUtil.recycleBitmap(img_classMark);
+        DrawUtil.recycleBitmap(managerImg.bitmap);
+        DrawUtil.recycleBitmap(img_defBtn);
     }
 
     public void drawBarGage(Canvas mCanvas, int bgColor, int color, String title,
@@ -264,15 +276,15 @@ public class Game_Main {
         int gageW = (int) (((float) num / (float) maxNum) * w);
 
         if (bgColor > -1)
-            CanvasUtil.drawBox(mCanvas, bgColor, true, x, y, w, h);
-        CanvasUtil.drawBox(mCanvas, color, true, x, y, gageW, h);
+            DrawUtil.drawBox(mCanvas, bgColor, true, x, y, w, h);
+        DrawUtil.drawBox(mCanvas, color, true, x, y, gageW, h);
         String exp = title + " " + num + "/" + maxNum;
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setTextSize(15);
         paint.setColor(Color.argb(255, 180, 190, 210));
-        CanvasUtil.drawString(mCanvas, exp, paint, x + w / 2, y - 5);
+        DrawUtil.drawString(mCanvas, exp, paint, x + w / 2, y - 5);
     }
 
     /**
@@ -281,7 +293,7 @@ public class Game_Main {
     public void drawStatusTab(Canvas mCanvas) {
         int barNum = canvasW / statusBarW;
         for (int i = 0; i <= barNum; i++) {
-            CanvasUtil.drawClip(img_statusBar, mCanvas, 0, 0,
+            DrawUtil.drawClip(img_statusBar, mCanvas, 0, 0,
                     statusBarW, statusBarH, statusBarW * i, 0);
         }
 
@@ -293,47 +305,47 @@ public class Game_Main {
         paint.setTextSize(fontSize);
 
         // Name Lv
-        CanvasUtil.drawString(mCanvas, userEnty.Name + "(Lv " + userEnty.LEVEL + ")", paint, 10, drawY);
+        DrawUtil.drawString(mCanvas, userEnty.Name + "(Lv " + userEnty.LEVEL + ")", paint, 10, drawY);
 
         // AP
-        CanvasUtil.drawString(mCanvas, "AP " + userEnty.AP, paint, drawX, drawY);
+        DrawUtil.drawString(mCanvas, "AP " + userEnty.AP, paint, drawX, drawY);
 
         // Gold
-        CanvasUtil.drawClip(img_mainBtn, mCanvas, goldIcon.clipX, goldIcon.clipY,
+        DrawUtil.drawClip(img_mainBtn, mCanvas, goldIcon.clipX, goldIcon.clipY,
                 goldIcon.clipW, goldIcon.clipH, goldIcon.drawX, drawY);
-        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.GOLD), paint,
+        DrawUtil.drawString(mCanvas, Integer.toString(userEnty.GOLD), paint,
                 goldIcon.drawX + goldIcon.clipW + 5, drawY + 3);
 
         // Member
-        CanvasUtil.drawClip(img_mainBtn, mCanvas, menIcon.clipX, menIcon.clipY,
+        DrawUtil.drawClip(img_mainBtn, mCanvas, menIcon.clipX, menIcon.clipY,
                 menIcon.clipW, menIcon.clipH, menIcon.drawX, drawY);
-        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.MEMBERLIST.size()), paint,
+        DrawUtil.drawString(mCanvas, Integer.toString(userEnty.MEMBERLIST.size()), paint,
                 menIcon.drawX + menIcon.clipW + 5, drawY + 3);
 
-//        CanvasUtil.drawClip(gameHome.img_mainBtn, mCanvas, partyIcon.clipX, partyIcon.clipY,
+//        DrawUtil.drawClip(gameHome.img_mainBtn, mCanvas, partyIcon.clipX, partyIcon.clipY,
 //                partyIcon.clipW, partyIcon.clipH, partyIcon.drawX, partyIcon.drawY);
-//        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.PARTYLIST.size()), paint,
+//        DrawUtil.drawString(mCanvas, Integer.toString(userEnty.PARTYLIST.size()), paint,
 //                partyIcon.drawX + partyIcon.clipW + 5, partyIcon.drawY + 3);
 
         //Turn
-        CanvasUtil.drawString(mCanvas, "Turn " + userEnty.TURN, paint, canvasW - 250, drawY);
+        DrawUtil.drawString(mCanvas, "Turn " + userEnty.TURN, paint, canvasW - 250, drawY);
 
         //Option Button
         int clipY = optionBtn.clipY;
         if (optionBtn.clickState == ButtonEnty.ButtonClickOn) {
             clipY = 53;
         }
-        CanvasUtil.drawClip(img_statusBar, mCanvas, optionBtn.clipX, clipY,
+        DrawUtil.drawClip(img_statusBar, mCanvas, optionBtn.clipX, clipY,
                 optionBtn.clipW, optionBtn.clipH, optionBtn.drawX, optionBtn.drawY);
 
         switch (appClass.gameState) {
             case INN.GAME_HOME:
-                CanvasUtil.drawClip(img_statusBar, mCanvas, 121, 107,
+                DrawUtil.drawClip(img_statusBar, mCanvas, 121, 107,
                         82, 23, optionBtn.drawX + (optionBtn.clipW - 82) / 2,
                         optionBtn.drawY + (optionBtn.clipH - 23) / 2);
                 break;
             default:
-                CanvasUtil.drawClip(img_statusBar, mCanvas, 121, 130,
+                DrawUtil.drawClip(img_statusBar, mCanvas, 121, 130,
                         82, 23, optionBtn.drawX + (optionBtn.clipW - 82) / 2,
                         optionBtn.drawY + (optionBtn.clipH - 23) / 2);
                 break;
@@ -342,7 +354,7 @@ public class Game_Main {
 
     private void drawManager(Canvas mCanvas) {
         int managerBottomY = canvasH - 484;
-        CanvasUtil.drawClip(managerImg.bitmap, mCanvas, 490, 156,
+        DrawUtil.drawClip(managerImg.bitmap, mCanvas, 490, 156,
                 228, 484, 50, managerBottomY);
 
         if (managerImg.animCnt < managerImg.animMaxFrame) {
@@ -353,7 +365,7 @@ public class Game_Main {
 
         for (ClipImageEnty enty : managerImg.animClipList) {
             if (enty.animStartFrame <= managerImg.animCnt && enty.animEndFrame >= managerImg.animCnt) {
-                CanvasUtil.drawClip(managerImg.bitmap, mCanvas, enty.animClipX, enty.animClipY,
+                DrawUtil.drawClip(managerImg.bitmap, mCanvas, enty.animClipX, enty.animClipY,
                         enty.animClipW, enty.animClipH, enty.animDrawX - 490 + 50, enty.animDrawY - 156 + managerBottomY);
                 break;
             }
@@ -361,27 +373,19 @@ public class Game_Main {
 
     }
 
-    public void setCardListFromSelectParty(int selectParty, int selectCardPos) {
-        this.selectCardNum = selectParty + "-" + selectCardPos;
-    }
-
     public void setSelectPartyNum(int selectPartyNum) {
-        String str[] = this.selectCardNum.split("-");
-        this.selectCardNum = selectPartyNum + "-" + str[1];
+        this.selectPartyNum = selectPartyNum;
     }
 
     public void setSelectCardNum(int selectCardNum) {
-        String str[] = this.selectCardNum.split("-");
-        this.selectCardNum = str[0] + "-" + selectCardNum;
+        this.selectCardNum = selectCardNum;
     }
 
     public Integer getSelectPartyNum() {
-        String str[] = selectCardNum.split("-");
-        return Integer.parseInt(str[0]);
+        return selectPartyNum;
     }
 
     public Integer getSelectPosition() {
-        String str[] = selectCardNum.split("-");
-        return Integer.parseInt(str[1]);
+        return selectCardNum;
     }
 }

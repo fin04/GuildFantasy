@@ -1,12 +1,20 @@
 package com.epriest.game.guildfantasy.main;
 
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 import com.epriest.game.CanvasGL.graphics.GLUtil;
+import com.epriest.game.CanvasGL.util.ButtonSprite;
 import com.epriest.game.CanvasGL.util.Game;
+import com.epriest.game.CanvasGL.util.GameUtil;
+import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.QuestEnty;
 import com.epriest.game.guildfantasy.main.play.DataManager;
+import com.epriest.game.guildfantasy.util.DialogActivity;
+import com.epriest.game.guildfantasy.util.INN;
 
 import java.util.ArrayList;
 
@@ -23,11 +31,35 @@ public class Game_Quest extends Game {
     public final int textLimit = 25;
     public final int textLineLimit = 5;
 
-    public Bitmap bg;
-    public Bitmap paper;
-    public Bitmap questBitmap;
+    public Bitmap img_bg;
+    public Bitmap img_paper;
+    public Bitmap img_questBitmap;
+    public Bitmap img_membercard;
+
+    public ArrayList<ButtonEnty> partyEntyList;
+
+    public ButtonEnty nextBtnEnty;
 
     public QuestEnty questEnty;
+
+    public enum QuestType{
+        delivery("배달"),
+        escort("호위"),
+        sweep("소탕"),
+        chase("퇴치"),
+        hunter("사냥"),
+        patrol("순찰");
+
+        private String label;
+
+        QuestType(String type){
+            this.label = type;
+        }
+
+        public String getLabel(){
+            return label;
+        }
+    }
 
     public Game_Quest(Game_Main gameMain) {
         this.gameMain = gameMain;
@@ -40,9 +72,10 @@ public class Game_Quest extends Game {
 
         questEnty = DataManager.getUserQuestEnty(gameMain.dbAdapter, gameMain.userEnty.Name, gameMain.selectQuestId);
 
-        bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/bg_guild.jpg", null);
-        paper = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/guildpaper.png", null);
-        questBitmap = GLUtil.loadAssetsBitmap(gameMain.appClass, "quest/" + questEnty.image, null);
+        img_bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/bg_guild.jpg", null);
+        img_paper = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/guildpaper.png", null);
+        img_membercard = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/membercard.png", null, 2);
+        img_questBitmap = GLUtil.loadAssetsBitmap(gameMain.appClass, "quest/" + questEnty.image, null);
 
         if (questEnty.textArr.isEmpty()) {
             for (int j = 0; j < questEnty.text.length() / textLimit + 1; j++) {
@@ -51,6 +84,27 @@ public class Game_Quest extends Game {
                 else
                     questEnty.textArr.add(questEnty.text.substring(j * textLimit, questEnty.text.length()));
             }
+        }
+
+        nextBtnEnty = new ButtonEnty();
+        nextBtnEnty.name = "의뢰수락";
+        nextBtnEnty.clipW = 209;
+        nextBtnEnty.clipH = 70;
+        nextBtnEnty.clipX = 0;
+        nextBtnEnty.clipY = 140;
+        nextBtnEnty.drawX = canvasW/2 - nextBtnEnty.clipW/2;
+        nextBtnEnty.drawY = canvasH - 120;
+
+        partyEntyList = new ArrayList<>();
+        for(int i=0; i<4; i++){
+            ButtonEnty enty = new ButtonEnty();
+            enty.clipW = 106;
+            enty.clipH = 140;
+            enty.clipX = 0;
+            enty.clipY = 0;
+            enty.drawX = i*(enty.clipW+10) + (canvasW - 4*(enty.clipW+10))/2;
+            enty.drawY = canvasH - enty.clipH - 180;
+            partyEntyList.add(enty);
         }
     }
 
@@ -68,5 +122,15 @@ public class Game_Quest extends Game {
     public void gOnTouchEvent(MotionEvent event) {
         if (gameMain.onStatusTouch())
             return;
+
+        if (GameUtil.equalsTouch(gameMain.appClass.touch, nextBtnEnty.drawX, nextBtnEnty.drawY,
+                nextBtnEnty.clipW, nextBtnEnty.clipH)) {
+            nextBtnEnty.clickState = ButtonEnty.ButtonClickOn;
+            if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
+                nextBtnEnty.clickState = ButtonEnty.ButtonClickOff;
+                gameMain.mainButtonAct(INN.GAME_PARTY);
+            }
+            return;
+        }
     }
 }

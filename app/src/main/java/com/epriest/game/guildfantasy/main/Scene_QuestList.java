@@ -6,10 +6,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
 import com.epriest.game.guildfantasy.main.enty.QuestEnty;
+import com.epriest.game.guildfantasy.util.DrawUtil;
 
 /**
  * Created by darka on 2017-03-26.
@@ -35,10 +35,10 @@ public class Scene_QuestList extends Scene {
 
     @Override
     public void recycleScene() {
-        CanvasUtil.recycleBitmap(gameQuestList.bg);
-        CanvasUtil.recycleBitmap(gameQuestList.questcard);
+        DrawUtil.recycleBitmap(gameQuestList.bg);
+        DrawUtil.recycleBitmap(gameQuestList.questcard);
         for (Bitmap bm : gameQuestList.questBitmapList) {
-            CanvasUtil.recycleBitmap(bm);
+            DrawUtil.recycleBitmap(bm);
         }
     }
 
@@ -52,7 +52,7 @@ public class Scene_QuestList extends Scene {
 //        mCanvas.drawColor(Color.BLACK);
 
 //        mCanvas.drawBitmap(bg, 0, 0, null);
-        CanvasUtil.drawBgBitmap(gameQuestList.bg, mCanvas);
+        DrawUtil.drawBgBitmap(gameQuestList.bg, mCanvas);
         drawQuestList(mCanvas);
 
         gameQuestList.gameMain.drawStatusTab(mCanvas);
@@ -63,66 +63,68 @@ public class Scene_QuestList extends Scene {
         for (int i = 0; i < gameQuestList.gameMain.userEnty.QUESTLIST.size(); i++) {
             QuestEnty enty = gameQuestList.gameMain.userEnty.QUESTLIST.get(i);
             int drawY = enty.btnEnty.drawY;
-            CanvasUtil.drawClip(gameQuestList.questcard, mCanvas, enty.btnEnty.clipX, enty.btnEnty.clipY,
+            DrawUtil.drawClip(gameQuestList.questcard, mCanvas, enty.btnEnty.clipX, enty.btnEnty.clipY,
                     enty.btnEnty.clipW, enty.btnEnty.clipH, enty.btnEnty.drawX, drawY);
 
-            int type = 0;
-            String label = "";
-            if (enty.type.equals("delivery")) {
-                type = 0;
-                label = "배달";
-            } else if (enty.type.equals("escort")) {
-                type = 1;
-                label = "호위";
-            } else if (enty.type.equals("sweep")) {
-                type = 2;
-                label = "소탕";
-            } else if (enty.type.equals("chase")) {
-                type = 3;
-                label = "퇴치";
-            } else if (enty.type.equals("hunter")) {
-                type = 4;
-                label = "사냥";
-            } else if (enty.type.equals("patrol")) {
-                type = 5;
-                label = "순찰";
-            }
+            int type = Game_Quest.QuestType.valueOf(enty.type).ordinal();
+            String label = Game_Quest.QuestType.valueOf(enty.type).getLabel();
+
 
             //quest img (200x200)
-            CanvasUtil.drawClip(gameQuestList.questBitmapList.get(i), mCanvas, 0, 0, 200, 200,
+            DrawUtil.drawClip(gameQuestList.questBitmapList.get(i), mCanvas, 0, 0, 200, 200,
                     475, drawY + 25);
 
             //label_eng
-            CanvasUtil.drawClip(gameQuestList.questcard, mCanvas, 150 + type % 2 * 100, 275 + type / 2 * 25,
+            DrawUtil.drawClip(gameQuestList.questcard, mCanvas, 150 + type % 2 * 100, 275 + type / 2 * 25,
                     90, 25, enty.btnEnty.drawX + (enty.btnEnty.clipW - 90) / 2, drawY + 30);
 
             //label_kor
-//            CanvasUtil.drawString(mCanvas, label, 20, Color.argb(255,100,40,40),
+//            DrawUtil.drawString(mCanvas, label, 20, Color.argb(255,100,40,40),
 //                    Paint.Align.CENTER, enty.btnEnty.drawX + enty.btnEnty.clipW/2,enty.btnEnty.drawY+10);
 
             //title
-            CanvasUtil.drawString(mCanvas, enty.title, 40, Color.argb(210, 10, 10, 25),
+            DrawUtil.drawString(mCanvas, enty.title, 40, Color.argb(210, 10, 10, 25),
                     Paint.Align.LEFT, enty.btnEnty.drawX + 55, drawY + 45);
 
             //text
-            for (int j = 0; j < enty.textArr.size(); j++) {
-                if (j < gameQuestList.textLineLimit) {
-                    CanvasUtil.drawString(mCanvas, enty.textArr.get(j), 24, Color.argb(210, 10, 10, 25),
-                            Paint.Align.LEFT, enty.btnEnty.drawX + 25, drawY + 120 + j * 27);
-                } else {
-                    break;
-                }
-            }
+//            for (int j = 0; j < enty.textArr.size(); j++) {
+//                if (j < gameQuestList.textLineLimit) {
+//                    DrawUtil.drawString(mCanvas, enty.textArr.get(j), 24, Color.argb(210, 10, 10, 25),
+//                            Paint.Align.LEFT, enty.btnEnty.drawX + 25, drawY + 120 + j * 27);
+//                } else {
+//                    break;
+//                }
+//            }
 
             //quest difficult stemp
             for (int j = 0; j < enty.difficult; j++) {
-                CanvasUtil.drawClip(gameQuestList.questcard, mCanvas, 100, 250,
+                DrawUtil.drawClip(gameQuestList.questcard, mCanvas, 100, 250,
                         50, 50, enty.btnEnty.drawX + j * 35, drawY + 5);
             }
 
             if (enty.actPartyNum > 0)
-                CanvasUtil.drawClip(gameQuestList.questcard, mCanvas, 201, 164,
+                DrawUtil.drawClip(gameQuestList.questcard, mCanvas, 201, 164,
                         51, 49, enty.btnEnty.drawX + 140, drawY + 8);
+
+            //reward
+            DrawUtil.drawBox(mCanvas, Color.argb(180,150,170,10), true,
+                    enty.btnEnty.drawX + 20, drawY + 150, 60, 30);
+            DrawUtil.drawString(mCanvas, "gold", 22, Color.rgb(200, 220, 220),
+                            Paint.Align.CENTER, enty.btnEnty.drawX + 50, drawY + 150);
+            DrawUtil.drawString(mCanvas, Integer.toString(enty.rewardGold), 24, Color.rgb(20, 20, 20),
+                    Paint.Align.CENTER, enty.btnEnty.drawX + 50, drawY + 180);
+
+            DrawUtil.drawBox(mCanvas, Color.argb(180,20,80,180), true,
+                    enty.btnEnty.drawX + 90, drawY + 150, 60, 30);
+            DrawUtil.drawString(mCanvas, "exp", 22, Color.rgb(200, 220, 220),
+                    Paint.Align.CENTER, enty.btnEnty.drawX + 120, drawY + 150);
+            DrawUtil.drawString(mCanvas, Integer.toString(enty.rewardExp), 24, Color.rgb(20, 20, 20),
+                    Paint.Align.CENTER, enty.btnEnty.drawX + 120, drawY + 180);
+
+            for(int j=0; j<5; j++) {
+                DrawUtil.drawBox(mCanvas, Color.argb(180, 180, 20, 10), false,
+                        enty.btnEnty.drawX + 170+50*j, drawY + 150, 50, 50);
+            }
         }
     }
 

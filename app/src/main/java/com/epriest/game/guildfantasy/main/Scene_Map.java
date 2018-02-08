@@ -9,7 +9,7 @@ import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
-import com.epriest.game.guildfantasy.main.enty.ImageEnty;
+import com.epriest.game.guildfantasy.util.DrawUtil;
 import com.epriest.game.guildfantasy.util.INN;
 
 /**
@@ -65,7 +65,7 @@ public class Scene_Map extends Scene {
 //            mapLayer.cursor.tileNum = mapLayer.terrainColumnList.get(mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x]-1;
         String curStr = INN.tileName[gameMap.mapLayer.cursor.tileNum] +"["
                 +(gameMap.mapLayer.cursor.curTile.x+1) + "," + (gameMap.mapLayer.cursor.curTile.y+1)+"]";
-        CanvasUtil.drawString(mCanvas, curStr, 20, Color.argb(200,50,50,50), Paint.Align.RIGHT,
+        DrawUtil.drawString(mCanvas, curStr, 20, Color.argb(200,50,50,50), Paint.Align.RIGHT,
                 20, 8);
 
         switch (gameMap.mapLayer.cursor.state ) {

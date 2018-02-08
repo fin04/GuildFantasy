@@ -43,7 +43,7 @@ public class Game_Event extends Game {
                 gameMain.userEnty.eventEnty.changeView = true;
                 gameMain.userEnty.eventEnty.currentViewNum++;
             }else{
-                gameMain.mainButtonAct(INN.GAME_HOME, 0);
+                gameMain.mainButtonAct(INN.GAME_HOME);
                 gameMain.showAlertType = GameDialog.ALERT_TYPE_NEXT_TURNSTART;
             }
 

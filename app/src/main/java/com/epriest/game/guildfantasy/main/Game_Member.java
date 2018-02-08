@@ -27,7 +27,7 @@ public class Game_Member extends Game {
     public Bitmap img_bg;
 
     public ArrayList<ButtonEnty> PartyButtonList = new ArrayList<>();
-    public ArrayList<ButtonEnty> addMemberButtonList = new ArrayList<>();
+    public ArrayList<ButtonEnty> PartyAddButtonList = new ArrayList<>();
     public ArrayList<MemberEnty> memberList;
     public ArrayList<Bitmap> img_member;
 
@@ -78,7 +78,7 @@ public class Game_Member extends Game {
         cardTextBoxH = 90;
 
 //        int cardY = 300;
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < memberList.size(); i++) {
             ButtonEnty mBtn = new ButtonEnty();
             mBtn.num = i;
 //            mCard.name = "card" + (i + 1);
@@ -93,7 +93,7 @@ public class Game_Member extends Game {
                 String imgPath = memberList.get(i).image;
                 mBtn.bitmap = GLUtil.loadAssetsBitmap(gameMain.appClass, "member/" + imgPath, null, 2);
             }
-            addMemberButtonList.add(mBtn);
+            PartyAddButtonList.add(mBtn);
         }
     }
 
@@ -131,8 +131,8 @@ public class Game_Member extends Game {
 
         //party 편성용 버튼
         if (gameMain.appClass.gameState == INN.GAME_MEMBER_FROM_PARTY) {
-            for (int i = 0; i < addMemberButtonList.size(); i++) {
-                ButtonEnty btn = addMemberButtonList.get(i);
+            for (int i = 0; i < PartyAddButtonList.size(); i++) {
+                ButtonEnty btn = PartyAddButtonList.get(i);
                 if (GameUtil.equalsTouch(gameMain.appClass.touch, btn.drawX, btn.drawY, btn.clipW, btn.clipH+scrollY)) {
                     switch (gameMain.appClass.touch.action) {
                         case MotionEvent.ACTION_DOWN:
@@ -148,7 +148,7 @@ public class Game_Member extends Game {
                                     DataManager.updateUserPartyMember(gameMain.dbAdapter, memberID,
                                             gameMain.userEnty.Name, gameMain.getSelectPartyNum(),
                                             gameMain.getSelectPosition());
-                                    gameMain.mainButtonAct(INN.GAME_PARTY, 0);
+                                    gameMain.mainButtonAct(INN.GAME_PARTY);
                                 }
                             }
                             break;

@@ -5,14 +5,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.epriest.game.CanvasGL.graphics.CanvasUtil;
+import com.epriest.game.CanvasGL.graphics.DrawUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
 import com.epriest.game.guildfantasy.main.enty.ImageEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 
-import static com.epriest.game.CanvasGL.graphics.CanvasUtil.*;
+import static com.epriest.game.CanvasGL.graphics.DrawUtil.*;
 
 /**
  * Created by darka on 2017-03-26.

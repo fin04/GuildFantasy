@@ -6,15 +6,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.MotionEvent;
 
-import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.guildfantasy.main.Game_Main;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
+import com.epriest.game.guildfantasy.util.DrawUtil;
 import com.epriest.game.guildfantasy.util.INN;
-
-import static com.epriest.game.CanvasGL.graphics.CanvasUtil.drawClip;
 
 /**
  * Created by darka on 2017-12-29.
@@ -57,7 +55,7 @@ public class AlertManager {
     }
 
     public void recycleScene() {
-        CanvasUtil.recycleBitmap(img_alertBox);
+        DrawUtil.recycleBitmap(img_alertBox);
     }
 
 //    public boolean onAlertTouch() {
@@ -126,7 +124,7 @@ public class AlertManager {
     public void drawAlert(Canvas mCanvas, String title, String text) {
         int alertY = (canvasH - img_alertBox.getHeight()) / 2;
         // alert bg
-        CanvasUtil.drawBitmap(img_alertBox, mCanvas, (canvasW - img_alertBox.getWidth()) / 2
+        DrawUtil.drawBitmap(img_alertBox, mCanvas, (canvasW - img_alertBox.getWidth()) / 2
                 , alertY);
 
         // alert button
@@ -134,7 +132,7 @@ public class AlertManager {
         if (alertBtn.clickState == ButtonEnty.ButtonClickOn) {
             alertBtnClipX += alertBtn.clipW;
         }
-        drawClip(game_main.img_mainBtn, mCanvas,
+        DrawUtil.drawClip(game_main.img_mainBtn, mCanvas,
                 alertBtnClipX, alertBtn.clipY,
                 alertBtn.clipW, alertBtn.clipH, alertBtn.drawX, alertBtn.drawY);
 
@@ -144,13 +142,13 @@ public class AlertManager {
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setColor(Color.BLACK);
         paint.setTextSize(30);
-        CanvasUtil.drawString(mCanvas, title, paint, canvasW / 2, alertY + 20);
+        DrawUtil.drawString(mCanvas, title, paint, canvasW / 2, alertY + 20);
 
         // text
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setColor(Color.DKGRAY);
         paint.setTextSize(25);
-        CanvasUtil.drawString(mCanvas, text, paint, canvasW / 2 - 150, alertY + 70);
+        DrawUtil.drawString(mCanvas, text, paint, canvasW / 2 - 150, alertY + 70);
     }
 
 
@@ -161,12 +159,12 @@ public class AlertManager {
         int halfCanvasW = canvasW / 2;
 
         // alert bg
-        CanvasUtil.drawBitmap(img_alertBox, mCanvas, alertX, alertY);
+        DrawUtil.drawBitmap(img_alertBox, mCanvas, alertX, alertY);
 
         //profile image
-        CanvasUtil.drawBitmap(profileImg, mCanvas, alertX + 15, alertY + 105);
+        DrawUtil.drawBitmap(profileImg, mCanvas, alertX + 15, alertY + 105);
         if (INN.setTempImg)
-            CanvasUtil.drawBox(mCanvas, Color.DKGRAY, true, alertX + 15, alertY + 105, 400, 512);
+            DrawUtil.drawBox(mCanvas, Color.DKGRAY, true, alertX + 15, alertY + 105, 400, 512);
 
         // class mark
         int classId = 0;
@@ -184,7 +182,7 @@ public class AlertManager {
             classId = 6;
         int clipX = classId % 4 * 64;
         int clipY = classId / 4 * 64;
-        CanvasUtil.drawClip(game_main.img_classMark, mCanvas, clipX, clipY,
+        DrawUtil.drawClip(game_main.img_classMark, mCanvas, clipX, clipY,
                 64, 64, alertX + 10, alertY + 105);
 
         // alert button
@@ -192,7 +190,7 @@ public class AlertManager {
         if (alertBtn.clickState == ButtonEnty.ButtonClickOn) {
             alertBtnClipX += alertBtn.clipW;
         }
-        drawClip(game_main.img_mainBtn, mCanvas,
+        DrawUtil.drawClip(game_main.img_mainBtn, mCanvas,
                 alertBtnClipX, alertBtn.clipY,
                 alertBtn.clipW, alertBtn.clipH, alertBtn.drawX, alertBtn.drawY);
 
@@ -202,7 +200,7 @@ public class AlertManager {
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setColor(Color.WHITE);
         paint.setTextSize(35);
-        CanvasUtil.drawString(mCanvas, enty.name, paint, halfCanvasW, alertY + 30);
+        DrawUtil.drawString(mCanvas, enty.name, paint, halfCanvasW, alertY + 30);
 
         // exp
         game_main.drawBarGage(mCanvas, -1, Color.argb(255, 0, 200, 50),
@@ -215,7 +213,7 @@ public class AlertManager {
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setColor(Color.argb(255, 80, 80, 80));
         paint.setTextSize(25);
-        CanvasUtil.drawString(mCanvas, sb.toString(), paint,
+        DrawUtil.drawString(mCanvas, sb.toString(), paint,
                 halfCanvasW, alertY + 110);
 
         // status_detail
@@ -228,13 +226,13 @@ public class AlertManager {
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setColor(Color.BLACK);
         paint.setTextSize(25);
-        CanvasUtil.drawString(mCanvas, "STR : " + enty.status.STR, paint,
+        DrawUtil.drawString(mCanvas, "STR : " + enty.status.STR, paint,
                 halfCanvasW, alertY + 230);
-        CanvasUtil.drawString(mCanvas, "DEX : " + enty.status.DEX, paint,
+        DrawUtil.drawString(mCanvas, "DEX : " + enty.status.DEX, paint,
                 halfCanvasW + 100, alertY + 230);
-        CanvasUtil.drawString(mCanvas, "INT : " + enty.status.INT, paint,
+        DrawUtil.drawString(mCanvas, "INT : " + enty.status.INT, paint,
                 halfCanvasW, alertY + 255);
-        CanvasUtil.drawString(mCanvas, "VIT : " + enty.status.VIT, paint,
+        DrawUtil.drawString(mCanvas, "VIT : " + enty.status.VIT, paint,
                 halfCanvasW + 100, alertY + 255);
 
         // profile text
@@ -252,7 +250,7 @@ public class AlertManager {
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setColor(Color.BLACK);
         paint.setTextSize(25);
-        CanvasUtil.drawString(mCanvas, sb.toString(), paint,
+        DrawUtil.drawString(mCanvas, sb.toString(), paint,
                 halfCanvasW - 200, alertY + 300);
 
     }

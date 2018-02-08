@@ -9,10 +9,8 @@ import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
-import com.epriest.game.guildfantasy.main.play.AlertManager;
 import com.epriest.game.guildfantasy.main.play.GameDialog;
 import com.epriest.game.guildfantasy.util.DrawUtil;
-import com.epriest.game.guildfantasy.util.INN;
 
 /**
  * Created by darka on 2016-10-31.
@@ -63,14 +61,16 @@ public class Scene_Home extends Scene {
     }
 
     private void drawBG(Canvas mCanvas) {
-        DrawUtil.drawBgBitmap(gameHome.bg, mCanvas, gameHome.scrollX);
-//        CanvasUtil.drawBox(mCanvas, Color.argb(255, 50,50,50),true,
+        DrawUtil.drawScrollBgBitmap(gameHome.bg, mCanvas, gameHome.scrollX);
+
+        CanvasUtil.drawBitmap(gameHome.img_defCha, mCanvas, gameHome.canvasW/2-gameHome.img_defCha.getWidth()/2, gameHome.canvasH-550);
+//        DrawUtil.drawBox(mCanvas, Color.argb(255, 50,50,50),true,
 //                0, 0,
 //                gameHome.gameMain.appClass.getGameCanvasWidth(), gameHome.mMainScreenY);
 
 //        int barNum = gameHome.gameMain.appClass.getGameCanvasWidth() / gameHome.gameMain.statusBarW;
 //        for (int i = 0; i <= barNum; i++) {
-//            CanvasUtil.drawClip(gameHome.gameMain.img_statusBar, mCanvas, 0, 0,
+//            DrawUtil.drawClip(gameHome.gameMain.img_statusBar, mCanvas, 0, 0,
 //                    gameHome.gameMain.statusBarW, gameHome.gameMain.statusBarH,
 //                    gameHome.gameMain.statusBarW * i, gameHome.gameMain.mMenuTabBarY);
 //        }
@@ -83,7 +83,7 @@ public class Scene_Home extends Scene {
                 gameHome.turnButton.clipX, gameHome.turnButton.clipY,
                 gameHome.turnButton.clipW, gameHome.turnButton.clipH,
                 gameHome.turnButton.drawX, gameHome.turnButton.drawY);
-        CanvasUtil.drawString(mCanvas, gameHome.turnButton.name, 50, Color.WHITE, Paint.Align.CENTER,
+        DrawUtil.drawString(mCanvas, gameHome.turnButton.name, 50, Color.WHITE, Paint.Align.CENTER,
                 gameHome.turnButton.drawX+gameHome.turnButton.clipW/2,gameHome.turnButton.drawY+30);
 
         for (ButtonEnty mBtn : gameHome.menuButtonList) {
@@ -110,9 +110,9 @@ public class Scene_Home extends Scene {
             CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 400, mBtn.iconImgNum * 50,
                     130, 50, btnNameX, btnNameY);
             //Button Subtitle HanGul
-//            CanvasUtil.drawClip(gameHome.img_homeBtn, mCanvas, 531, mBtn.iconImgNum*50,
+//            DrawUtil.drawClip(gameHome.img_homeBtn, mCanvas, 531, mBtn.iconImgNum*50,
 //                    130, 50, btnNameX, btnNameY);
-//            CanvasUtil.drawClip(menu_icon, mCanvas, null, (iconNum%5)*mBtn.w, (iconNum/5)*mBtn.h,
+//            DrawUtil.drawClip(menu_icon, mCanvas, null, (iconNum%5)*mBtn.w, (iconNum/5)*mBtn.h,
 //                    mBtn.w, mBtn.h, mBtn.x+(btnArea-mBtn.w)/2, mBtn.y);
         }
     }

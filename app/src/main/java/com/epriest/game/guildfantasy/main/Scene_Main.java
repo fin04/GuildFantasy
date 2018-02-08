@@ -86,14 +86,14 @@ public class Scene_Main {
     }
 
     public void drawStatusBar(Canvas mCanvas, Paint paint) {
-        CanvasUtil.drawBitmap(status_bar, mCanvas, null, 0, 0);
+        DrawUtil.drawBitmap(status_bar, mCanvas, null, 0, 0);
         paint.setColor(Color.argb(255, 50, 50, 50));
         paint.setTextSize(25);
-        CanvasUtil.drawString(mCanvas, gameMain.userEnty.Name, paint, 30, 3);
-        CanvasUtil.drawString(mCanvas, "Level "+ gameMain.userEnty.LEVEL, paint, 150, 3);
-        CanvasUtil.drawString(mCanvas, "quest "+ gameMain.userEnty.QUESTLIST.size(), paint, 300, 3);
-        CanvasUtil.drawString(mCanvas, "party "+ gameMain.userEnty.PARTYLIST.size(), paint, 450, 3);
-        CanvasUtil.drawString(mCanvas, "member "+ gameMain.userEnty.MEMBERLIST.size(), paint, 600, 3);
+        DrawUtil.drawString(mCanvas, gameMain.userEnty.Name, paint, 30, 3);
+        DrawUtil.drawString(mCanvas, "Level "+ gameMain.userEnty.LEVEL, paint, 150, 3);
+        DrawUtil.drawString(mCanvas, "quest "+ gameMain.userEnty.QUESTLIST.size(), paint, 300, 3);
+        DrawUtil.drawString(mCanvas, "party "+ gameMain.userEnty.PARTYLIST.size(), paint, 450, 3);
+        DrawUtil.drawString(mCanvas, "member "+ gameMain.userEnty.MEMBERLIST.size(), paint, 600, 3);
     }
 
     private void drawPartyMenuButton(Canvas mCanvas, Paint paint) {
@@ -102,9 +102,9 @@ public class Scene_Main {
             if(mBtn.clickState == ButtonEnty.ButtonClickOn){
                 clipY += mBtn.clipH;
             }
-            CanvasUtil.drawClip(menu_icon, mCanvas, null, mBtn.clipX, clipY,
+            DrawUtil.drawClip(menu_icon, mCanvas, null, mBtn.clipX, clipY,
                     mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
-//            CanvasUtil.drawClip(menu_icon, mCanvas, null, (iconNum%5)*mBtn.w, (iconNum/5)*mBtn.h,
+//            DrawUtil.drawClip(menu_icon, mCanvas, null, (iconNum%5)*mBtn.w, (iconNum/5)*mBtn.h,
 //                    mBtn.w, mBtn.h, mBtn.x+(btnArea-mBtn.w)/2, mBtn.y);
 
         }
@@ -117,9 +117,9 @@ public class Scene_Main {
             if(mBtn.clickState == ButtonEnty.ButtonClickOn){
                 clipY += mBtn.clipH;
             }
-            CanvasUtil.drawClip(menu_icon, mCanvas, null, mBtn.clipX, clipY,
+            DrawUtil.drawClip(menu_icon, mCanvas, null, mBtn.clipX, clipY,
                     mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
-//            CanvasUtil.drawClip(menu_icon, mCanvas, null, (iconNum%5)*mBtn.w, (iconNum/5)*mBtn.h,
+//            DrawUtil.drawClip(menu_icon, mCanvas, null, (iconNum%5)*mBtn.w, (iconNum/5)*mBtn.h,
 //                    mBtn.w, mBtn.h, mBtn.x+(btnArea-mBtn.w)/2, mBtn.y);
 
         }

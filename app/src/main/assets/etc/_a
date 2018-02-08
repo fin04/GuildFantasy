@@ -8,7 +8,7 @@ import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
-import com.epriest.game.CanvasGL.graphics.CanvasUtil;
+import com.epriest.game.CanvasGL.graphics.DrawUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.GameUtil;
@@ -25,7 +25,7 @@ import com.epriest.game.guildfantasy.util.PPreference;
 
 import java.util.ArrayList;
 
-import static com.epriest.game.CanvasGL.graphics.CanvasUtil.drawClip;
+import static com.epriest.game.CanvasGL.graphics.DrawUtil.drawClip;
 
 /**
  * Created by darka on 2017-03-26.

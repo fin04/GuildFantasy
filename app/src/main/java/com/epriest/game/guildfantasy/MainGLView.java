@@ -9,7 +9,6 @@ import android.support.v4.view.MotionEventCompat;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
-import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.graphics.GLView;
 import com.epriest.game.CanvasGL.util.Scene;
@@ -38,6 +37,7 @@ import com.epriest.game.guildfantasy.main.Scene_Shop;
 import com.epriest.game.guildfantasy.main.Scene_Title;
 import com.epriest.game.guildfantasy.main.Scene_Temple;
 import com.epriest.game.guildfantasy.main.play.GameDbAdapter;
+import com.epriest.game.guildfantasy.util.DrawUtil;
 import com.epriest.game.guildfantasy.util.INN;
 
 /**
@@ -472,7 +472,7 @@ public class MainGLView extends GLView {
             paint.setColor(Color.YELLOW);
             paint.setTextSize(20);
 //			paint.setTextAlign(Align.RIGHT);
-            CanvasUtil.drawBox(mCanvas, Color.argb(150, 0, 0, 0), true, 10, 0, 100, 40);
+            DrawUtil.drawBox(mCanvas, Color.argb(150, 0, 0, 0), true, 10, 0, 100, 40);
             mCanvas.drawText("fps-" + GLView.framelate, 10, 20, paint);
         } catch (Exception e) {
             e.getStackTrace();
@@ -514,13 +514,13 @@ public class MainGLView extends GLView {
         // mCanvas.drawCircle(game.appClass.touch.axisX-10,
         // game.appClass.touch.axisY-10, 20, drawPaint);*/
         int value = pointer.getWidth() / 2;
-        CanvasUtil.drawBitmap(pointer, mCanvas, (int) appClass.touch.mLastTouchX - value, (int) appClass.touch.mLastTouchY - value);
+        DrawUtil.drawBitmap(pointer, mCanvas, (int) appClass.touch.mLastTouchX - value, (int) appClass.touch.mLastTouchY - value);
 
 //        drawPaint.setColor(Color.YELLOW);
 ////		drawPaint.setAlpha(255);
 //        drawPaint.setTextSize(20);
         String text = (int) appClass.touch.mLastTouchX + "," + (int) appClass.touch.mLastTouchY;
-        CanvasUtil.drawString(mCanvas, text, 20, Color.YELLOW, Paint.Align.CENTER,
+        DrawUtil.drawString(mCanvas, text, 20, Color.YELLOW, Paint.Align.CENTER,
                 (int) appClass.touch.mLastTouchX - value, (int) appClass.touch.mLastTouchY);
 //        mCanvas.drawText((int) appClass.touch.mLastTouchY + "," + (int) appClass.touch.mLastTouchY,
 //                0, appClass.getGameCanvasHeight(), drawPaint);

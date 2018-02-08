@@ -25,7 +25,8 @@ public class Game_Home extends Game {
     public ArrayList<String> prologStrList;
     public boolean isAlert;
     public int maxChar = 18;
-    public boolean isNext;
+
+    public int canvasW, canvasH;
 
     public int scrollX, prevScrollX;
     public int mMainScreenY;
@@ -36,6 +37,8 @@ public class Game_Home extends Game {
 
     public Bitmap bg;
     public Bitmap img_homeBtn;
+    public Bitmap img_defCha;
+
     public GameDialog turnEndDialog;
     public GameDialog turnStartDialog;
 //    public Bitmap img_char_01;
@@ -55,13 +58,17 @@ public class Game_Home extends Game {
 //        }
 //        menuButtonList = new ArrayList();
 
+        this.canvasW = gameMain.appClass.getGameCanvasWidth();
+        this.canvasH = gameMain.appClass.getGameCanvasHeight();
+
         bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/bg_town.jpg", null);
         img_homeBtn = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/home_btn.png", null);
+        img_defCha = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/def_cha.png", null);
 //        img_card = GLUtil.loadAssetsBitmap(appClass, "main/membercard.png", null);
 
 
         mMainScreenY = 0;
-        setMenuIcon(gameMain.canvasW, gameMain.canvasH);
+        setMenuIcon(canvasW, canvasH);
 
         try {
             turnButton = new ButtonEnty();
@@ -70,8 +77,8 @@ public class Game_Home extends Game {
             turnButton.clipH = 150;
             turnButton.clipX = 0;
             turnButton.clipY = 0;
-            turnButton.drawX = gameMain.canvasW - (turnButton.clipW + 5);
-            turnButton.drawY = gameMain.canvasH - (turnButton.clipH * 3);
+            turnButton.drawX = canvasW - (turnButton.clipW + 5);
+            turnButton.drawY = canvasH - (turnButton.clipH * 3);
 
             turnEndDialog = new GameDialog(gameMain.appClass);
             turnEndDialog.setOnButtonListener(new GameDialog.onClickListener() {
@@ -252,17 +259,17 @@ public class Game_Home extends Game {
                     mBtn.clickState = ButtonEnty.ButtonClickOff;
 
                     if (mBtn.name.equals(INN.MENU_INN))
-                        gameMain.mainButtonAct(INN.GAME_MEMBER, 0);
+                        gameMain.mainButtonAct(INN.GAME_MEMBER);
                     else if (mBtn.name.equals(INN.MENU_BAR))
-                        gameMain.mainButtonAct(INN.GAME_RECRUIT, 0);
+                        gameMain.mainButtonAct(INN.GAME_RECRUIT);
                     else if (mBtn.name.equals(INN.MENU_GUILD))
-                        gameMain.mainButtonAct(INN.GAME_QUESTLIST, 0);
+                        gameMain.mainButtonAct(INN.GAME_QUESTLIST);
                     else if (mBtn.name.equals(INN.MENU_SHOP))
-                        gameMain.mainButtonAct(INN.GAME_SHOP, 0);
+                        gameMain.mainButtonAct(INN.GAME_SHOP);
                     else if (mBtn.name.equals(INN.MENU_TEMPLE))
-                        gameMain.mainButtonAct(INN.GAME_TEMPLE, 0);
+                        gameMain.mainButtonAct(INN.GAME_TEMPLE);
                     else if (mBtn.name.equals(INN.MENU_GATE))
-                        gameMain.mainButtonAct(INN.GAME_MOVE, 0);
+                        gameMain.mainButtonAct(INN.GAME_MOVE);
 //                    else if (mBtn.name.equals("Menu"))
 //                        gameMain.mainButtonAct(INN.GAME_OPTION, 0);
                     return true;
@@ -275,13 +282,15 @@ public class Game_Home extends Game {
     }
 
     public void onScrollBg(){
+        int bgHalfWidth = bg.getWidth()/2;
         if (gameMain.appClass.touch.action == MotionEvent.ACTION_DOWN) {
             prevScrollX = scrollX;
         }
         scrollX = prevScrollX - (int) (gameMain.appClass.touch.mLastTouchX - gameMain.appClass.touch.mDownX);
-        int maxScrollX = bg.getWidth()/2;
-        if (scrollX < -maxScrollX) {
-            scrollX = -maxScrollX;
+        int maxScrollX = bgHalfWidth-canvasW/2;
+        int minScrollX = -bgHalfWidth+canvasW/2;
+        if (scrollX < minScrollX) {
+            scrollX = minScrollX;
         }else if (scrollX > maxScrollX) {
             scrollX = maxScrollX;
         }

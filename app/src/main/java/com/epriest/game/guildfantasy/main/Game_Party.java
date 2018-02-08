@@ -163,7 +163,7 @@ public class Game_Party extends Game {
             backBtn.clickState = ButtonEnty.ButtonClickOn;
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 backBtn.clickState = ButtonEnty.ButtonClickOff;
-                gameMain.mainButtonAct(INN.GAME_HOME, 0);
+                gameMain.mainButtonAct(INN.GAME_HOME);
             }
             return;
         }
@@ -195,7 +195,7 @@ public class Game_Party extends Game {
                 if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                     btn.clickState = ButtonEnty.ButtonClickOff;
                     gameMain.setSelectCardNum(i);
-                    gameMain.mainButtonAct(INN.GAME_MEMBER_FROM_PARTY, 0);
+                    gameMain.mainButtonAct(INN.GAME_MEMBER_FROM_PARTY, i);
                 }
                 return;
             } else {

@@ -5,11 +5,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
 import com.epriest.game.CanvasGL.util.TextUtil;
+import com.epriest.game.guildfantasy.util.DrawUtil;
 
 import java.util.ArrayList;
 
@@ -39,7 +39,7 @@ public class Scene_Event extends Scene {
         int size = gameEvent.gameMain.userEnty.eventEnty.ImageList.size();
         if(num < size) {
             String imagePath = gameEvent.gameMain.userEnty.eventEnty.ImageList.get(num);
-            CanvasUtil.recycleBitmap(eventBitmap);
+            DrawUtil.recycleBitmap(eventBitmap);
             eventBitmap = GLUtil.loadAssetsBitmap(gameEvent.gameMain.appClass.getBaseContext(), "" +
                     "event/" + imagePath, null);
         }
@@ -52,7 +52,7 @@ public class Scene_Event extends Scene {
 
     @Override
     public void recycleScene() {
-        CanvasUtil.recycleBitmap(eventBitmap);
+        DrawUtil.recycleBitmap(eventBitmap);
     }
 
     @Override
@@ -64,9 +64,9 @@ public class Scene_Event extends Scene {
     public void draw(Canvas mCanvas) {
         if(gameEvent.gameMain.userEnty.eventEnty.changeView)
             loadEventImage(gameEvent.gameMain.userEnty.eventEnty.currentViewNum);
-        CanvasUtil.drawBgBitmap(eventBitmap, mCanvas);
+        DrawUtil.drawBgBitmap(eventBitmap, mCanvas);
 
-        CanvasUtil.drawBox(mCanvas, Color.argb(150, 50, 50,50), true, 50, 50,
+        DrawUtil.drawBox(mCanvas, Color.argb(150, 50, 50,50), true, 50, 50,
                 gameEvent.gameMain.canvasW-100, gameEvent.gameMain.canvasH-100);
 
         int textsize = 25;
@@ -79,7 +79,7 @@ public class Scene_Event extends Scene {
         paint.setColor(Color.argb(255,220,220,220));
         paint.setTextAlign(Paint.Align.LEFT);
         for(int i =0; i< textList.size(); i++){
-            CanvasUtil.drawString(mCanvas, textList.get(i), paint,
+            DrawUtil.drawString(mCanvas, textList.get(i), paint,
                     paperX+15, (int) (paperY + i*(paint.getTextSize()+10)));
         }
     }

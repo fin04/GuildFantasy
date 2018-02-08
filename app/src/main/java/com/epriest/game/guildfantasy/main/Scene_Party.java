@@ -6,16 +6,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.epriest.game.CanvasGL.graphics.CanvasUtil;
+
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 import com.epriest.game.guildfantasy.main.play.DataManager;
-import com.epriest.game.guildfantasy.util.INN;
-
-import static com.epriest.game.CanvasGL.graphics.CanvasUtil.drawString;
-import static com.epriest.game.CanvasGL.graphics.CanvasUtil.recycleBitmap;
+import com.epriest.game.guildfantasy.util.DrawUtil;
 
 /**
  * Created by darka on 2017-04-07.
@@ -39,15 +36,15 @@ public class Scene_Party extends Scene {
 
     @Override
     public void recycleScene() {
-//        CanvasUtil.recycleBitmap(mos_detail);
+//        DrawUtil.recycleBitmap(mos_detail);
         for (int i = 0; i < gameParty.PartyCardList.size(); i++) {
             ButtonEnty mBtn = gameParty.PartyCardList.get(i);
             if (mBtn.name.equals("0")) {
-                recycleBitmap(mBtn.bitmap);
+                DrawUtil.recycleBitmap(mBtn.bitmap);
             }
         }
-        CanvasUtil.recycleBitmap(gameParty.img_title_bg);
-        CanvasUtil.recycleBitmap(gameParty.img_membercard);
+        DrawUtil.recycleBitmap(gameParty.img_title_bg);
+        DrawUtil.recycleBitmap(gameParty.img_membercard);
     }
 
     @Override
@@ -58,7 +55,7 @@ public class Scene_Party extends Scene {
     @Override
     public void draw(Canvas mCanvas) {
         //draw bg
-        CanvasUtil.drawBitmap(gameParty.img_title_bg, mCanvas, 0, 0);
+        DrawUtil.drawBitmap(gameParty.img_title_bg, mCanvas, 0, 0);
 
         drawStatusTab(mCanvas);
 
@@ -68,7 +65,7 @@ public class Scene_Party extends Scene {
         //draw card
         drawPartyCard(mCanvas);
 
-        CanvasUtil.drawString(mCanvas, "PartyNum = "+gameParty.gameMain.getSelectPartyNum(), 30, Color.WHITE, Paint.Align.LEFT, 20,200);
+        DrawUtil.drawString(mCanvas, "PartyNum = "+gameParty.gameMain.getSelectPartyNum(), 30, Color.WHITE, Paint.Align.LEFT, 20,200);
     }
 
     public void drawStatusTab(Canvas mCanvas) {
@@ -77,7 +74,7 @@ public class Scene_Party extends Scene {
         int statusBarH = gameParty.gameMain.statusBarH;
         int barNum = canvasW / statusBarW;
         for (int i = 0; i <= barNum; i++) {
-            CanvasUtil.drawClip(gameParty.gameMain.img_statusBar, mCanvas, 0, 0,
+            DrawUtil.drawClip(gameParty.gameMain.img_statusBar, mCanvas, 0, 0,
                     statusBarW, statusBarH, statusBarW * i, 0);
         }
 
@@ -89,40 +86,40 @@ public class Scene_Party extends Scene {
         paint.setTextSize(fontSize);
 
         /*// Name Lv
-        CanvasUtil.drawString(mCanvas, userEnty.Name + "(Lv " + userEnty.LEVEL + ")", paint, 10, drawY);
+        DrawUtil.drawString(mCanvas, userEnty.Name + "(Lv " + userEnty.LEVEL + ")", paint, 10, drawY);
 
         // AP
-        CanvasUtil.drawString(mCanvas, "AP " + userEnty.AP, paint, drawX, drawY);
+        DrawUtil.drawString(mCanvas, "AP " + userEnty.AP, paint, drawX, drawY);
 
         // Gold
-        CanvasUtil.drawClip(img_mainBtn, mCanvas, goldIcon.clipX, goldIcon.clipY,
+        DrawUtil.drawClip(img_mainBtn, mCanvas, goldIcon.clipX, goldIcon.clipY,
                 goldIcon.clipW, goldIcon.clipH, goldIcon.drawX, drawY);
-        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.GOLD), paint,
+        DrawUtil.drawString(mCanvas, Integer.toString(userEnty.GOLD), paint,
                 goldIcon.drawX + goldIcon.clipW + 5, drawY + 3);
 
         // Member
-        CanvasUtil.drawClip(img_mainBtn, mCanvas, menIcon.clipX, menIcon.clipY,
+        DrawUtil.drawClip(img_mainBtn, mCanvas, menIcon.clipX, menIcon.clipY,
                 menIcon.clipW, menIcon.clipH, menIcon.drawX, drawY);
-        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.MEMBERLIST.size()), paint,
+        DrawUtil.drawString(mCanvas, Integer.toString(userEnty.MEMBERLIST.size()), paint,
                 menIcon.drawX + menIcon.clipW + 5, drawY + 3);*/
 
-//        CanvasUtil.drawClip(gameHome.img_mainBtn, mCanvas, partyIcon.clipX, partyIcon.clipY,
+//        DrawUtil.drawClip(gameHome.img_mainBtn, mCanvas, partyIcon.clipX, partyIcon.clipY,
 //                partyIcon.clipW, partyIcon.clipH, partyIcon.drawX, partyIcon.drawY);
-//        CanvasUtil.drawString(mCanvas, Integer.toString(userEnty.PARTYLIST.size()), paint,
+//        DrawUtil.drawString(mCanvas, Integer.toString(userEnty.PARTYLIST.size()), paint,
 //                partyIcon.drawX + partyIcon.clipW + 5, partyIcon.drawY + 3);
 
         //Turn
-//        CanvasUtil.drawString(mCanvas, "Turn " + userEnty.TURN, paint, canvasW - 250, drawY);
+//        DrawUtil.drawString(mCanvas, "Turn " + userEnty.TURN, paint, canvasW - 250, drawY);
 
         //Option Button
         int clipY = gameParty.okBtn.clipY;
         if (gameParty.okBtn.clickState == ButtonEnty.ButtonClickOn) {
             clipY = 53;
         }
-        CanvasUtil.drawClip(gameParty.gameMain.img_statusBar, mCanvas, gameParty.okBtn.clipX, clipY,
+        DrawUtil.drawClip(gameParty.gameMain.img_statusBar, mCanvas, gameParty.okBtn.clipX, clipY,
                 gameParty.okBtn.clipW, gameParty.okBtn.clipH, gameParty.okBtn.drawX, gameParty.okBtn.drawY);
 
-        CanvasUtil.drawClip(gameParty.gameMain.img_statusBar, mCanvas, 121, 130,
+        DrawUtil.drawClip(gameParty.gameMain.img_statusBar, mCanvas, 121, 130,
                 82, 23, gameParty.okBtn.drawX + (gameParty.okBtn.clipW - 82) / 2,
                 gameParty.okBtn.drawY + (gameParty.okBtn.clipH - 23) / 2);
 
@@ -131,10 +128,10 @@ public class Scene_Party extends Scene {
         if (gameParty.backBtn.clickState == ButtonEnty.ButtonClickOn) {
             clipY = 53;
         }
-        CanvasUtil.drawClip(gameParty.gameMain.img_statusBar, mCanvas, gameParty.backBtn.clipX, clipY,
+        DrawUtil.drawClip(gameParty.gameMain.img_statusBar, mCanvas, gameParty.backBtn.clipX, clipY,
                 gameParty.backBtn.clipW, gameParty.backBtn.clipH, gameParty.backBtn.drawX, gameParty.backBtn.drawY);
 
-        CanvasUtil.drawClip(gameParty.gameMain.img_statusBar, mCanvas, 121, 130,
+        DrawUtil.drawClip(gameParty.gameMain.img_statusBar, mCanvas, 121, 130,
                 82, 23, gameParty.backBtn.drawX + (gameParty.backBtn.clipW - 82) / 2,
                 gameParty.backBtn.drawY + (gameParty.backBtn.clipH - 23) / 2);
 
@@ -146,9 +143,9 @@ public class Scene_Party extends Scene {
             if (mBtn.clickState == ButtonEnty.ButtonClickOn || gameParty.gameMain.getSelectPartyNum() == mBtn.num) {
                 clipX += 115;
             }
-            CanvasUtil.drawClip(gameParty.gameMain.img_mainBtn, mCanvas, clipX, mBtn.clipY,
+            DrawUtil.drawClip(gameParty.gameMain.img_mainBtn, mCanvas, clipX, mBtn.clipY,
                     mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
-            CanvasUtil.drawClip(gameParty.gameMain.img_statusBar, mCanvas, (mBtn.num + 1) * 16,
+            DrawUtil.drawClip(gameParty.gameMain.img_statusBar, mCanvas, (mBtn.num + 1) * 16,
                     98, 14, 24,
                     mBtn.drawX + (mBtn.clipW - 15) / 2, mBtn.drawY + (mBtn.clipH - 24) / 2);
         }
@@ -161,7 +158,7 @@ public class Scene_Party extends Scene {
         for (int i = 0; i < gameParty.PartyCardList.size(); i++) {
             ButtonEnty mBtn = gameParty.PartyCardList.get(i);
 
-            CanvasUtil.drawClip(gameParty.img_membercard, mCanvas, mBtn.clipX, mBtn.clipY,
+            DrawUtil.drawClip(gameParty.img_membercard, mCanvas, mBtn.clipX, mBtn.clipY,
                     mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
 
             if(mBtn.name.equals("0")) {
@@ -170,7 +167,7 @@ public class Scene_Party extends Scene {
                 if (mBtn.clickState == ButtonEnty.ButtonClickOn) {
                     clipY = 47;
                 }
-                CanvasUtil.drawClip(gameParty.img_membercard, mCanvas, 213, clipY,
+                DrawUtil.drawClip(gameParty.img_membercard, mCanvas, 213, clipY,
                         47, 47, mBtn.drawX + btnX, mBtn.drawY + btnY);
             }else {
                 // 멤버가 정해진 card draw
@@ -187,20 +184,20 @@ public class Scene_Party extends Scene {
         int cardTextBoxH = 90;
         int cardTextBoxY = cardH - cardTextBoxH - 15;
         //draw Character
-        CanvasUtil.drawClip(mBtn.bitmap, mCanvas,
+        DrawUtil.drawClip(mBtn.bitmap, mCanvas,
                 (mBtn.bitmap.getWidth() - mBtn.clipW) / 2, 80,
                 mBtn.clipW - 10, mBtn.clipH - 10, mBtn.drawX + 5, mBtn.drawY + 5);
-//        CanvasUtil.drawBitmap(mBtn.bitmap, mCanvas, mBtn.drawX + 5, mBtn.drawY + 5);
+//        DrawUtil.drawBitmap(mBtn.bitmap, mCanvas, mBtn.drawX + 5, mBtn.drawY + 5);
         //draw cardNameBG
-        CanvasUtil.drawClip(gameParty.img_membercard, mCanvas, 176, 283,
+        DrawUtil.drawClip(gameParty.img_membercard, mCanvas, 176, 283,
                 127, 26, mBtn.drawX + (cardW - 127) / 2, mBtn.drawY + 10);
         //draw cardTextBox
-        CanvasUtil.drawClip(gameParty.img_membercard, mCanvas, 35, 283,
+        DrawUtil.drawClip(gameParty.img_membercard, mCanvas, 35, 283,
                 cardTextBoxW, cardTextBoxH, mBtn.drawX + 35, mBtn.drawY + cardTextBoxY);
 
         MemberEnty enty = DataManager.getMemberData(gameParty.gameMain.dbAdapter, mBtn.name);
-        CanvasUtil.drawString(mCanvas, enty.name, 20, Color.WHITE, Paint.Align.CENTER, mBtn.drawX + cardW / 2, mBtn.drawY + 7);
-        CanvasUtil.drawString(mCanvas, "LV." + Integer.toString(enty.status.LEVEL),
+        DrawUtil.drawString(mCanvas, enty.name, 20, Color.WHITE, Paint.Align.CENTER, mBtn.drawX + cardW / 2, mBtn.drawY + 7);
+        DrawUtil.drawString(mCanvas, "LV." + Integer.toString(enty.status.LEVEL),
                 20, Color.DKGRAY, Paint.Align.LEFT, mBtn.drawX + 15, mBtn.drawY + 3);
     }
 
@@ -240,7 +237,7 @@ public class Scene_Party extends Scene {
             int color = Color.argb(180, 255, 255, 255);
             if(btn.clickState == ButtonEnty.ButtonClickOn)
                 color = Color.argb(180, 150, 150, 255);
-            CanvasUtil.drawBox(mCanvas, color, true, btn.drawX, btn.drawY, btn.clipW, btn.clipH);
+            DrawUtil.drawBox(mCanvas, color, true, btn.drawX, btn.drawY, btn.clipW, btn.clipH);
 
             if(gameParty.currentParty.playerIdList.size() > i){
                 MemberEnty enty = findMemberEnty(gameParty.currentParty.playerIdList.get(i));
@@ -263,23 +260,23 @@ public class Scene_Party extends Scene {
     /*private void drawQuestDetail(Canvas mCanvas, Paint paint) {
         int paperX = 10;
         int paperY = 62;
-        CanvasUtil.drawBitmap(gameParty.img_questPaper, mCanvas, paperX, paperY);
+        DrawUtil.drawBitmap(gameParty.img_questPaper, mCanvas, paperX, paperY);
         int widthCenter = paperX + (gameParty.img_questPaper.getWidth() / 2);
         paperY += 13;
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setTextSize(35);
-//        CanvasUtil.drawString(mCanvas, gameParty.gameMain.selectQuestEnty.title, paint, widthCenter, paperY);
+//        DrawUtil.drawString(mCanvas, gameParty.gameMain.selectQuestEnty.title, paint, widthCenter, paperY);
         paperY += 38;
-//        CanvasUtil.drawBitmap(mos_detail, mCanvas, widthCenter - mos_detail.getWidth() / 2, paperY+10);
+//        DrawUtil.drawBitmap(mos_detail, mCanvas, widthCenter - mos_detail.getWidth() / 2, paperY+10);
         paint.setTextSize(22);
         paint.setARGB(200, 255, 10, 10);
 //        paperY += mos_detail.getHeight() + 20;
-//        CanvasUtil.drawString(mCanvas, gameParty.gameMain.selectQuestEnty.tip, paint, widthCenter, paperY);
+//        DrawUtil.drawString(mCanvas, gameParty.gameMain.selectQuestEnty.tip, paint, widthCenter, paperY);
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setTextSize(24);
         paint.setARGB(200, 40, 30, 10);
 //        for(int i =0; i< gameParty.gameMain.selectQuestEnty.textArr.size(); i++){
-//            CanvasUtil.drawString(mCanvas, gameParty.gameMain.selectQuestEnty.textArr.get(i), paint,
+//            DrawUtil.drawString(mCanvas, gameParty.gameMain.selectQuestEnty.textArr.get(i), paint,
 //                    paperX+15, (int) (paperY + i*(paint.getTextSize()+10)));
 //        }
     }*/

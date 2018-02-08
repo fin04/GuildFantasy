@@ -59,7 +59,7 @@ public class TurnManager {
         //이벤트 뷰
         gameMain.userEnty.eventEnty.changeView = true;
         if (gameMain.userEnty.eventEnty.ImageList.size() > 0)
-            gameMain.mainButtonAct(INN.GAME_EVENT, 0);
+            gameMain.mainButtonAct(INN.GAME_EVENT);
         else
             gameMain.showAlertType = GameDialog.ALERT_TYPE_NEXT_TURNSTART;
     }

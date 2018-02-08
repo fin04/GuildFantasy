@@ -1,21 +1,16 @@
 package com.epriest.game.guildfantasy.main.play;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.MotionEvent;
 
-import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.GameUtil;
-import com.epriest.game.CanvasGL.util.TouchData;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
-
-import static com.epriest.game.CanvasGL.graphics.CanvasUtil.drawClip;
+import com.epriest.game.guildfantasy.util.DrawUtil;
 
 /**
  * Created by darka on 2018-01-16.
@@ -78,7 +73,7 @@ public class GameDialog {
     }
 
     public void dissmiss(){
-        CanvasUtil.recycleBitmap(img_alertBox);
+        DrawUtil.recycleBitmap(img_alertBox);
     }
 
     public boolean onTouch() {
@@ -126,7 +121,7 @@ public class GameDialog {
             return;
         int alertY = (canvasH - img_alertBox.getHeight()) / 2;
         // alert bg
-        CanvasUtil.drawBitmap(img_alertBox, mCanvas, (canvasW - img_alertBox.getWidth()) / 2
+        DrawUtil.drawBitmap(img_alertBox, mCanvas, (canvasW - img_alertBox.getWidth()) / 2
                 , alertY);
 
         // alert button
@@ -134,7 +129,7 @@ public class GameDialog {
         if (alertBtn.clickState == ButtonEnty.ButtonClickOn) {
             alertBtnClipX += alertBtn.clipW;
         }
-        drawClip(img_mainBtn, mCanvas,
+        DrawUtil.drawClip(img_mainBtn, mCanvas,
                 alertBtnClipX, alertBtn.clipY,
                 alertBtn.clipW, alertBtn.clipH, alertBtn.drawX, alertBtn.drawY);
 
@@ -143,7 +138,7 @@ public class GameDialog {
         if (cancelBtn.clickState == ButtonEnty.ButtonClickOn) {
             cancelBtnClipX += cancelBtn.clipW;
         }
-        drawClip(img_mainBtn, mCanvas,
+         DrawUtil.drawClip(img_mainBtn, mCanvas,
                 cancelBtnClipX, cancelBtn.clipY,
                 cancelBtn.clipW, cancelBtn.clipH, cancelBtn.drawX, cancelBtn.drawY);
 
@@ -154,7 +149,7 @@ public class GameDialog {
         if (title != null) {
             paint.setColor(Color.BLACK);
             paint.setTextSize(30);
-            CanvasUtil.drawString(mCanvas, title, paint, canvasW / 2, alertY + 35);
+            DrawUtil.drawString(mCanvas, title, paint, canvasW / 2, alertY + 35);
         }
 
         // text
@@ -163,7 +158,7 @@ public class GameDialog {
             paint.setColor(Color.DKGRAY);
             paint.setTextSize(30);
             alertY = img_alertBox.getHeight() / 2 + alertY;
-            CanvasUtil.drawString(mCanvas, text, paint, canvasW / 2 - 150, alertY);
+            DrawUtil.drawString(mCanvas, text, paint, canvasW / 2 - 150, alertY);
         }
     }
 }
