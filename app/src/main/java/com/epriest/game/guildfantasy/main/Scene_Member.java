@@ -62,10 +62,10 @@ public class Scene_Member extends Scene {
         int cardTextBoxY = gameMember.cardH - gameMember.cardTextBoxH - 15;
 
         for (int i = 0; i < gameMember.memberList.size(); i++) {
-            int cx = gameMember.cardX + i % gameMember.cardRowNum * (gameMember.cardW + 10);
-            int cy = gameMember.cardY + i / gameMember.cardRowNum * (gameMember.cardH + 30) - gameMember.scrollY;
+            int cx = gameMember.cardLeftX + i % gameMember.cardRowNum * (gameMember.cardW + 10);
+            int cy = gameMember.cardTopY + i / gameMember.cardRowNum * (gameMember.cardH + 30) - gameMember.scrollY;
 
-            if (cy < gameMember.cardY - gameMember.cardH || cy > gameMember.gameMain.canvasH) {
+            if (cy < gameMember.cardTopY - gameMember.cardH || cy > gameMember.gameMain.canvasH) {
             } else {
                 drawMemberCard(mCanvas, i, cx, cy, chrImgX, chrImgY, cardTextBoxY);
             }
@@ -74,7 +74,7 @@ public class Scene_Member extends Scene {
         DrawUtil.drawString(mCanvas, "" + gameMember.gameMain.selectCardNum, 30,
                 Color.YELLOW, Paint.Align.LEFT, 300, 120);
 
-        drawPartyButton(mCanvas);
+//        drawPartyButton(mCanvas);
         gameMember.gameMain.drawStatusTab(mCanvas);
 
 //        if (gameMember.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_VIEWMEMBER) {
@@ -106,6 +106,7 @@ public class Scene_Member extends Scene {
         DrawUtil.drawString(mCanvas, "LV." + Integer.toString(enty.status.LEVEL), 20,
                 Color.DKGRAY, Paint.Align.LEFT, cx + 15, cy + 3);
 
+        //편성버튼
         if (gameMember.gameMain.appClass.gameState == INN.GAME_MEMBER_FROM_PARTY) {
             for (int i = 0; i < gameMember.PartyAddButtonList.size(); i++) {
                 ButtonEnty mBtn = gameMember.PartyAddButtonList.get(i);
@@ -134,17 +135,17 @@ public class Scene_Member extends Scene {
     }
 
     private void drawPartyButton(Canvas mCanvas) {
-        for (ButtonEnty mBtn : gameMember.PartyButtonList) {
-            int clipY = mBtn.clipY;
-            if (mBtn.clickState == ButtonEnty.ButtonClickOn || gameMember.gameMain.getSelectPartyNum() == mBtn.num) {
-                clipY += 84;
-            }
-            DrawUtil.drawClip(gameMember.gameMain.img_mainBtn, mCanvas, mBtn.clipX, clipY,
-                    mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
-//            DrawUtil.drawClip(gameMember.gameMain.img_statusBar, mCanvas, (mBtn.num + 1) * 16,
-//                    98, 14, 24,
-//                    mBtn.drawX + (mBtn.clipW - 15) / 2, mBtn.drawY + (mBtn.clipH - 24) / 2);
-        }
+//        for (ButtonEnty mBtn : gameMember.PartyButtonList) {
+//            int clipY = mBtn.clipY;
+//            if (mBtn.clickState == ButtonEnty.ButtonClickOn || gameMember.gameMain.getSelectPartyNum() == mBtn.num) {
+//                clipY += 84;
+//            }
+//            DrawUtil.drawClip(gameMember.gameMain.img_mainBtn, mCanvas, mBtn.clipX, clipY,
+//                    mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY);
+////            DrawUtil.drawClip(gameMember.gameMain.img_statusBar, mCanvas, (mBtn.num + 1) * 16,
+////                    98, 14, 24,
+////                    mBtn.drawX + (mBtn.clipW - 15) / 2, mBtn.drawY + (mBtn.clipH - 24) / 2);
+//        }
     }
 
     private void drawMemberSheet(Canvas mCanvas) {

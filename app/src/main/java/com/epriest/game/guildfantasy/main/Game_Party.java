@@ -163,11 +163,10 @@ public class Game_Party extends Game {
             backBtn.clickState = ButtonEnty.ButtonClickOn;
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 backBtn.clickState = ButtonEnty.ButtonClickOff;
-                gameMain.mainButtonAct(INN.GAME_HOME);
+                gameMain.mainButtonAct(INN.GAME_QUEST);
             }
             return;
         }
-
 
         for (int i = 0; i < PartyNumButtonList.size(); i++) {
             ButtonEnty btn = PartyNumButtonList.get(i);

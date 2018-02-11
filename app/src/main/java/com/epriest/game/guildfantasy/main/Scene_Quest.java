@@ -105,6 +105,11 @@ public class Scene_Quest extends Scene {
         for (ButtonEnty enty : gameQuest.partyEntyList) {
             DrawUtil.drawClip(gameQuest.img_membercard, mCanvas, enty.clipX, enty.clipY,
                     enty.clipW, enty.clipH, enty.drawX, enty.drawY);
+            if(enty.name != null) {
+                DrawUtil.drawClip(enty.bitmap, mCanvas,
+                        (enty.bitmap.getWidth() - enty.clipW) / 2, 20,
+                        enty.clipW - 10, enty.clipH - 10, enty.drawX + 5, enty.drawY + 5);
+            }
         }
 
     }
