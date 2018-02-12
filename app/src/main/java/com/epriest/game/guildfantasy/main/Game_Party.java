@@ -9,7 +9,9 @@ import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 import com.epriest.game.guildfantasy.main.enty.PartyEnty;
+import com.epriest.game.guildfantasy.main.play.AlertManager;
 import com.epriest.game.guildfantasy.main.play.DataManager;
+import com.epriest.game.guildfantasy.main.play.GameDialog;
 import com.epriest.game.guildfantasy.util.INN;
 
 import java.util.ArrayList;
@@ -20,77 +22,58 @@ import java.util.ArrayList;
 
 public class Game_Party extends Game {
 
-    //    public int partyState;
+    final public static int PartyMemberMaximum = 4;
+
     public Game_Main gameMain;
-//    public View_Member viewMember;
-
-    public ArrayList<ButtonEnty> PartyNumButtonList = new ArrayList<>();
-    public ArrayList<ButtonEnty> PartyCardList = new ArrayList<>();
-//    public ArrayList<Bitmap> CardImgList = new ArrayList<>();
-    public PartyEnty currentParty = new PartyEnty();
-
-    public ButtonEnty backBtn;
-    public ButtonEnty okBtn;
-//    public ButtonEnty supplyBtn;
+    public GameDialog limitedPartyMemberDialog;
 
     /**
-     * partyNumber.cardNumber
+     * 파티 선택 버튼
      */
-//    public String selectCardNum;
+    public ArrayList<ButtonEnty> PartyNumButtonList = new ArrayList<>();
+    /**
+     * 파티원 카드 버튼
+     */
+    public ArrayList<ButtonEnty> PartyCardList = new ArrayList<>();
+    /**
+     * 파티정보
+     */
+    public PartyEnty currentParty = new PartyEnty();
 
-    //    public Bitmap img_mainBtn;
-//    public Bitmap img_statusBar;
+
     public Bitmap img_membercard;
-    public Bitmap img_memberFrame;
     public Bitmap img_title_bg;
-//    public Bitmap img_questPaper;
 
-//    public int mMenuTabBarY;
+    /**
+     * 현재 파티의 파티원 수
+     */
+    public int partyMemberCount;
 
     public Game_Party(Game_Main gameMain) {
         this.gameMain = gameMain;
-//        this.partyState = partyState;
-//        viewMember = new View_Member(gameMain);
     }
 
     @Override
     public void gStart() {
-//        if(partyState == INN.MODE_PARTY_INFO){
-//            tempParty = gameMain.userEnty.PARTYLIST.get(gameMain.selectQuestEnty.actPartyNum-1);
-//        }
-//        gameMain.selectQuestEnty.textArr = TextUtil.setMultiLineText(gameMain.selectQuestEnty.text, 24, 300);
-//        if (gameMain.userEnty.PARTYLIST.size() == 0)
-//            gameMain.userEnty.PARTYLIST.add(currentParty);
-//        else
-//            currentParty = gameMain.userEnty.PARTYLIST.get(selectPartyNum);
-
-//        img_statusBar = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/statusbar.png", null);
-//        img_mainBtn = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/main_btn.png", null);
         img_membercard = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/membercard.png", null);
         img_title_bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/bg_party.jpg", null);
-//        img_memberFrame = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/member_frame.png", null);
-//        img_questPaper = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/guildpaper.png", null);
 
-//        gameMain.setCardListFromSelectParty(0, 0);
+        //userName으로 파티정보를 불러옴
         currentParty = DataManager.getPartyData(gameMain.dbAdapter, gameMain.userEnty.Name, gameMain.getSelectPartyNum());
 
-        backBtn = new ButtonEnty();
-        backBtn.clipW = 102;
-        backBtn.clipH = 53;
-        backBtn.clipX = 121;
-        backBtn.clipY = 0;
-        backBtn.name = "back";
-        backBtn.drawX = gameMain.canvasW - backBtn.clipW - 15;
-        backBtn.drawY = (gameMain.statusBarH - backBtn.clipH) / 2;
+        limitedPartyMemberDialog = new GameDialog(gameMain.appClass);
+        limitedPartyMemberDialog.setOnButtonListener(new GameDialog.onClickListener() {
+            @Override
+            public void onPositiveClick() {
+                gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+            }
 
-        okBtn = new ButtonEnty();
-        okBtn.clipW = 102;
-        okBtn.clipH = 53;
-        okBtn.clipX = 121;
-        okBtn.clipY = 0;
-        okBtn.name = "ok";
-        okBtn.drawX = gameMain.canvasW - okBtn.clipW * 2 - 20;
-        okBtn.drawY = (gameMain.statusBarH - okBtn.clipH) / 2;
+            @Override
+            public void onCancelClick() {
+                gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+            }
+        });
+        limitedPartyMemberDialog.setText("더 이상 파티원을 추가할 수 없습니다.");
 
         // party card 위치
         setPartyCardList();
@@ -120,7 +103,6 @@ public class Game_Party extends Game {
         for (int i = 0; i < 9; i++) {
             ButtonEnty mCard = new ButtonEnty();
             mCard.num = i;
-//            mCard.name = "card" + (i + 1);
             mCard.clipW = 212;
             mCard.clipH = 280;
             mCard.clipX = 0;
@@ -129,6 +111,7 @@ public class Game_Party extends Game {
             mCard.drawY = cardY + (i / 3) * (mCard.clipH + 10);
             mCard.name = currentParty.memberPos[i];
             if(!mCard.name.equals("0")) {
+                partyMemberCount++;
                 String imgPath = DataManager.getMemberData(gameMain.dbAdapter, mCard.name).image;
                 mCard.bitmap = GLUtil.loadAssetsBitmap(gameMain.appClass, "member/" + imgPath, null, 2);
             }
@@ -147,27 +130,15 @@ public class Game_Party extends Game {
 
     @Override
     public void gOnTouchEvent(MotionEvent event) {
-
-        if (GameUtil.equalsTouch(gameMain.appClass.touch, okBtn.drawX, okBtn.drawY,
-                okBtn.clipW, okBtn.clipH)) {
-            okBtn.clickState = ButtonEnty.ButtonClickOn;
-            if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
-                okBtn.clickState = ButtonEnty.ButtonClickOff;
-                //파티설정 저장
-            }
+        if (gameMain.onStatusTouch())
             return;
+
+        if (gameMain.showAlertType == GameDialog.ALERT_TYPE_LIMITEDPARTYMEMBER) {
+            if (limitedPartyMemberDialog.onTouch())
+                return;
         }
 
-        if (GameUtil.equalsTouch(gameMain.appClass.touch, backBtn.drawX, backBtn.drawY,
-                backBtn.clipW, backBtn.clipH)) {
-            backBtn.clickState = ButtonEnty.ButtonClickOn;
-            if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
-                backBtn.clickState = ButtonEnty.ButtonClickOff;
-                gameMain.mainButtonAct(INN.GAME_QUEST);
-            }
-            return;
-        }
-
+        //파티선택
         for (int i = 0; i < PartyNumButtonList.size(); i++) {
             ButtonEnty btn = PartyNumButtonList.get(i);
             if (GameUtil.equalsTouch(gameMain.appClass.touch, btn.drawX, btn.drawY, btn.clipW, btn.clipH)) {
@@ -187,12 +158,18 @@ public class Game_Party extends Game {
             }
         }
 
+        //파티멤버선택
         for (int i = 0; i < PartyCardList.size(); i++) {
             ButtonEnty btn = PartyCardList.get(i);
             if (GameUtil.equalsTouch(gameMain.appClass.touch, btn.drawX, btn.drawY, btn.clipW, btn.clipH)) {
                 btn.clickState = ButtonEnty.ButtonClickOn;
                 if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                     btn.clickState = ButtonEnty.ButtonClickOff;
+                    //파티원이 제한수가 넘고, 빈 편성카드를 클릭했을때 (경고창 "더이상 추가할 수 없습니다")
+                    if(currentParty.memberPos[i].equals("0") && partyMemberCount >= PartyMemberMaximum) {
+                        gameMain.showAlertType = GameDialog.ALERT_TYPE_LIMITEDPARTYMEMBER;
+                        return;
+                    }
                     gameMain.setSelectCardNum(i);
                     gameMain.mainButtonAct(INN.GAME_MEMBER_FROM_PARTY, i);
                 }

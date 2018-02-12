@@ -203,7 +203,6 @@ public class MainGLView extends GLView {
                 gameBattle.gUpdate();
                 break;
             case INN.GAME_PARTY:
-            case INN.GAME_PARTY_FROM_QUEST:
                 if (appClass.isGameInit) {
                     gameParty = new Game_Party(gameMain);
                     gameParty.Start();
@@ -291,7 +290,6 @@ public class MainGLView extends GLView {
                     appClass.isSceneInit = false;
                     break;
                 case INN.GAME_PARTY:
-                case INN.GAME_PARTY_FROM_QUEST:
                     mScene = new Scene_Party(gameParty, sceneMain);
                     mScene.initScene(appClass);
                     appClass.isSceneInit = false;
@@ -415,7 +413,6 @@ public class MainGLView extends GLView {
                 gameQuestList.gOnTouchEvent(event);
                 break;
             case INN.GAME_PARTY:
-            case INN.GAME_PARTY_FROM_QUEST:
                 gameParty.gOnTouchEvent(event);
                 break;
             case INN.GAME_SHOP:

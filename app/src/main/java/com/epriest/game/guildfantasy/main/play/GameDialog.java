@@ -25,6 +25,7 @@ public class GameDialog {
     public final static int ALERT_TYPE_MAXMEMBER = 5;
     public final static int ALERT_TYPE_GEMNOTENOUGH = 6;
     public final static int ALERT_TYPE_VIEWMEMBER = 7;
+    public final static int ALERT_TYPE_LIMITEDPARTYMEMBER = 8;
 
     private onClickListener mListener;
 

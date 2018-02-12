@@ -241,10 +241,10 @@ public class Game_Main {
                             mainButtonAct(INN.GAME_QUESTLIST);
                             break;
                         case INN.GAME_MEMBER_FROM_PARTY:
-                            mainButtonAct(INN.GAME_MEMBER);
-                            break;
-                        case INN.GAME_PARTY_FROM_QUEST:
                             mainButtonAct(INN.GAME_PARTY);
+                            break;
+                        case INN.GAME_PARTY:
+                            mainButtonAct(INN.GAME_QUEST);
                             break;
                         default:
                             mainButtonAct(INN.GAME_HOME);

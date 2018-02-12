@@ -139,10 +139,9 @@ public class Game_Recruit extends Game {
         if (gameMain.onStatusTouch())
             return;
 
-        TouchData.Touch touch = gameMain.appClass.touch;
-        if (GameUtil.equalsTouch(touch,
+        if (GameUtil.equalsTouch(gameMain.appClass.touch,
                 summonBtn.drawX, summonBtn.drawY, summonBtn.clipW, summonBtn.clipH)) {
-            if (touch.action == MotionEvent.ACTION_UP) {
+            if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 summonBtn.clickState = ButtonEnty.ButtonClickOff;
                 activeNewCard(summonBtn.name);
                 return;
@@ -154,9 +153,9 @@ public class Game_Recruit extends Game {
             summonBtn.clickState = ButtonEnty.ButtonClickOff;
         }
 
-        if (GameUtil.equalsTouch(touch,
+        if (GameUtil.equalsTouch(gameMain.appClass.touch,
                 bondageBtn.drawX, bondageBtn.drawY, bondageBtn.clipW, bondageBtn.clipH)) {
-            if (touch.action == MotionEvent.ACTION_UP) {
+            if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 bondageBtn.clickState = ButtonEnty.ButtonClickOff;
                 return;
             } else {
@@ -167,9 +166,9 @@ public class Game_Recruit extends Game {
             bondageBtn.clickState = ButtonEnty.ButtonClickOff;
         }
 
-        if (GameUtil.equalsTouch(touch,
+        if (GameUtil.equalsTouch(gameMain.appClass.touch,
                 covenantBtn.drawX, covenantBtn.drawY, covenantBtn.clipW, covenantBtn.clipH)) {
-            if (touch.action == MotionEvent.ACTION_UP) {
+            if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 covenantBtn.clickState = ButtonEnty.ButtonClickOff;
                 activeNewCard(covenantBtn.name);
 

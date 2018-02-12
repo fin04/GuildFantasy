@@ -14,6 +14,8 @@ public class MemberEnty {
     public String age;
     public String birthday;
     public String mercy;
+    public String grade;
+    public String reload;
     public String image;
     public int iconid;
     public String memberclass;

@@ -232,6 +232,8 @@ public class DataManager {
         enty.sex = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERSEX));
         enty.age = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERAGE));
         enty.race = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERRACE));
+        enty.grade = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERGRADE));
+        enty.reload = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERRELOAD));
         enty.memberclass = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERCLASS));
         enty.profile = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERPROFILE));
         enty.dialog1 = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERDIALOG1));
@@ -278,6 +280,12 @@ public class DataManager {
         return entyList;
     }
 
+    /**
+     * DB에서 party list를 가져옴
+     *
+     * @param username
+     * @return entyList
+     */
     public static ArrayList<PartyEnty> getUserPartyList(GameDbAdapter dbAdapter, String username) {
         ArrayList<PartyEnty> entyList = new ArrayList<>();
         Cursor partyCursor = dbAdapter.getCursor(GameDbAdapter.PLAYER_PARTY_TABLE, GameDbAdapter.KEY_USERNAME, username);
@@ -425,6 +433,8 @@ public class DataManager {
         memEnty.race = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERRACE));
         memEnty.memberclass = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERCLASS));
         memEnty.mercy = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERMERCY));
+        memEnty.grade = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERGRADE));
+        memEnty.reload = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERRELOAD));
         memEnty.image = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERIMAGENAME));
         memEnty.iconid = memberCursor.getInt(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERICONID));
         memEnty.profile = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERPROFILE));
@@ -514,6 +524,11 @@ public class DataManager {
         return enty;
     }
 
+    /**
+     * db에서 party data를 불러옴
+     *
+     * @return enty
+     */
     public static PartyEnty getPartyData(GameDbAdapter dbAdapter, String username, int partyNum) {
         String partyID = username + "_" + partyNum;
         Cursor partyCursor = getPartyCursorFromId(dbAdapter, partyID);
@@ -596,7 +611,7 @@ public class DataManager {
         String TableName = GameDbAdapter.PLAYER_MEMBER_TABLE;
         String[] columns = {memEnty.memberId, userName, memEnty.name, memEnty.engname, memEnty.sex,
                 memEnty.age, memEnty.race, memEnty.memberclass, memEnty.mercy, memEnty.image,
-                Integer.toString(memEnty.iconid), memEnty.profile, memEnty.dialog1,
+                Integer.toString(memEnty.iconid), memEnty.grade, memEnty.reload, memEnty.profile, memEnty.dialog1,
                 Integer.toString(memEnty.status.LEVEL), Integer.toString(memEnty.status.EXP),
                 Integer.toString(memEnty.status.MAX_HP), Integer.toString(memEnty.status.MAX_MP),
                 Integer.toString(memEnty.status.MAX_AP), Integer.toString(memEnty.status.STR),
