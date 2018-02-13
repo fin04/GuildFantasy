@@ -32,7 +32,6 @@ public class Scene_Member extends Scene {
     @Override
     public void recycleScene() {
         DrawUtil.recycleBitmap(gameMember.img_bg);
-        DrawUtil.recycleBitmap(gameMember.img_memberSheet);
         DrawUtil.recycleBitmap(gameMember.img_membercard);
         for (int i = 0; i < gameMember.img_member.size(); i++) {
             DrawUtil.recycleBitmap(gameMember.img_member.get(i));
@@ -57,7 +56,7 @@ public class Scene_Member extends Scene {
         DrawUtil.drawString(mCanvas, Integer.toString(partyNum), 20,
                 Color.argb(255, 255, 255, 255), Paint.Align.LEFT, 200, 50);
 
-        int chrImgX = (200 - gameMember.img_member.get(0).getWidth()) / 2;
+        int chrImgX = (200 - gameMember.img_member.get(1).getWidth()) / 2;
         int chrImgY = 30;// + (180 - gameMember.img_member.get(0).getHeight()) / 2;
         int cardTextBoxY = gameMember.cardH - gameMember.cardTextBoxH - 15;
 
@@ -87,9 +86,28 @@ public class Scene_Member extends Scene {
                                 int cardTextBoxY) {
         MemberEnty enty = gameMember.memberList.get(num);
 
-        //draw cardBG
+        //draw card
         DrawUtil.drawClip(gameMember.img_membercard, mCanvas, 0, 0,
                 gameMember.cardW, gameMember.cardH, cx, cy);
+
+        //draw 편성해제카드
+        if(num == 0 && gameMember.gameMain.appClass.gameState == INN.GAME_MEMBER_FROM_PARTY){
+            ButtonEnty mBtn = gameMember.PartyAddButtonList.get(num);
+            int clipX = mBtn.clipX;
+            if (mBtn.clickState == ButtonEnty.ButtonClickOn) {
+                clipX = mBtn.clipX+85;
+            }
+            DrawUtil.drawClip(gameMember.img_membercard, mCanvas, clipX, mBtn.clipY,
+                    mBtn.clipW, mBtn.clipH, mBtn.drawX, mBtn.drawY-gameMember.scrollY);
+            DrawUtil.drawClip(gameMember.img_membercard, mCanvas, 170,308,85,64,
+                    mBtn.drawX, mBtn.drawY+10-gameMember.scrollY);
+
+//            DrawUtil.drawClip(gameMember.img_membercard, mCanvas, 0, 282, 85, 85,
+//                    cx+(gameMember.cardW-85)/2, cy+(gameMember.cardH-85)/2);
+//            DrawUtil.drawClip(gameMember.img_membercard, mCanvas, 170,308,85,64,
+//                    cx+(gameMember.cardW-85)/2, cy+(gameMember.cardH-64)/2);
+            return;
+        }
         //draw Character
         DrawUtil.drawClip(gameMember.img_member.get(num), mCanvas,
                 (gameMember.img_member.get(num).getWidth() - gameMember.cardW) / 2, 80,
@@ -108,15 +126,15 @@ public class Scene_Member extends Scene {
 
         //편성버튼
         if (gameMember.gameMain.appClass.gameState == INN.GAME_MEMBER_FROM_PARTY) {
-            for (int i = 0; i < gameMember.PartyAddButtonList.size(); i++) {
-                ButtonEnty mBtn = gameMember.PartyAddButtonList.get(i);
+//            for (int i = 0; i < gameMember.PartyAddButtonList.size(); i++) {
+                ButtonEnty mBtn = gameMember.PartyAddButtonList.get(num);
                 int clipY = 0;
                 if (mBtn.clickState == ButtonEnty.ButtonClickOn) {
                     clipY = 47;
                 }
                 DrawUtil.drawClip(gameMember.img_membercard, mCanvas, mBtn.clipX, clipY,
                         mBtn.clipW, mBtn.clipH, mBtn.drawX, cy+gameMember.cardH-mBtn.clipH);
-            }
+//            }
         }
 
 
