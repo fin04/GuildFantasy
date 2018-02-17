@@ -61,14 +61,8 @@ public class Scene_Party extends Scene {
         //draw card
         drawPartyCard(mCanvas);
 
-        DrawUtil.drawString(mCanvas, "PartyNum = "+gameParty.gameMain.getSelectPartyNum(), 30,
-                Color.WHITE, Paint.Align.LEFT, 20,200);
-
-        //파티제한 알림
-        if (gameParty.gameMain.showAlertType == GameDialog.ALERT_TYPE_LIMITEDPARTYMEMBER) {
-            gameParty.limitedPartyMemberDialog.draw(mCanvas, gameParty.gameMain.img_mainBtn);
-        }
-
+//        DrawUtil.drawString(mCanvas, "PartyNum = "+gameParty.gameMain.getSelectPartyNum(), 30,
+//                Color.WHITE, Paint.Align.LEFT, 20,200);
 
         gameParty.gameMain.drawStatusTab(mCanvas);
     }
@@ -124,18 +118,21 @@ public class Scene_Party extends Scene {
                 (mBtn.bitmap.getWidth() - mBtn.clipW) / 2, 80,
                 mBtn.clipW - 10, mBtn.clipH - 10, mBtn.drawX + 5, mBtn.drawY + 5);
 //        DrawUtil.drawBitmap(mBtn.bitmap, mCanvas, mBtn.drawX + 5, mBtn.drawY + 5);
-        //draw cardNameBG
-        DrawUtil.drawClip(gameParty.img_membercard, mCanvas, 176, 283,
-                127, 26, mBtn.drawX + (cardW - 127) / 2, mBtn.drawY + 10);
-        //draw cardTextBox
-        DrawUtil.drawClip(gameParty.img_membercard, mCanvas, 35, 283,
-                cardTextBoxW, cardTextBoxH, mBtn.drawX + 35, mBtn.drawY + cardTextBoxY);
+
+        //draw cardNameTag
+        int clipSize = 30;
+        DrawUtil.drawClip(gameParty.img_membercard, mCanvas, 175, 280,
+                clipSize, clipSize, mBtn.drawX, mBtn.drawY);
+        DrawUtil.drawClipResize(gameParty.img_membercard, mCanvas, 180, 280,
+                clipSize, clipSize, mBtn.drawX+clipSize, mBtn.drawY, cardW-clipSize*2, clipSize);
+        DrawUtil.drawClip(gameParty.img_membercard, mCanvas, 271, 280,
+                clipSize, clipSize, mBtn.drawX+cardW-clipSize, mBtn.drawY);
 
         MemberEnty enty = DataManager.getMemberData(gameParty.gameMain.dbAdapter, mBtn.name);
         DrawUtil.drawString(mCanvas, enty.name, 20, Color.WHITE, Paint.Align.CENTER,
-                mBtn.drawX + cardW / 2, mBtn.drawY + 7);
+                mBtn.drawX + cardW / 2, mBtn.drawY + 3);
         DrawUtil.drawString(mCanvas, "LV." + Integer.toString(enty.status.LEVEL),
-                20, Color.DKGRAY, Paint.Align.LEFT, mBtn.drawX + 15, mBtn.drawY + 3);
+                20, Color.YELLOW, Paint.Align.LEFT, mBtn.drawX + 8, mBtn.drawY + 3);
     }
 
 }

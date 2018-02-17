@@ -2,14 +2,16 @@ package com.epriest.game.guildfantasy.main;
 
 import android.graphics.Bitmap;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
-import com.epriest.game.guildfantasy.main.play.AlertManager;
+import com.epriest.game.guildfantasy.main.enty.PartyEnty;
 import com.epriest.game.guildfantasy.main.play.DataManager;
+import com.epriest.game.guildfantasy.util.DrawUtil;
 import com.epriest.game.guildfantasy.util.INN;
 
 import java.util.ArrayList;
@@ -28,7 +30,7 @@ public class Game_Member extends Game {
     /**
      * 파티추가버튼 리스트
      */
-    public ArrayList<ButtonEnty> PartyAddButtonList = new ArrayList<>();
+    public ArrayList<ButtonEnty> AddPartyButtonList = new ArrayList<>();
     /**
      * 멤버 리스트
      */
@@ -37,6 +39,11 @@ public class Game_Member extends Game {
      * 멤버 이미지 리스트
      */
     public ArrayList<Bitmap> img_member;
+
+    /**
+     * 파티 멤버
+     */
+    PartyEnty currentParty;
 
     public final int cardW = 212;
     public final int cardH = 280;
@@ -55,7 +62,7 @@ public class Game_Member extends Game {
 
     public int cardRowNum;
     public int scrollY, prevScrollY;
-    public int selectMember = -1;
+    public int selectMemberNum = -1;
 
 
     public Game_Member(Game_Main gameMain) {
@@ -67,16 +74,34 @@ public class Game_Member extends Game {
     public void gStart() {
         //멤버리스트 불러오기
         memberList = DataManager.getUserMemberList(gameMain.dbAdapter, gameMain.userEnty.Name);
+        //파티 불러오기
+        currentParty = DataManager.getPartyData(gameMain.dbAdapter, gameMain.userEnty.Name, gameMain.getSelectPartyNum());
         //멤버 이미지 불러오기
         img_member = new ArrayList<>();
         for (int i = 0; i < memberList.size(); i++) {
             img_member.add(GLUtil.loadAssetsBitmap(gameMain.appClass, "member/" + memberList.get(i).image, null, 2));
+            memberList.get(i).partyNum = getPartyNumFromSelectMemberId(memberList.get(i).memberId);
+            memberList.get(i).partyPos = getPositionFromSelectMemberId(memberList.get(i).memberId);
         }
 
         //멤버 카드 행 숫자
         cardRowNum = gameMain.canvasW / cardW;
         //파티원 편성용
         if (gameMain.appClass.gameState == INN.GAME_MEMBER_FROM_PARTY) {
+//            ArrayList<String> partyMemberList = new ArrayList<>();
+//            for (int i = 0; i < 9; i++) {
+//                if (!currentParty.memberPos[i].equals(Game_Party.BlankID)) {
+//                    partyMemberList.add(currentParty.memberPos[i]);
+//                }
+//            }
+//            for (int i = 0; i < memberList.size(); i++) {
+//                for (String pMember : partyMemberList) {
+//                    if (memberList.get(i).memberId.equals(pMember)) {
+//                        Bitmap bitmap = DrawUtil.enhanceImage(img_member.get(i), 0, 0);
+//                        img_member.set(i, bitmap);
+//                    }
+//                }
+//            }
             memberList.add(0, null);
             img_member.add(0, null);
             setAddMemberCardList();
@@ -93,22 +118,22 @@ public class Game_Member extends Game {
         for (int i = 0; i < memberList.size(); i++) {
             ButtonEnty mBtn = new ButtonEnty();
             mBtn.num = i;
-            if(i == 0){
+            if (i == 0) {
                 mBtn.clipW = exceptBtnW;
                 mBtn.clipH = exceptBtnH;
                 mBtn.clipX = 0;
                 mBtn.clipY = 282;
-                mBtn.drawX = cardLeftX + (cardW-exceptBtnW)/2;
-                mBtn.drawY = cardTopY + (cardH-exceptBtnH)/2;
-            }else {
+                mBtn.drawX = cardLeftX + (cardW - exceptBtnW) / 2;
+                mBtn.drawY = cardTopY + (cardH - exceptBtnH) / 2;
+            } else {
                 mBtn.clipW = addBtnW;
                 mBtn.clipH = addBtnH;
                 mBtn.clipX = 213;
                 mBtn.clipY = 0;
                 mBtn.drawX = cardLeftX + (i % cardRowNum) * (cardW + 8) + cardW - mBtn.clipW;
-                mBtn.drawY = cardTopY + (i / cardRowNum) * (cardH + 30) + cardH - mBtn.clipH;
+                mBtn.drawY = cardTopY + (i / cardRowNum) * (cardH + 30) + cardH - mBtn.clipH - 5;
             }
-            PartyAddButtonList.add(mBtn);
+            AddPartyButtonList.add(mBtn);
         }
     }
 
@@ -122,6 +147,57 @@ public class Game_Member extends Game {
 
     }
 
+    /**
+     * 선택한 멤버를 파티의 포지션에 등록후 파티메뉴로 전환
+     *
+     * @param memberID   : 선택 멤버
+     * @param position   : 파티 포지션
+     * @param changeMain : 파티메뉴 전환
+     */
+    private void setSelectMemberToParty(String memberID, int position, boolean changeMain) {
+        DataManager.updateUserPartyMember(gameMain.dbAdapter, memberID,
+                gameMain.userEnty.Name, gameMain.getSelectPartyNum(),
+                position);
+
+        if (changeMain)
+            gameMain.mainButtonAct(INN.GAME_PARTY);
+    }
+
+    /**
+     * //선택된 멤버가 이미 파티에 등록되어있을 경우 파티위치 반환
+     *
+     * @param selectMemberID
+     * @return
+     */
+    private int getPositionFromSelectMemberId(String selectMemberID) {
+        for (int j = 0; j < currentParty.memberPos.length; j++) {
+            if (selectMemberID.equals(currentParty.memberPos[j])) {
+                return j;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 선택된 멤버가 이미 파티에 등록되어있을 경우 파티넘버 반환
+     *
+     * @param selectMemberID
+     * @return
+     */
+    private int getPartyNumFromSelectMemberId(String selectMemberID) {
+        for (int j = 0; j < currentParty.memberPos.length; j++) {
+            if (selectMemberID.equals(currentParty.memberPos[j])) {
+                return currentParty.party_num;
+            }
+        }
+        return -1;
+    }
+
+    public String getMemberDB_ID(String memberId){
+        String db_id = memberId.split("-")[0];
+        return db_id;
+    }
+
     @Override
     public void gOnTouchEvent(MotionEvent event) {
         if (gameMain.onStatusTouch())
@@ -129,9 +205,9 @@ public class Game_Member extends Game {
 
         //party 편성용 버튼
         if (gameMain.appClass.gameState == INN.GAME_MEMBER_FROM_PARTY) {
-            for (int i = 0; i < PartyAddButtonList.size(); i++) {
-                ButtonEnty btn = PartyAddButtonList.get(i);
-                if (GameUtil.equalsTouch(gameMain.appClass.touch, btn.drawX, btn.drawY + scrollY, btn.clipW, btn.clipH)) {
+            for (int i = 0; i < AddPartyButtonList.size(); i++) {
+                ButtonEnty btn = AddPartyButtonList.get(i);
+                if (GameUtil.equalsTouch(gameMain.appClass.touch, btn.drawX, btn.drawY - scrollY, btn.clipW, btn.clipH)) {
                     switch (gameMain.appClass.touch.action) {
                         case MotionEvent.ACTION_DOWN:
                             btn.clickState = ButtonEnty.ButtonClickOn;
@@ -140,17 +216,67 @@ public class Game_Member extends Game {
                         case MotionEvent.ACTION_UP:
                             btn.clickState = ButtonEnty.ButtonClickOff;
                             if (prevScrollY == scrollY) {
-                                selectMember = btn.num;
-                                if (selectMember != -1) {
-                                    //memberID가 "0"이면 파티에서 제거, 그보다 크면 파티원 추가
-                                    String memberID = "0";
-                                    if (selectMember > 0) {
-                                        memberID = memberList.get(selectMember).memberId;
-                                    }
-                                    DataManager.updateUserPartyMember(gameMain.dbAdapter, memberID,
-                                            gameMain.userEnty.Name, gameMain.getSelectPartyNum(),
-                                            gameMain.getSelectPosition());
-                                    gameMain.mainButtonAct(INN.GAME_PARTY);
+
+                                switch (btn.num) {
+                                    case 0:
+                                        // 편성해체카드 클릭시 편성해제
+                                        setSelectMemberToParty(Game_Party.BlankID, gameMain.getSelectPosition(), true);
+                                        break;
+                                    default:
+                                        String selectMemberID = memberList.get(btn.num).memberId;
+                                        String selectMemberDB_ID = getMemberDB_ID(selectMemberID);
+                                        String positionMemberID = currentParty.memberPos[gameMain.getSelectPosition()];
+                                        String positionMemberDBID = null;
+                                        if (!positionMemberID.equals(Game_Party.BlankID)) {
+                                            positionMemberDBID = getMemberDB_ID(positionMemberID);
+                                        }
+
+                                        // 중복체크
+                                        if (selectMemberID.equals(positionMemberID) || selectMemberDB_ID.equals(positionMemberDBID)) {
+                                            //선택한 멤버가 수정하려는 파티 포지션의 멤버와 동일할때 -> 그대로 삽입
+                                            //선택한 멤버의 타입이 수정하려는 파티 포지션의 멤버의 타입과 동일할때 -> 그대로 삽입
+                                        } else {
+                                            for (int j = 0; j < currentParty.memberPos.length; j++) {
+                                                if (currentParty.memberPos[j].equals(Game_Party.BlankID))
+                                                    continue;
+
+                                                String selectPosMemberID = currentParty.memberPos[j];
+                                                if (selectMemberID.equals(selectPosMemberID)) {
+                                                    //선택한 멤버가 파티의 다른 포지션에 이미 있을때
+                                                    // -> 선택한 멤버의 포지션으로 수정하려는 파티 포지션의 멤버를 이동
+                                                    setSelectMemberToParty(positionMemberID, j, false);
+                                                    break;
+                                                } else if (selectMemberDB_ID.equals(getMemberDB_ID(selectPosMemberID))) {
+                                                    //선택한 멤버의 타입이 다른 포지션에 이미 있을때
+                                                    // -> 동일한 타입의 카드가 중복되는 것을 방지하고 알림을 띄움
+                                                    Toast.makeText(gameMain.appClass, "중복된 카드입니다.", Toast.LENGTH_SHORT).show();
+                                                    return;
+                                                }
+                                            }
+                                        }
+
+//                                            if (isOverlapDbMemberId(memberList.get(btn.num))) {
+////                                        MemberEnty selectPosEnty = DataManager.getMemberData(gameMain.dbAdapter, currentParty.memberPos[gameMain.getSelectPosition()]);
+////                                        if (memberList.get(btn.num).db_memberID.equals(selectPosEnty.db_memberID)) {
+//                                                //toast
+//                                                Toast.makeText(gameMain.appClass, "중복된 카드입니다.", Toast.LENGTH_SHORT).show();
+//                                                return;
+//                                            }
+//
+//                                            int selectMemberPartyPos = getPositionFromSelectMemberId(selectEnty.memberId);
+//                                            if (selectMemberPartyPos > -1) {
+//
+//                                                if (positionMemberID.equals(Game_Party.BlankID)) {
+//                                                    // 선택한 멤버의 원래 포지션에서 멤버를 삭제
+//                                                    setSelectMemberToParty(Game_Party.BlankID, selectMemberPartyPos, false);
+//                                                }else{
+//                                                    //선택된 포지션에 memberId가 있을때 선택한 멤버의 원래 포지션에 삽입
+//                                                    setSelectMemberToParty(positionMemberID, selectMemberPartyPos, false);
+//                                                }
+//                                        }
+                                        //선택한 멤버를 수정하려는 파티 포지션에 삽입
+                                        setSelectMemberToParty(selectMemberID, gameMain.getSelectPosition(), true);
+                                        break;
                                 }
                             }
                             break;
@@ -165,16 +291,16 @@ public class Game_Member extends Game {
             prevScrollY = scrollY;
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
             if (prevScrollY == scrollY) {
-                selectMember = (((int) gameMain.appClass.touch.mLastTouchX - cardLeftX) / cardW)
+                selectMemberNum = (((int) gameMain.appClass.touch.mLastTouchX - cardLeftX) / cardW)
                         + (((int) gameMain.appClass.touch.mLastTouchY + scrollY - cardTopY) / cardH) * cardRowNum;
-                if (gameMain.userEnty.MEMBERLIST.size() < selectMember) {
-                    selectMember = -1;
+                if (gameMain.userEnty.MEMBERLIST.size() < selectMemberNum) {
+                    selectMemberNum = -1;
                 }
 //                gameMain.userEnty.MEMBERLIST.get(selectMember).party_number = gameMain.selectCardNum;
 //                String partyID = gameMain.userEnty.Name+"_"+gameMain.getSelectPartyNum();
 
-                if (selectMember > 0) {
-                    String memberID = memberList.get(selectMember).memberId;
+                if (selectMemberNum > 0) {
+                    String memberID = memberList.get(selectMemberNum).memberId;
                     DataManager.updateUserPartyMember(gameMain.dbAdapter, memberID,
                             gameMain.userEnty.Name, gameMain.getSelectPartyNum(), gameMain.getSelectPosition());
                 }
@@ -183,7 +309,7 @@ public class Game_Member extends Game {
             }
         }
         scrollY = prevScrollY - (int) (gameMain.appClass.touch.mLastTouchY - gameMain.appClass.touch.mDownY);
-        int maxScrollY = (gameMain.userEnty.MEMBERLIST.size() / cardRowNum) * (cardH + 30) - (gameMain.canvasH - cardTopY);
+        int maxScrollY = (gameMain.userEnty.MEMBERLIST.size() / cardRowNum + 1) * (cardH + 30) - (gameMain.canvasH - cardTopY);
         if (maxScrollY < 0)
             maxScrollY = 0;
         if (scrollY < 0)

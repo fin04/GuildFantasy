@@ -2,6 +2,7 @@ package com.epriest.game.guildfantasy.main;
 
 import android.graphics.Bitmap;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.Game;
@@ -23,9 +24,11 @@ import java.util.ArrayList;
 public class Game_Party extends Game {
 
     final public static int PartyMemberMaximum = 4;
+    final public static String BlankID = "0";
+
+    public ArrayList<String> memberPosList = new ArrayList<>();
 
     public Game_Main gameMain;
-    public GameDialog limitedPartyMemberDialog;
 
     /**
      * 파티 선택 버튼
@@ -61,20 +64,6 @@ public class Game_Party extends Game {
         //userName으로 파티정보를 불러옴
         currentParty = DataManager.getPartyData(gameMain.dbAdapter, gameMain.userEnty.Name, gameMain.getSelectPartyNum());
 
-        limitedPartyMemberDialog = new GameDialog(gameMain.appClass);
-        limitedPartyMemberDialog.setOnButtonListener(new GameDialog.onClickListener() {
-            @Override
-            public void onPositiveClick() {
-                gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
-            }
-
-            @Override
-            public void onCancelClick() {
-                gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
-            }
-        });
-        limitedPartyMemberDialog.setText("더 이상 파티원을 추가할 수 없습니다.");
-
         // party card 위치
         setPartyCardList();
 
@@ -90,7 +79,7 @@ public class Game_Party extends Game {
             mBtn.clipX = 0;
             mBtn.clipY = 172;
             mBtn.drawX = 40 + (mBtn.clipW + 10) * i;
-            mBtn.drawY = bottomMenuY - 5;
+            mBtn.drawY = bottomMenuY - 100;
             PartyNumButtonList.add(mBtn);
         }
     }
@@ -99,7 +88,7 @@ public class Game_Party extends Game {
      * Card Setting
      */
     private void setPartyCardList(){
-        int cardY = 300;
+        int cardY = 150;
         for (int i = 0; i < 9; i++) {
             ButtonEnty mCard = new ButtonEnty();
             mCard.num = i;
@@ -110,7 +99,7 @@ public class Game_Party extends Game {
             mCard.drawX = 34 + (i % 3) * (mCard.clipW + 8);
             mCard.drawY = cardY + (i / 3) * (mCard.clipH + 10);
             mCard.name = currentParty.memberPos[i];
-            if(!mCard.name.equals("0")) {
+            if(!mCard.name.equals(Game_Party.BlankID)) {
                 partyMemberCount++;
                 String imgPath = DataManager.getMemberData(gameMain.dbAdapter, mCard.name).image;
                 mCard.bitmap = GLUtil.loadAssetsBitmap(gameMain.appClass, "member/" + imgPath, null, 2);
@@ -132,11 +121,6 @@ public class Game_Party extends Game {
     public void gOnTouchEvent(MotionEvent event) {
         if (gameMain.onStatusTouch())
             return;
-
-        if (gameMain.showAlertType == GameDialog.ALERT_TYPE_LIMITEDPARTYMEMBER) {
-            if (limitedPartyMemberDialog.onTouch())
-                return;
-        }
 
         //파티선택
         for (int i = 0; i < PartyNumButtonList.size(); i++) {
@@ -167,7 +151,8 @@ public class Game_Party extends Game {
                     btn.clickState = ButtonEnty.ButtonClickOff;
                     //파티원이 제한수가 넘고, 빈 편성카드를 클릭했을때 (경고창 "더이상 추가할 수 없습니다")
                     if(currentParty.memberPos[i].equals("0") && partyMemberCount >= PartyMemberMaximum) {
-                        gameMain.showAlertType = GameDialog.ALERT_TYPE_LIMITEDPARTYMEMBER;
+                        //toast
+                        Toast.makeText(gameMain.appClass, "더 이상 파티원을 추가할 수 없습니다.", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     gameMain.setSelectCardNum(i);

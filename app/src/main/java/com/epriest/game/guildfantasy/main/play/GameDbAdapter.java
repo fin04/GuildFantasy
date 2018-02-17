@@ -94,6 +94,7 @@ public class GameDbAdapter {
     public static final String KEY_USERGEM_GREEN = "player_gem_green";
     public static final String KEY_USERGEM_BLUE = "player_gem_blue";
 
+    public static final String KEY_DBMEMBERID = "member_db_id";
     public static final String KEY_MEMBERLEVEL = "member_lv";
     public static final String KEY_MEMBEREXP = "member_exp";
     public static final String KEY_MEMBERHP = "member_hp";

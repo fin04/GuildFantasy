@@ -10,7 +10,7 @@ public class PartyEnty {
 
 	public String party_gold;
 	public String party_exp;
-	public int num;
+	public int party_num;
 	public String questId;
 	public String questTime;
 

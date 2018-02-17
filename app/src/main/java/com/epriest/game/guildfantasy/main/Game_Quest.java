@@ -168,7 +168,7 @@ public class Game_Quest extends Game {
             nextBtnEnty.clickState = ButtonEnty.ButtonClickOn;
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 nextBtnEnty.clickState = ButtonEnty.ButtonClickOff;
-//                gameMain.mainButtonAct(INN.GAME_PARTY);
+                gameMain.mainButtonAct(INN.GAME_DUNGEON);
             }
             return;
         }

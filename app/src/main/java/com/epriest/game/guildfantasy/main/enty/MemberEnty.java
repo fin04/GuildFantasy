@@ -7,7 +7,7 @@ package com.epriest.game.guildfantasy.main.enty;
 public class MemberEnty {
 
     public String memberId;
-    public String db_memberID;
+//    public String db_memberID;
     public String name;
     public String engname;
     public String sex;
@@ -27,6 +27,9 @@ public class MemberEnty {
     public EquipEnty equip;
 
     public String questID;
+
+    public int partyNum;
+    public int partyPos;
 
     public String skill_1;
 

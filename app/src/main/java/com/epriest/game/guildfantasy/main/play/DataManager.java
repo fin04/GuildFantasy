@@ -174,7 +174,7 @@ public class DataManager {
                 for (int i = 0; i < 5; i++) {
                     PartyEnty enty = new PartyEnty();
                     enty.partyId = userEnty.Name + "_" + i;
-                    enty.num = i;
+                    enty.party_num = i;
                     insertUserParty(dbAdapter, enty, userEnty.Name);
                 }
 
@@ -226,7 +226,8 @@ public class DataManager {
         Cursor cursor = getUserMemberCursor(dbAdapter, memberID);
         enty.status = new StatusEnty();
         enty.equip = new EquipEnty();
-        enty.memberId = memberID;
+        enty.memberId = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERID));
+//        enty.db_memberID = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_DBMEMBERID));
         enty.name = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERNAME));
         enty.engname = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERENGNAME));
         enty.sex = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MEMBERSEX));
@@ -424,7 +425,7 @@ public class DataManager {
         String id = memberID.split("-")[0];
         MemberEnty memEnty = new MemberEnty();
         Cursor memberCursor = getDBMemberCursor(dbAdapter, id);
-        memEnty.db_memberID = id;
+//        memEnty.db_memberID = id;
         memEnty.memberId = id + "-" + System.currentTimeMillis();
         memEnty.name = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERNAME));
         memEnty.engname = memberCursor.getString(memberCursor.getColumnIndex(GameDbAdapter.KEY_MEMBERENGNAME));
@@ -533,6 +534,7 @@ public class DataManager {
         String partyID = username + "_" + partyNum;
         Cursor partyCursor = getPartyCursorFromId(dbAdapter, partyID);
         PartyEnty enty = new PartyEnty();
+        enty.party_num = partyNum;
         enty.partyName = partyCursor.getString(partyCursor.getColumnIndex(GameDbAdapter.KEY_PARTYTITLE));
         enty.partyId = partyID;
         enty.birthTime = partyCursor.getString(partyCursor.getColumnIndex(GameDbAdapter.KEY_PARTYBIRTH));
@@ -646,7 +648,7 @@ public class DataManager {
     public static long insertUserParty(GameDbAdapter dbAdapter, PartyEnty partyEnty, String userName) {
         String TableName = GameDbAdapter.PLAYER_PARTY_TABLE;
         String[] columns = {
-                partyEnty.partyId, partyEnty.partyName, Integer.toString(partyEnty.num), userName, partyEnty.birthTime,
+                partyEnty.partyId, partyEnty.partyName, Integer.toString(partyEnty.party_num), userName, partyEnty.birthTime,
                 partyEnty.questId, partyEnty.questTime, partyEnty.party_exp, partyEnty.party_gold, partyEnty.memberPos[0],
                 partyEnty.memberPos[1], partyEnty.memberPos[2], partyEnty.memberPos[3], partyEnty.memberPos[4],
                 partyEnty.memberPos[5], partyEnty.memberPos[6], partyEnty.memberPos[7], partyEnty.memberPos[8]};
