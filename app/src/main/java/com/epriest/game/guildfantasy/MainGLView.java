@@ -75,11 +75,14 @@ public class MainGLView extends GLView {
 
     public MainGLView(Context context) {
         super(context);
-        appClass.gameState = INN.GAME_INTRO;
-        appClass.isGameInit = true;
-        appClass.isSceneInit = true;
         dbAdapter = new GameDbAdapter(context);
         dbAdapter.open();
+
+        gameMain = new Game_Main(appClass.getBaseContext(), dbAdapter);
+        gameMain.Init();
+        gameMain.gameState = INN.GAME_INTRO;
+        gameMain.isGameInit = true;
+        gameMain.isSceneInit = true;
     }
 
     @Override
@@ -102,7 +105,14 @@ public class MainGLView extends GLView {
 
     @Override
     public void cUpdateLogic() {
+        appClass.isGameInit = gameMain.isGameInit;
+
         if (appClass.isGameInit) {
+            appClass.isSceneInit = gameMain.isSceneInit;
+            appClass.gameState = gameMain.gameState;
+            gameMain.isGameInit = false;
+            gameMain.isSceneInit = false;
+
             gameTitle = null;
             gameHome = null;
             gameQuest = null;
@@ -124,10 +134,10 @@ public class MainGLView extends GLView {
             case INN.GAME_INTRO:
 //                appClass.isGameInit = false;
                 if (appClass.isGameInit) {
-                    if (gameMain == null) {
-                        gameMain = new Game_Main(appClass.getBaseContext(), dbAdapter);
-                        gameMain.Init();
-                    }
+//                    if (gameMain == null) {
+//                        gameMain = new Game_Main(appClass.getBaseContext(), dbAdapter);
+//                        gameMain.Init();
+//                    }
 
                     gameTitle = new Game_Title(gameMain);
                     gameTitle.Start();

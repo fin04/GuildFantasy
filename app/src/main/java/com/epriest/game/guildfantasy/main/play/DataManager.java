@@ -29,6 +29,7 @@ public class DataManager {
      * @return cursor
      */
     public static Cursor getUserMainCursor(GameDbAdapter dbAdapter, String playerName) {
+        Cursor c= dbAdapter.getCursor(GameDbAdapter.PLAYER_MAIN_TABLE, GameDbAdapter.KEY_USERNAME, playerName);
         return dbAdapter.getCursor(GameDbAdapter.PLAYER_MAIN_TABLE, GameDbAdapter.KEY_USERNAME, playerName);
     }
 

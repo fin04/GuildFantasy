@@ -33,6 +33,9 @@ public class Game_Main {
     public GameDbAdapter dbAdapter;
 //    public Scene_Main sceneMain;
 
+    public boolean isGameInit, isSceneInit;
+    public int gameState;
+
     public UserEnty userEnty;
 
     public ImageEnty managerImg;
@@ -94,17 +97,17 @@ public class Game_Main {
     }
 
     public void mainButtonAct(int state) {
-        appClass.isGameInit = true;
-        appClass.isSceneInit = true;
-        appClass.gameState = state;
+        isGameInit = true;
+        isSceneInit = true;
+        gameState = state;
         selectCardNum = 0;
         selectPartyNum = 0;
     }
 
     public void mainButtonAct(int state, int val) {
-        appClass.isGameInit = true;
-        appClass.isSceneInit = true;
-        appClass.gameState = state;
+        isGameInit = true;
+        isSceneInit = true;
+        gameState = state;
         switch (state) {
             case INN.GAME_MEMBER:
                 selectCardNum = val;
@@ -113,9 +116,9 @@ public class Game_Main {
     }
 
     public void mainButtonAct(int state, String val) {
-        appClass.isGameInit = true;
-        appClass.isSceneInit = true;
-        appClass.gameState = state;
+        isGameInit = true;
+        isSceneInit = true;
+        gameState = state;
         switch (state) {
             case INN.GAME_QUEST:
                 selectQuestId = val;

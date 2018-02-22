@@ -13,6 +13,7 @@ import com.epriest.game.guildfantasy.main.enty.PartyEnty;
 import com.epriest.game.guildfantasy.main.play.DataManager;
 import com.epriest.game.guildfantasy.util.DrawUtil;
 import com.epriest.game.guildfantasy.util.INN;
+import com.epriest.game.guildfantasy.util.LoadImageTask;
 
 import java.util.ArrayList;
 
@@ -79,7 +80,13 @@ public class Game_Member extends Game {
         //멤버 이미지 불러오기
         img_member = new ArrayList<>();
         for (int i = 0; i < memberList.size(); i++) {
-            img_member.add(GLUtil.loadAssetsBitmap(gameMain.appClass, "member/" + memberList.get(i).image, null, 2));
+            try {
+                Bitmap bitmap = new LoadImageTask(gameMain.appClass.getBaseContext(), null, 2).execute("member/" + memberList.get(i).image).get();
+                img_member.add(bitmap);
+            }catch(Exception e){
+
+            }
+//            img_member.add(GLUtil.loadAssetsBitmap(gameMain.appClass, "member/" + memberList.get(i).image, null, 2));
             memberList.get(i).partyNum = getPartyNumFromSelectMemberId(memberList.get(i).memberId);
             memberList.get(i).partyPos = getPositionFromSelectMemberId(memberList.get(i).memberId);
         }
