@@ -1,6 +1,7 @@
 package com.epriest.game.guildfantasy.main;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
@@ -25,21 +26,21 @@ public class Game_Member extends Game {
 
     public Game_Main gameMain;
 
-    public Bitmap img_membercard;
+    public Bitmap img_cardBg;
     public Bitmap img_bg;
 
     /**
-     * 파티추가버튼 리스트
+     * 멤버카드 버튼 리스트
      */
-    public ArrayList<ButtonEnty> AddPartyButtonList = new ArrayList<>();
+    public ArrayList<ButtonEnty> cardImageList;
     /**
-     * 멤버 리스트
+     * 멤버 추가 버튼 리스트
      */
-    public ArrayList<MemberEnty> memberList;
+    public ArrayList<ButtonEnty> addButtonList;
     /**
      * 멤버 이미지 리스트
      */
-    public ArrayList<Bitmap> img_member;
+//    public ArrayList<Bitmap> memberBitmapList;
 
     /**
      * 파티 멤버
@@ -48,6 +49,13 @@ public class Game_Member extends Game {
 
     public final int cardW = 212;
     public final int cardH = 280;
+    private final int addBtnW = 47;
+    private final int addBtnH = 47;
+    private final int exceptBtnW = 85;
+    private final int exceptBtnH = 85;
+
+    public final int chrImgW = 720;
+    public final int chrImgH = 1024;
 
     public final int cardTextBoxW = 140;
     public final int cardTextBoxH = 90;
@@ -55,13 +63,21 @@ public class Game_Member extends Game {
     public final int cardLeftX = 34;
     public final int cardTopY = Game_Main.statusBarH + 200;
 
-    public final int addBtnW = 47;
-    public final int addBtnH = 47;
-
-    public final int exceptBtnW = 85;
-    public final int exceptBtnH = 85;
-
-    public int cardRowNum;
+    public int maxScrollY;
+    /**
+     * 화면 내의 카드 열의 최대갯수
+     */
+    public int maxnum_ScreenCardColum;
+    /**
+     *화면 내의 카드 행의 최대갯수
+     */
+    public int maxnum_ScreenCardRow;
+    public int maxnum_ScreenCard;
+    /**
+     * 화면내에 그려지는 카드 행의 시작 넘버
+     */
+    public int curDrawCardRow;
+    public int prevDrawCardRow;
     public int scrollY, prevScrollY;
     public int selectMemberNum = -1;
 
@@ -74,73 +90,99 @@ public class Game_Member extends Game {
     @Override
     public void gStart() {
         //멤버리스트 불러오기
-        memberList = DataManager.getUserMemberList(gameMain.dbAdapter, gameMain.userEnty.Name);
+        ArrayList<MemberEnty> memberList = gameMain.userEnty.MEMBERLIST;
+//        memberList = DataManager.getUserMemberList(gameMain.dbAdapter, gameMain.userEnty.Name);
         //파티 불러오기
         currentParty = DataManager.getPartyData(gameMain.dbAdapter, gameMain.userEnty.Name, gameMain.getSelectPartyNum());
-        //멤버 이미지 불러오기
-        img_member = new ArrayList<>();
+        //멤버 리스트 생성
         for (int i = 0; i < memberList.size(); i++) {
-            try {
-                Bitmap bitmap = new LoadImageTask(gameMain.appClass.getBaseContext(), null, 2).execute("member/" + memberList.get(i).image).get();
-                img_member.add(bitmap);
-            }catch(Exception e){
-
-            }
 //            img_member.add(GLUtil.loadAssetsBitmap(gameMain.appClass, "member/" + memberList.get(i).image, null, 2));
             memberList.get(i).partyNum = getPartyNumFromSelectMemberId(memberList.get(i).memberId);
             memberList.get(i).partyPos = getPositionFromSelectMemberId(memberList.get(i).memberId);
         }
 
         //멤버 카드 행 숫자
-        cardRowNum = gameMain.canvasW / cardW;
-        //파티원 편성용
-        if (gameMain.appClass.gameState == INN.GAME_MEMBER_FROM_PARTY) {
-//            ArrayList<String> partyMemberList = new ArrayList<>();
-//            for (int i = 0; i < 9; i++) {
-//                if (!currentParty.memberPos[i].equals(Game_Party.BlankID)) {
-//                    partyMemberList.add(currentParty.memberPos[i]);
-//                }
-//            }
-//            for (int i = 0; i < memberList.size(); i++) {
-//                for (String pMember : partyMemberList) {
-//                    if (memberList.get(i).memberId.equals(pMember)) {
-//                        Bitmap bitmap = DrawUtil.enhanceImage(img_member.get(i), 0, 0);
-//                        img_member.set(i, bitmap);
-//                    }
-//                }
-//            }
-            memberList.add(0, null);
-            img_member.add(0, null);
-            setAddMemberCardList();
-        }
+        maxnum_ScreenCardColum = gameMain.canvasW / cardW;
+        maxnum_ScreenCardRow = gameMain.canvasH / cardH +1;
+        maxnum_ScreenCard = maxnum_ScreenCardColum*maxnum_ScreenCardRow;
+        prevDrawCardRow = 0;
+        curDrawCardRow = 0;
+        maxScrollY = (gameMain.userEnty.MEMBERLIST.size() / maxnum_ScreenCardColum + 1) * (cardH + 30) - (gameMain.canvasH - cardTopY);
 
-        img_membercard = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/membercard.png", null);
+
+//        memberBitmapList = new ArrayList<>();
+//        for (int i = 0; i < imgLoadCnt; i++) {
+//            try {
+//                Bitmap bitmap = new LoadImageTask(gameMain.appClass, null, 2)
+//                        .execute("member/" + memberList.get(i).image).get();
+//                memberBitmapList.add(bitmap);
+//            } catch (Exception e) {
+//            }
+//        }
+
+        //파티원 편성용
+//        if (gameMain.appClass.gameState == INN.GAME_MEMBER_FROM_PARTY) {
+//            memberList.add(0, null);
+//            memberBitmapList.add(0, null);
+//            memberBitmapList.remove(memberBitmapList.size()-1);
+//        }
+        setMemberCardList(memberList);
+        img_cardBg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/membercard.png", null);
         img_bg = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/bg_inn.jpg", null);
 
 //        setPartyButton();
     }
 
-    private void setAddMemberCardList() {
-
+    private void setMemberCardList(ArrayList<MemberEnty> memberList) {
+        //멤버 이미지 로드
+        int imgLoadCnt = maxnum_ScreenCardRow * maxnum_ScreenCardColum;
+        if (memberList.size() < imgLoadCnt) {
+            imgLoadCnt = memberList.size();
+        }
+        cardImageList = new ArrayList<>();
         for (int i = 0; i < memberList.size(); i++) {
+            ButtonEnty cardBtn = new ButtonEnty();
+            cardBtn.num = i;
+            if(i < imgLoadCnt) {
+                try {
+                    if (i == 0 && gameMain.appClass.gameState == INN.GAME_MEMBER_FROM_PARTY) {
+                        cardBtn.bitmap = null;
+                    }else {
+                        cardBtn.bitmap = new LoadImageTask(gameMain.appClass, null, 2)
+                                .execute("member/" + memberList.get(i).image).get();
+                    }
+                } catch (Exception e) {
+                }
+            }
+            cardBtn.clipX = 0;
+            cardBtn.clipY = 0;
+            cardBtn.clipW = cardW;
+            cardBtn.clipH = cardH;
+            cardBtn.drawX = cardLeftX + i % maxnum_ScreenCardColum * (cardW + 10);
+            cardBtn.drawY = cardTopY + i / maxnum_ScreenCardColum * (cardH + 30);
+            cardImageList.add(cardBtn);
+
+            if (gameMain.appClass.gameState != INN.GAME_MEMBER_FROM_PARTY)
+                continue;
+
+            addButtonList = new ArrayList<>();
             ButtonEnty mBtn = new ButtonEnty();
-            mBtn.num = i;
             if (i == 0) {
                 mBtn.clipW = exceptBtnW;
                 mBtn.clipH = exceptBtnH;
                 mBtn.clipX = 0;
                 mBtn.clipY = 282;
-                mBtn.drawX = cardLeftX + (cardW - exceptBtnW) / 2;
-                mBtn.drawY = cardTopY + (cardH - exceptBtnH) / 2;
+                mBtn.drawX = cardBtn.drawX + (cardW - exceptBtnW) / 2;
+                mBtn.drawY = cardBtn.drawY + (cardH - exceptBtnH) / 2;
             } else {
                 mBtn.clipW = addBtnW;
                 mBtn.clipH = addBtnH;
                 mBtn.clipX = 213;
                 mBtn.clipY = 0;
-                mBtn.drawX = cardLeftX + (i % cardRowNum) * (cardW + 8) + cardW - mBtn.clipW;
-                mBtn.drawY = cardTopY + (i / cardRowNum) * (cardH + 30) + cardH - mBtn.clipH - 5;
+                mBtn.drawX = cardLeftX + (i % maxnum_ScreenCardColum) * (cardW + 8) + cardW - mBtn.clipW;
+                mBtn.drawY = cardTopY + (i / maxnum_ScreenCardColum) * (cardH + 30) + cardH - mBtn.clipH - 5;
             }
-            AddPartyButtonList.add(mBtn);
+            addButtonList.add(mBtn);
         }
     }
 
@@ -200,7 +242,7 @@ public class Game_Member extends Game {
         return -1;
     }
 
-    public String getMemberDB_ID(String memberId){
+    public String getMemberDB_ID(String memberId) {
         String db_id = memberId.split("-")[0];
         return db_id;
     }
@@ -212,8 +254,8 @@ public class Game_Member extends Game {
 
         //party 편성용 버튼
         if (gameMain.appClass.gameState == INN.GAME_MEMBER_FROM_PARTY) {
-            for (int i = 0; i < AddPartyButtonList.size(); i++) {
-                ButtonEnty btn = AddPartyButtonList.get(i);
+            for (int i = 0; i < cardImageList.size(); i++) {
+                ButtonEnty btn = cardImageList.get(i);
                 if (GameUtil.equalsTouch(gameMain.appClass.touch, btn.drawX, btn.drawY - scrollY, btn.clipW, btn.clipH)) {
                     switch (gameMain.appClass.touch.action) {
                         case MotionEvent.ACTION_DOWN:
@@ -230,7 +272,7 @@ public class Game_Member extends Game {
                                         setSelectMemberToParty(Game_Party.BlankID, gameMain.getSelectPosition(), true);
                                         break;
                                     default:
-                                        String selectMemberID = memberList.get(btn.num).memberId;
+                                        String selectMemberID = gameMain.userEnty.MEMBERLIST.get(btn.num).memberId;
                                         String selectMemberDB_ID = getMemberDB_ID(selectMemberID);
                                         String positionMemberID = currentParty.memberPos[gameMain.getSelectPosition()];
                                         String positionMemberDBID = null;
@@ -299,7 +341,7 @@ public class Game_Member extends Game {
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
             if (prevScrollY == scrollY) {
                 selectMemberNum = (((int) gameMain.appClass.touch.mLastTouchX - cardLeftX) / cardW)
-                        + (((int) gameMain.appClass.touch.mLastTouchY + scrollY - cardTopY) / cardH) * cardRowNum;
+                        + (((int) gameMain.appClass.touch.mLastTouchY + scrollY - cardTopY) / cardH) * maxnum_ScreenCardColum;
                 if (gameMain.userEnty.MEMBERLIST.size() < selectMemberNum) {
                     selectMemberNum = -1;
                 }
@@ -307,7 +349,7 @@ public class Game_Member extends Game {
 //                String partyID = gameMain.userEnty.Name+"_"+gameMain.getSelectPartyNum();
 
                 if (selectMemberNum > 0) {
-                    String memberID = memberList.get(selectMemberNum).memberId;
+                    String memberID = gameMain.userEnty.MEMBERLIST.get(selectMemberNum).memberId;
                     DataManager.updateUserPartyMember(gameMain.dbAdapter, memberID,
                             gameMain.userEnty.Name, gameMain.getSelectPartyNum(), gameMain.getSelectPosition());
                 }
@@ -316,18 +358,57 @@ public class Game_Member extends Game {
             }
         }
         scrollY = prevScrollY - (int) (gameMain.appClass.touch.mLastTouchY - gameMain.appClass.touch.mDownY);
-        int maxScrollY = (gameMain.userEnty.MEMBERLIST.size() / cardRowNum + 1) * (cardH + 30) - (gameMain.canvasH - cardTopY);
+
         if (maxScrollY < 0)
             maxScrollY = 0;
-        if (scrollY < 0)
+        if (scrollY < 0) {
             scrollY = 0;
-        else if (scrollY > maxScrollY)
+            curDrawCardRow = 0;
+        }else if (scrollY > maxScrollY) {
             scrollY = maxScrollY;
+            curDrawCardRow = maxScrollY/cardH;
+        }else{
+            curDrawCardRow = scrollY/cardH;
+            if(prevDrawCardRow < curDrawCardRow){
+                int loadCardNum = (prevDrawCardRow+maxnum_ScreenCardRow)*maxnum_ScreenCardColum;
+                for (int i = loadCardNum; i < maxnum_ScreenCardColum; i++) {
+                    if(cardImageList.size() <= i)
+                        break;
+                    String imgPath = "member/" + gameMain.userEnty.MEMBERLIST.get(i).image;
+                    try {
+                        cardImageList.get(i).bitmap = new LoadImageTask(gameMain.appClass,
+                                null, 2).execute(imgPath).get();
+                    } catch (Exception e) {
+                    }finally {
+                        int num = i-maxnum_ScreenCard+i;
+                        DrawUtil.recycleBitmap(cardImageList.get(num).bitmap);
+                    }
+                }
+                prevDrawCardRow = curDrawCardRow;
+            }else if(prevDrawCardRow > curDrawCardRow) {
+                int loadCardNum = (prevDrawCardRow-1)*maxnum_ScreenCardColum;
+                for (int i = loadCardNum; i < maxnum_ScreenCardColum; i++) {
+                    if(cardImageList.size() <= i)
+                        break;
+                    String imgPath = "member/" + gameMain.userEnty.MEMBERLIST.get(i).image;
+                    try {
+                        cardImageList.get(i).bitmap = new LoadImageTask(gameMain.appClass,
+                                null, 2).execute(imgPath).get();
+                    } catch (Exception e) {
+                    }finally {
+                        int num = i-maxnum_ScreenCard;
+                        DrawUtil.recycleBitmap(cardImageList.get(num).bitmap);
+                    }
+                }
+                prevDrawCardRow = curDrawCardRow;
+            }
+
+        }
 
 //        if(event.getAction() == MotionEvent.ACTION_UP) {
 //            if(prevScrollY == scrollY){
 //                selectMember = (((int)gameMain.appClass.touch.mLastTouchX-cardX) / cardW)
-//                        + (((int)gameMain.appClass.touch.mLastTouchY+scrollY-cardY)/cardH)*cardRowNum + 1;
+//                        + (((int)gameMain.appClass.touch.mLastTouchY+scrollY-cardY)/cardH)*maxnum_ScreenCardColum + 1;
 //                gameMain.userEnty.MEMBERLIST.get(selectMember).party_number = gameMain.selectCardNum;
 //                gameMain.mainButtonAct(INN.GAME_PARTY, 0);
 //                return;
@@ -343,8 +424,8 @@ public class Game_Member extends Game {
 
         /*if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
             for (int i = 0; i < memberList.size(); i++) {
-                int cx = cardX + i % cardRowNum * (cardW + 10);
-                int cy = cardY + i / cardRowNum * (cardH + 30);
+                int cx = cardX + i % maxnum_ScreenCardColum * (cardW + 10);
+                int cy = cardY + i / maxnum_ScreenCardColum * (cardH + 30);
                 if (GameUtil.equalsTouch(gameMain.appClass.touch, cx, cy, cardW, cardH)) {
 //                    gameMain.userEnty.PARTY_MEMBERID_LIST.set(gameMain.selectCardNum, memberList.get(i).memberId);
 //                    gameMain.mainButtonAct(INN.GAME_MEMBER, 0);

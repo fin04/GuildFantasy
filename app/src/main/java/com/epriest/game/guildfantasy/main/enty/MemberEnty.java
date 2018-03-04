@@ -6,8 +6,8 @@ package com.epriest.game.guildfantasy.main.enty;
 
 public class MemberEnty {
 
+    public int num;
     public String memberId;
-//    public String db_memberID;
     public String name;
     public String engname;
     public String sex;
