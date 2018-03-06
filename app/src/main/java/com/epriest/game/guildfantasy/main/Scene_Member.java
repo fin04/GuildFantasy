@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DrawFilter;
 import android.graphics.Paint;
+import android.util.Log;
 
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
@@ -58,7 +59,7 @@ public class Scene_Member extends Scene {
         int cardTextBoxY = gameMember.cardH - gameMember.cardTextBoxH - 15;
 
         int startCardNum = gameMember.curDrawCardRow*gameMember.maxnum_ScreenCardColum;
-        for (int i = startCardNum; i < startCardNum+gameMember.maxnum_ScreenCard; i++) {
+        for (int i = startCardNum; i < startCardNum+gameMember.maxnum_ScreenCard-gameMember.maxnum_ScreenCardColum; i++) {
             if(i >= gameMember.cardImageList.size())
                 break;
             MemberEnty enty = gameMember.gameMain.userEnty.MEMBERLIST.get(i);
@@ -119,6 +120,9 @@ public class Scene_Member extends Scene {
                 clipSize, clipSize, cx+clipSize, cy, gameMember.cardW-clipSize*2, clipSize);
         DrawUtil.drawClip(gameMember.img_cardBg, mCanvas, 271, 280,
                 clipSize, clipSize, cx+gameMember.cardW-clipSize, cy);
+        DrawUtil.drawBox(mCanvas, Color.YELLOW, true, cx+25, cy+25, 55, 90);
+        DrawUtil.drawString(mCanvas, "["+num+"]", 30, Color.DKGRAY, Paint.Align.LEFT, cx+30, cy+30);
+//        DrawUtil.drawString(mCanvas, "bitmap="+gameMember.cardImageList.get(num).bitmap.toString()., 30, Color.DKGRAY, Paint.Align.LEFT, cx+30, cy+50);
         //draw cardTextBox
 //        DrawUtil.drawClip(gameMember.img_cardBg, mCanvas, 35, 283,
 //                gameMember.cardTextBoxW, gameMember.cardTextBoxH, cx + 35, cy + cardTextBoxY);

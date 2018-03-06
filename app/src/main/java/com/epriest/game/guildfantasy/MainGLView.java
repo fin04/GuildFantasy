@@ -476,15 +476,15 @@ public class MainGLView extends GLView {
                 android.os.Process.killProcess(android.os.Process.myPid());
                 break;
             default:
-                appClass.gameState = INN.GAME_HOME;
-                appClass.isGameInit = true;
-                appClass.isSceneInit = true;
+                gameMain.mainButtonAct(INN.GAME_HOME);
                 break;
-            case INN.GAME_MEMBER:
-                appClass.gameState = INN.GAME_HOME;
-                appClass.isGameInit = true;
-                appClass.isSceneInit = true;
+            case INN.GAME_MEMBER_FROM_PARTY:
+                gameMain.mainButtonAct(INN.GAME_PARTY);
                 break;
+            case INN.GAME_DUNGEON:
+                gameMain.mainButtonAct(INN.GAME_QUEST);
+                break;
+
         }
     }
 

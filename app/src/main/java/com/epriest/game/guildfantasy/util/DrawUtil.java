@@ -94,6 +94,8 @@ public class DrawUtil {
                                 int clipX, int clipY, int clipW, int clipH, int drawX, int drawY) {
         if(bitmap == null)
             return;
+        if(bitmap.isRecycled())
+            return;
 //        Paint mPaint = new Paint();
 //        mPaint.setAntiAlias(true);
         Rect src = new Rect(clipX, clipY, clipX + clipW, clipY + clipH);

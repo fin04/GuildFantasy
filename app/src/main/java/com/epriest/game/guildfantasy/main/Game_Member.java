@@ -16,7 +16,9 @@ import com.epriest.game.guildfantasy.util.DrawUtil;
 import com.epriest.game.guildfantasy.util.INN;
 import com.epriest.game.guildfantasy.util.LoadImageTask;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by darka on 2017-03-26.
@@ -69,10 +71,11 @@ public class Game_Member extends Game {
      */
     public int maxnum_ScreenCardColum;
     /**
-     *화면 내의 카드 행의 최대갯수
+     * 화면 내의 카드 행의 최대갯수
      */
     public int maxnum_ScreenCardRow;
     public int maxnum_ScreenCard;
+    public int maxnum_ScrollCardRow;
     /**
      * 화면내에 그려지는 카드 행의 시작 넘버
      */
@@ -103,11 +106,12 @@ public class Game_Member extends Game {
 
         //멤버 카드 행 숫자
         maxnum_ScreenCardColum = gameMain.canvasW / cardW;
-        maxnum_ScreenCardRow = gameMain.canvasH / cardH +1;
-        maxnum_ScreenCard = maxnum_ScreenCardColum*maxnum_ScreenCardRow;
+        maxnum_ScreenCardRow = gameMain.canvasH / cardH + 1;
+        maxnum_ScreenCard = maxnum_ScreenCardColum * maxnum_ScreenCardRow;
         prevDrawCardRow = 0;
         curDrawCardRow = 0;
-        maxScrollY = (gameMain.userEnty.MEMBERLIST.size() / maxnum_ScreenCardColum + 1) * (cardH + 30) - (gameMain.canvasH - cardTopY);
+        maxnum_ScrollCardRow = memberList.size() /maxnum_ScreenCardColum +1;
+        maxScrollY = maxnum_ScrollCardRow * (cardH + 30) - (gameMain.canvasH - cardTopY);
 
 
 //        memberBitmapList = new ArrayList<>();
@@ -140,18 +144,20 @@ public class Game_Member extends Game {
             imgLoadCnt = memberList.size();
         }
         cardImageList = new ArrayList<>();
+        addButtonList = new ArrayList<>();
         for (int i = 0; i < memberList.size(); i++) {
             ButtonEnty cardBtn = new ButtonEnty();
             cardBtn.num = i;
-            if(i < imgLoadCnt) {
+            if (i < imgLoadCnt) {
                 try {
                     if (i == 0 && gameMain.appClass.gameState == INN.GAME_MEMBER_FROM_PARTY) {
                         cardBtn.bitmap = null;
-                    }else {
+                    } else {
                         cardBtn.bitmap = new LoadImageTask(gameMain.appClass, null, 2)
                                 .execute("member/" + memberList.get(i).image).get();
                     }
-                } catch (Exception e) {
+                } catch (ExecutionException e) {
+                } catch (InterruptedException e) {
                 }
             }
             cardBtn.clipX = 0;
@@ -165,7 +171,6 @@ public class Game_Member extends Game {
             if (gameMain.appClass.gameState != INN.GAME_MEMBER_FROM_PARTY)
                 continue;
 
-            addButtonList = new ArrayList<>();
             ButtonEnty mBtn = new ButtonEnty();
             if (i == 0) {
                 mBtn.clipW = exceptBtnW;
@@ -359,44 +364,54 @@ public class Game_Member extends Game {
         }
         scrollY = prevScrollY - (int) (gameMain.appClass.touch.mLastTouchY - gameMain.appClass.touch.mDownY);
 
-        if (maxScrollY < 0)
+        if (maxScrollY < 0) {
             maxScrollY = 0;
+            return;
+        }
         if (scrollY < 0) {
             scrollY = 0;
             curDrawCardRow = 0;
-        }else if (scrollY > maxScrollY) {
+        } else if (scrollY > maxScrollY) {
             scrollY = maxScrollY;
-            curDrawCardRow = maxScrollY/cardH;
-        }else{
-            curDrawCardRow = scrollY/cardH;
-            if(prevDrawCardRow < curDrawCardRow){
-                int loadCardNum = (prevDrawCardRow+maxnum_ScreenCardRow)*maxnum_ScreenCardColum;
-                for (int i = loadCardNum; i < maxnum_ScreenCardColum; i++) {
-                    if(cardImageList.size() <= i)
+            curDrawCardRow = maxScrollY / cardH;
+        } else {
+            curDrawCardRow = scrollY / cardH;
+            if (0 > curDrawCardRow) {
+                return;
+            } else if (prevDrawCardRow < curDrawCardRow && curDrawCardRow+maxnum_ScreenCardRow <= maxnum_ScrollCardRow) {
+                int loadCardCnt = (curDrawCardRow - prevDrawCardRow) * maxnum_ScreenCardColum;
+                int loadCardNum = (prevDrawCardRow + maxnum_ScreenCardRow) * maxnum_ScreenCardColum;
+                for (int i = loadCardNum; i < loadCardNum + loadCardCnt; i++) {
+                    if (cardImageList.size() <= i)
                         break;
                     String imgPath = "member/" + gameMain.userEnty.MEMBERLIST.get(i).image;
                     try {
                         cardImageList.get(i).bitmap = new LoadImageTask(gameMain.appClass,
                                 null, 2).execute(imgPath).get();
-                    } catch (Exception e) {
-                    }finally {
-                        int num = i-maxnum_ScreenCard+i;
+                    } catch (ExecutionException e) {
+                    } catch (InterruptedException e) {
+                    } finally {
+                        int num = i - maxnum_ScreenCard;
                         DrawUtil.recycleBitmap(cardImageList.get(num).bitmap);
                     }
                 }
                 prevDrawCardRow = curDrawCardRow;
-            }else if(prevDrawCardRow > curDrawCardRow) {
-                int loadCardNum = (prevDrawCardRow-1)*maxnum_ScreenCardColum;
-                for (int i = loadCardNum; i < maxnum_ScreenCardColum; i++) {
-                    if(cardImageList.size() <= i)
+            } else if (prevDrawCardRow > curDrawCardRow) {
+                int loadCardCnt = (prevDrawCardRow - curDrawCardRow) * maxnum_ScreenCardColum;
+                int loadCardNum = curDrawCardRow * maxnum_ScreenCardColum;
+                for (int i = loadCardNum; i < loadCardNum + loadCardCnt; i++) {
+                    if (cardImageList.size() <= i)
                         break;
                     String imgPath = "member/" + gameMain.userEnty.MEMBERLIST.get(i).image;
                     try {
                         cardImageList.get(i).bitmap = new LoadImageTask(gameMain.appClass,
                                 null, 2).execute(imgPath).get();
-                    } catch (Exception e) {
-                    }finally {
-                        int num = i-maxnum_ScreenCard;
+                    } catch (ExecutionException e) {
+                    } catch (InterruptedException e) {
+                    } finally {
+                        int num = i + maxnum_ScreenCard;
+                        if (num >= cardImageList.size())
+                            continue;
                         DrawUtil.recycleBitmap(cardImageList.get(num).bitmap);
                     }
                 }
