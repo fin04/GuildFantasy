@@ -39,8 +39,8 @@ public class Game_Home extends Game {
     public Bitmap img_homeBtn;
     public Bitmap img_defCha;
 
-    public GameDialog turnEndDialog;
-    public GameDialog turnStartDialog;
+    public GameDialog turnOffDialog;
+    public GameDialog turnOnDialog;
 //    public Bitmap img_char_01;
 //    private Bitmap img_card;
 
@@ -80,8 +80,8 @@ public class Game_Home extends Game {
             turnButton.drawX = canvasW - (turnButton.clipW + 5);
             turnButton.drawY = canvasH - (turnButton.clipH * 3);
 
-            turnEndDialog = new GameDialog(gameMain.appClass);
-            turnEndDialog.setOnButtonListener(new GameDialog.onClickListener() {
+            turnOffDialog = new GameDialog(gameMain.appClass);
+            turnOffDialog.setTwoButtonListener(new GameDialog.onTwoClickListener() {
                 @Override
                 public void onPositiveClick() {
                     gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
@@ -89,28 +89,26 @@ public class Game_Home extends Game {
                 }
 
                 @Override
-                public void onCancelClick() {
+                public void onNegativeClick() {
                     gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
                 }
             });
-            turnEndDialog.setTitle("다음 턴");
-            turnEndDialog.setText("현재 턴을 끝내겠습니까?");
+            turnOffDialog.setTitle("다음 턴");
+            turnOffDialog.setText("현재 턴을 끝내겠습니까?");
+            turnOffDialog.setButtonTitle("턴 종료");
+            turnOffDialog.setButtonTitle("취소");
         } catch (Exception e) {
         }
-        try {
-            turnStartDialog = new GameDialog(gameMain.appClass);
-            turnStartDialog.setOnButtonListener(new GameDialog.onClickListener() {
-                @Override
-                public void onPositiveClick() {
-                    gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
-                }
 
+        try {
+            turnOnDialog = new GameDialog(gameMain.appClass);
+            turnOnDialog.setOnButtonListener(new GameDialog.onOneClickListener() {
                 @Override
-                public void onCancelClick() {
+                public void onClick() {
                     gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
                 }
             });
-            turnStartDialog.setTitle(gameMain.userEnty.TURN + "턴 시작");
+            turnOnDialog.setTitle(gameMain.userEnty.TURN + "턴 시작");
             StringBuilder sb = new StringBuilder("Turn : ");
             sb.append(gameMain.userEnty.TURN);
             sb.append("\n");
@@ -121,7 +119,8 @@ public class Game_Home extends Game {
             sb.append("\n");
             sb.append("New Quest : ");
             sb.append(gameMain.userEnty.eventEnty.QuestIDList.size());
-            turnStartDialog.setText(sb.toString());
+            turnOnDialog.setText(sb.toString());
+            turnOffDialog.setButtonTitle("확인");
         } catch (Exception e) {
         }
     }
@@ -218,11 +217,11 @@ public class Game_Home extends Game {
             return;
 
         // 턴 종료 알림
-        if (gameMain.showAlertType == GameDialog.ALERT_TYPE_CURRENT_TURNEND) {
-            if (turnEndDialog.onTouch())
+        if (gameMain.showAlertType == GameDialog.ALERT_TYPE_CURRENT_TURNOFF) {
+            if (turnOffDialog.onTouch())
                 return;
-        }else if (gameMain.showAlertType == GameDialog.ALERT_TYPE_NEXT_TURNSTART) {
-            if (turnStartDialog.onTouch())
+        }else if (gameMain.showAlertType == GameDialog.ALERT_TYPE_NEXT_TURNON) {
+            if (turnOnDialog.onTouch())
                 return;
         }
 //
@@ -241,7 +240,7 @@ public class Game_Home extends Game {
             turnButton.clickState = ButtonEnty.ButtonClickOn;
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 turnButton.clickState = ButtonEnty.ButtonClickOff;
-                gameMain.showAlertType = GameDialog.ALERT_TYPE_CURRENT_TURNEND;
+                gameMain.showAlertType = GameDialog.ALERT_TYPE_CURRENT_TURNOFF;
 //                gameMain.alertManager.onAlertTouch();
                 return true;
             }

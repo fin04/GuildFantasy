@@ -13,6 +13,7 @@ import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 import com.epriest.game.guildfantasy.main.play.AlertManager;
 import com.epriest.game.guildfantasy.main.play.DataManager;
+import com.epriest.game.guildfantasy.main.play.GameDialog;
 import com.epriest.game.guildfantasy.util.INN;
 
 import java.util.ArrayList;
@@ -37,6 +38,10 @@ public class Game_Recruit extends Game {
     public MemberEnty recruitEnty;
     public Bitmap recruitImg;
 
+    public GameDialog summonDialog;
+    public GameDialog covenantDialog;
+    public GameDialog bondageDialog;
+
 
     public Game_Recruit(Game_Main gameMain) {
         this.gameMain = gameMain;
@@ -53,6 +58,39 @@ public class Game_Recruit extends Game {
         covenantBtn = new ButtonEnty();
         covenantBtn.bitmap = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/banner_covenant.png", null);
         setButton();
+
+        summonDialog = new GameDialog(gameMain.appClass);
+        summonDialog.setOnButtonListener(new GameDialog.onOneClickListener() {
+            @Override
+            public void onClick() {
+                gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+            }
+        });
+        summonDialog.setTitle("소환 완료");
+        summonDialog.setText("");
+        summonDialog.setButtonTitle("확인");
+
+        covenantDialog = new GameDialog(gameMain.appClass);
+        covenantDialog.setOnButtonListener(new GameDialog.onOneClickListener() {
+            @Override
+            public void onClick() {
+                gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+            }
+        });
+        covenantDialog.setTitle("계약 완료");
+        covenantDialog.setText("");
+        covenantDialog.setButtonTitle("확인");
+
+        bondageDialog = new GameDialog(gameMain.appClass);
+        bondageDialog.setOnButtonListener(new GameDialog.onOneClickListener() {
+            @Override
+            public void onClick() {
+                gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+            }
+        });
+        bondageDialog.setTitle("속박 완료");
+        bondageDialog.setText("");
+        bondageDialog.setButtonTitle("확인");
     }
 
     private void setButton() {
@@ -93,12 +131,12 @@ public class Game_Recruit extends Game {
 
     private void activeNewCard(String type) {
         if(gameMain.userEnty.MEMBERLIST.size() >= maxMember){
-//            gameMain.alertManager.showAlertType = AlertManager.ALERT_TYPE_MAXMEMBER;
+            gameMain.showAlertType = GameDialog.ALERT_TYPE_MAXMEMBER;
             return;
         }
         if (type.equals("covenant")) {
             if (gameMain.userEnty.GOLD < 10) {
-//                gameMain.alertManager.showAlertType = AlertManager.ALERT_TYPE_EMPTYGOLD;
+                gameMain.showAlertType = GameDialog.ALERT_TYPE_EMPTYGOLD;
             } else {
                 gameMain.userEnty.GOLD -= 10;
                 ArrayList<MemberEnty> entyList = DataManager.getGradeMemberDataList(gameMain.dbAdapter, "1");
@@ -106,7 +144,7 @@ public class Game_Recruit extends Game {
             }
         }else if (type.equals("summon")) {
             if(gameMain.userEnty.GEM_RED == 0 || gameMain.userEnty.GEM_GREEN == 0 || gameMain.userEnty.GEM_BLUE == 0){
-//                gameMain.alertManager.showAlertType = AlertManager.ALERT_TYPE_GEMNOTENOUGH;
+                gameMain.showAlertType = GameDialog.ALERT_TYPE_GEMNOTENOUGH;
             }else{
                 gameMain.userEnty.GEM_RED--;
                 gameMain.userEnty.GEM_GREEN--;
@@ -139,11 +177,20 @@ public class Game_Recruit extends Game {
         if (gameMain.onStatusTouch())
             return;
 
+        //소환버튼
         if (GameUtil.equalsTouch(gameMain.appClass.touch,
                 summonBtn.drawX, summonBtn.drawY, summonBtn.clipW, summonBtn.clipH)) {
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 summonBtn.clickState = ButtonEnty.ButtonClickOff;
-                activeNewCard(summonBtn.name);
+                summonDialog.setOnButtonListener(new GameDialog.onOneClickListener() {
+                    @Override
+                    public void onClick() {
+                        activeNewCard(summonBtn.name);
+                        summonDialog.setImage(recruitImg);
+                        gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+                    }
+                });
+                gameMain.showAlertType = GameDialog.ALERT_TYPE_RECRUIT_SUMMON;
                 return;
             } else {
                 summonBtn.clickState = ButtonEnty.ButtonClickOn;
@@ -153,10 +200,20 @@ public class Game_Recruit extends Game {
             summonBtn.clickState = ButtonEnty.ButtonClickOff;
         }
 
+        //속박버튼
         if (GameUtil.equalsTouch(gameMain.appClass.touch,
                 bondageBtn.drawX, bondageBtn.drawY, bondageBtn.clipW, bondageBtn.clipH)) {
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 bondageBtn.clickState = ButtonEnty.ButtonClickOff;
+                bondageDialog.setOnButtonListener(new GameDialog.onOneClickListener() {
+                    @Override
+                    public void onClick() {
+                        activeNewCard(bondageBtn.name);
+                        bondageDialog.setImage(recruitImg);
+                        gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+                    }
+                });
+                gameMain.showAlertType = GameDialog.ALERT_TYPE_RECRUIT_BONDAGE;
                 return;
             } else {
                 bondageBtn.clickState = ButtonEnty.ButtonClickOn;
@@ -166,12 +223,20 @@ public class Game_Recruit extends Game {
             bondageBtn.clickState = ButtonEnty.ButtonClickOff;
         }
 
+        //계약버튼
         if (GameUtil.equalsTouch(gameMain.appClass.touch,
                 covenantBtn.drawX, covenantBtn.drawY, covenantBtn.clipW, covenantBtn.clipH)) {
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 covenantBtn.clickState = ButtonEnty.ButtonClickOff;
-                activeNewCard(covenantBtn.name);
-
+                covenantDialog.setOnButtonListener(new GameDialog.onOneClickListener() {
+                    @Override
+                    public void onClick() {
+                        activeNewCard(covenantBtn.name);
+                        covenantDialog.setImage(recruitImg);
+                        gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+                    }
+                });
+                gameMain.showAlertType = GameDialog.ALERT_TYPE_RECRUIT_COVENANT;
                 return;
             } else {
                 covenantBtn.clickState = ButtonEnty.ButtonClickOn;

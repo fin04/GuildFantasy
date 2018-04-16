@@ -61,7 +61,7 @@ public class TurnManager {
         if (gameMain.userEnty.eventEnty.ImageList.size() > 0)
             gameMain.mainButtonAct(INN.GAME_EVENT);
         else
-            gameMain.showAlertType = GameDialog.ALERT_TYPE_NEXT_TURNSTART;
+            gameMain.showAlertType = GameDialog.ALERT_TYPE_NEXT_TURNON;
     }
 
     private void QuestLife() {

@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
+import com.epriest.game.guildfantasy.main.play.GameDialog;
 import com.epriest.game.guildfantasy.util.DrawUtil;
 
 
@@ -49,13 +50,20 @@ public class Scene_Recruit extends Scene {
 
         drawBtn(mCanvas);
 
-//        if(gameRecruit.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_GETNEWMEMBER) {
-//            gameRecruit.gameMain.alertManager.drawMemberAlert(mCanvas, gameRecruit.recruitImg, gameRecruit.recruitEnty);
-//        }else if(gameRecruit.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_EMPTYGOLD)
+        if (gameRecruit.gameMain.showAlertType == GameDialog.ALERT_TYPE_RECRUIT_SUMMON) {
+            gameRecruit.summonDialog.draw(mCanvas, gameRecruit.gameMain.img_mainBtn);
+        } else if (gameRecruit.gameMain.showAlertType == GameDialog.ALERT_TYPE_RECRUIT_BONDAGE) {
+            gameRecruit.bondageDialog.draw(mCanvas, gameRecruit.gameMain.img_mainBtn);
+        } else if (gameRecruit.gameMain.showAlertType == GameDialog.ALERT_TYPE_RECRUIT_COVENANT) {
+            gameRecruit.covenantDialog.draw(mCanvas, gameRecruit.gameMain.img_mainBtn);
+        }
+//        if(gameRecruit.gameMain.showAlertType == GameDialog.ALERT_TYPE_GETNEWMEMBER) {
+//            gameRecruit.gameMain.drawMemberAlert(mCanvas, gameRecruit.recruitImg, gameRecruit.recruitEnty);
+//        }else if(gameRecruit.gameMain.showAlertType == GameDialog.ALERT_TYPE_EMPTYGOLD) {
 //            gameRecruit.gameMain.alertManager.drawAlert(mCanvas, "", "Gold가 없습니다.");
-//        else if(gameRecruit.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_MAXMEMBER)
+//        }else if(gameRecruit.gameMain.showAlertType == GameDialog.ALERT_TYPE_MAXMEMBER) {
 //            gameRecruit.gameMain.alertManager.drawAlert(mCanvas, "", "멤버가 찼습니다.");
-//        else if(gameRecruit.gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_GEMNOTENOUGH)
+//        }else if(gameRecruit.gameMain.showAlertType == GameDialog.ALERT_TYPE_GEMNOTENOUGH){
 //            gameRecruit.gameMain.alertManager.drawAlert(mCanvas, "", "보석이 모자랍니다.");
     }
 
