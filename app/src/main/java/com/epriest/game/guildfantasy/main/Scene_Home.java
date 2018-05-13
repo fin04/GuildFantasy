@@ -50,12 +50,12 @@ public class Scene_Home extends Scene {
         gameHome.gameMain.drawStatusTab(mCanvas);
         drawMenuButton(mCanvas);
 
-        if (gameHome.gameMain.showAlertType == GameDialog.ALERT_TYPE_CURRENT_TURNOFF) {
-            gameHome.turnOffDialog.draw(mCanvas, gameHome.gameMain.img_mainBtn);
-        }else
-        if (gameHome.gameMain.showAlertType == GameDialog.ALERT_TYPE_NEXT_TURNON) {
-            gameHome.turnOnDialog.draw(mCanvas, gameHome.gameMain.img_mainBtn);
-        }
+//        if (gameHome.gameMain.showAlertType == GameDialog.ALERT_TYPE_CURRENT_TURNOFF) {
+//            gameHome.turnOffDialog.draw(mCanvas, gameHome.gameMain.img_mainBtn);
+//        }else
+//        if (gameHome.gameMain.showAlertType == GameDialog.ALERT_TYPE_NEXT_TURNON) {
+//            gameHome.turnOnDialog.draw(mCanvas, gameHome.gameMain.img_mainBtn);
+//        }
 
 
     }

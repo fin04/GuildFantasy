@@ -15,6 +15,7 @@ import com.epriest.game.guildfantasy.main.enty.ClipImageEnty;
 import com.epriest.game.guildfantasy.main.enty.ImageEnty;
 import com.epriest.game.guildfantasy.main.enty.UserEnty;
 import com.epriest.game.guildfantasy.main.play.GameDbAdapter;
+import com.epriest.game.guildfantasy.main.play.GameDialog;
 import com.epriest.game.guildfantasy.main.play.TurnManager;
 import com.epriest.game.guildfantasy.util.DrawUtil;
 import com.epriest.game.guildfantasy.util.INN;
@@ -59,6 +60,8 @@ public class Game_Main {
 
     public int canvasW, canvasH;
 
+    public GameDialog Dialog;
+
     /**
      * partyNumber.cardNumber
      */
@@ -90,6 +93,8 @@ public class Game_Main {
 
         selectCardNum = 0;
         selectPartyNum = 0;
+
+        Dialog = new GameDialog(appClass);
     }
 
     private UserEnty checkPlayerData() {
@@ -234,6 +239,11 @@ public class Game_Main {
 //    }
 
     public boolean onStatusTouch() {
+        if(Dialog.getShow()){
+            Dialog.onTouch();
+            return true;
+        }
+
         if (GameUtil.equalsTouch(appClass.touch,
                 optionBtn.drawX, optionBtn.drawY, optionBtn.clipW, optionBtn.clipH)) {
             if (appClass.touch.action == MotionEvent.ACTION_UP) {
@@ -353,6 +363,27 @@ public class Game_Main {
                         optionBtn.drawY + (optionBtn.clipH - 23) / 2);
                 break;
         }
+    }
+
+    public void onTurnStartDialog(){
+        Dialog.setPositiveButtonListener(new GameDialog.onPositiveButtonListener() {
+            @Override
+            public void onClick() {
+            }
+        });
+        StringBuilder sb = new StringBuilder("Turn : ");
+        sb.append(userEnty.TURN);
+        sb.append("\n");
+        sb.append("Clear Quest : ");
+        sb.append("\n");
+        sb.append("Income : ");
+        sb.append(userEnty.eventEnty.Gold + "Gold");
+        sb.append("\n");
+        sb.append("New Quest : ");
+        sb.append(userEnty.eventEnty.QuestIDList.size());
+        Dialog.setText(sb.toString());
+        Dialog.setPositiveBtnTitle("확인");
+        Dialog.show();
     }
 
     private void drawManager(Canvas mCanvas) {

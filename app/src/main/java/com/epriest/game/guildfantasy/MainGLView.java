@@ -339,6 +339,10 @@ public class MainGLView extends GLView {
             mScene.draw(mCanvas);
         }
 
+        if(gameMain.Dialog.getShow()){
+            gameMain.Dialog.draw(mCanvas);
+        }
+
 //		drawGuideLine(mCanvas);
 //        drawFps(mCanvas);
 //        drawTouchPoint(mCanvas);

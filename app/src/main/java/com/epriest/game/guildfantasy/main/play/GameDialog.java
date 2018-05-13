@@ -12,46 +12,52 @@ import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.util.DrawUtil;
 
-import java.util.ArrayList;
-
 /**
  * Created by darka on 2018-01-16.
  */
 
 public class GameDialog {
-    public final static int ALERT_TYPE_NONE = 0;
-    public final static int ALERT_TYPE_CURRENT_TURNOFF = 1;
-    public final static int ALERT_TYPE_NEXT_TURNON = 2;
-    public final static int ALERT_TYPE_EMPTYGOLD = 3;
-    public final static int ALERT_TYPE_GETNEWMEMBER = 4;
-    public final static int ALERT_TYPE_MAXMEMBER = 5;
-    public final static int ALERT_TYPE_GEMNOTENOUGH = 6;
-    public final static int ALERT_TYPE_VIEWMEMBER = 7;
-    public final static int ALERT_TYPE_LIMITEDPARTYMEMBER = 8;
-    public final static int ALERT_TYPE_RECRUIT_SUMMON = 11;
-    public final static int ALERT_TYPE_RECRUIT_BONDAGE = 12;
-    public final static int ALERT_TYPE_RECRUIT_COVENANT = 13;
+//    public final static int ALERT_TYPE_NONE = 0;
+//    public final static int ALERT_TYPE_CURRENT_TURNOFF = 1;
+//    public final static int ALERT_TYPE_NEXT_TURNON = 2;
+//    public final static int ALERT_TYPE_EMPTYGOLD = 3;
+//    public final static int ALERT_TYPE_GETNEWMEMBER = 4;
+//    public final static int ALERT_TYPE_MAXMEMBER = 5;
+//    public final static int ALERT_TYPE_GEMNOTENOUGH = 6;
+//    public final static int ALERT_TYPE_VIEWMEMBER = 7;
+//    public final static int ALERT_TYPE_LIMITEDPARTYMEMBER = 8;
+//    public final static int ALERT_TYPE_RECRUIT_SUMMON = 11;
+//    public final static int ALERT_TYPE_RECRUIT_BONDAGE = 12;
+//    public final static int ALERT_TYPE_RECRUIT_COVENANT = 13;
 
-    private onTwoClickListener mTwoClickListener;
-    private onOneClickListener mOneClickListener;
+    private onNegativeButtonListener mNegativeButtonListener;
+    private onPositiveButtonListener mPositiveButtonListener;
+
+    public boolean isDialogShow = false;
 
     private ApplicationClass appClass;
     private String title;
     private String text;
-    private ArrayList<String> buttonTitleList;
     private Bitmap bitmap;
     private int canvasW, canvasH;
-    private ButtonEnty alertBtn;
-    private ButtonEnty cancelBtn;
+    private ButtonEnty positiveBtn;
+    private ButtonEnty negativeBtn;
     public Bitmap img_alertBox;
 
-    public interface onTwoClickListener {
-        void onPositiveClick();
+    /**
+     * alert box의 height
+     */
+    private int img_alertBoxH = 430;
+    /**
+     * onebutton에서 쓰이는 drawX
+     */
+    private int singleBtnX;
 
-        void onNegativeClick();
+    public interface onPositiveButtonListener {
+        void onClick();
     }
 
-    public interface onOneClickListener {
+    public interface onNegativeButtonListener {
         void onClick();
     }
 
@@ -63,27 +69,25 @@ public class GameDialog {
     private void init() {
         canvasW = appClass.getGameCanvasWidth();
         canvasH = appClass.getGameCanvasHeight();
-        img_alertBox = GLUtil.loadAssetsBitmap(appClass, "main/alertbox.png", null);
+        img_alertBox = GLUtil.loadAssetsBitmap(appClass, "main/alert1.png", null);
 
-        buttonTitleList = new ArrayList<>();
+        positiveBtn = new ButtonEnty();
+        positiveBtn.clipW = 130;
+        positiveBtn.clipH = 70;
+        positiveBtn.clipX = 0;
+        positiveBtn.clipY = 431;
+        positiveBtn.drawX = canvasW / 2 - positiveBtn.clipW - 10;//(canvasW - img_alertBox.getWidth()) / 2 + img_alertBox.getWidth() - 100;
+        positiveBtn.drawY = (canvasH - img_alertBox.getHeight()) / 2 + img_alertBoxH - positiveBtn.clipH - 30;
 
-        alertBtn = new ButtonEnty();
-        alertBtn.name = "alert";
-        alertBtn.clipW = 90;
-        alertBtn.clipH = 90;
-        alertBtn.clipX = 231;
-        alertBtn.clipY = 173;
-        alertBtn.drawX = canvasW / 2 - alertBtn.clipW - 10;//(canvasW - img_alertBox.getWidth()) / 2 + img_alertBox.getWidth() - 100;
-        alertBtn.drawY = (canvasH - img_alertBox.getHeight()) / 2 + img_alertBox.getHeight() - alertBtn.clipH - 30;
+        singleBtnX = (canvasW - positiveBtn.clipW) / 2;
 
-        cancelBtn = new ButtonEnty();
-        cancelBtn.name = "cancel";
-        cancelBtn.clipW = 90;
-        cancelBtn.clipH = 90;
-        cancelBtn.clipX = 231;
-        cancelBtn.clipY = 173;
-        cancelBtn.drawX = canvasW / 2 + 10;//(canvasW - img_alertBox.getWidth()) / 2 + img_alertBox.getWidth() - alertBtn.clipW -10;
-        cancelBtn.drawY = (canvasH - img_alertBox.getHeight()) / 2 + img_alertBox.getHeight() - cancelBtn.clipH - 30;
+        negativeBtn = new ButtonEnty();
+        negativeBtn.clipW = 130;
+        negativeBtn.clipH = 70;
+        negativeBtn.clipX = 0;
+        negativeBtn.clipY = 431;
+        negativeBtn.drawX = canvasW / 2 + 10;//(canvasW - img_alertBox.getWidth()) / 2 + img_alertBox.getWidth() - positiveBtn.clipW -10;
+        negativeBtn.drawY = (canvasH - img_alertBox.getHeight()) / 2 + img_alertBoxH - negativeBtn.clipH - 30;
     }
 
     public void dissmiss() {
@@ -92,29 +96,58 @@ public class GameDialog {
     }
 
     public boolean onTouch() {
-        if (GameUtil.equalsTouch(appClass.touch,
-                alertBtn.drawX, alertBtn.drawY, alertBtn.clipW, alertBtn.clipH)) {
-            if (appClass.touch.action == MotionEvent.ACTION_UP) {
-                alertBtn.clickState = ButtonEnty.ButtonClickOff;
-                if (mOneClickListener != null)
-                    mOneClickListener.onClick();
-                else
-                    mTwoClickListener.onPositiveClick();
+        if (mPositiveButtonListener != null && mNegativeButtonListener == null) {
+            if (GameUtil.equalsTouch(appClass.touch,
+                    singleBtnX, positiveBtn.drawY, positiveBtn.clipW, positiveBtn.clipH)) {
+                if (appClass.touch.action == MotionEvent.ACTION_UP) {
+                    positiveBtn.clickState = ButtonEnty.ButtonClickOff;
+                    mPositiveButtonListener.onClick();
+                    close();
+                    return true;
+                } else {
+                    positiveBtn.clickState = ButtonEnty.ButtonClickOn;
+                }
                 return true;
-            } else {
-                alertBtn.clickState = ButtonEnty.ButtonClickOn;
             }
-        } else if (GameUtil.equalsTouch(appClass.touch,
-                cancelBtn.drawX, cancelBtn.drawY, cancelBtn.clipW, cancelBtn.clipH)) {
-            if (appClass.touch.action == MotionEvent.ACTION_UP) {
-                cancelBtn.clickState = ButtonEnty.ButtonClickOff;
-                mTwoClickListener.onNegativeClick();
+        } else if (mPositiveButtonListener == null && mNegativeButtonListener != null) {
+            if (GameUtil.equalsTouch(appClass.touch,
+                    singleBtnX, positiveBtn.drawY, positiveBtn.clipW, positiveBtn.clipH)) {
+                if (appClass.touch.action == MotionEvent.ACTION_UP) {
+                    negativeBtn.clickState = ButtonEnty.ButtonClickOff;
+                    mNegativeButtonListener.onClick();
+                    close();
+                    return true;
+                } else {
+                    negativeBtn.clickState = ButtonEnty.ButtonClickOn;
+                }
                 return true;
-            } else {
-                cancelBtn.clickState = ButtonEnty.ButtonClickOn;
             }
-        } else
-            cancelBtn.clickState = ButtonEnty.ButtonClickOn;
+        } else if ((mPositiveButtonListener != null && mNegativeButtonListener != null)) {
+            if (GameUtil.equalsTouch(appClass.touch,
+                    positiveBtn.drawX, positiveBtn.drawY, positiveBtn.clipW, positiveBtn.clipH)) {
+                if (appClass.touch.action == MotionEvent.ACTION_UP) {
+                    positiveBtn.clickState = ButtonEnty.ButtonClickOff;
+                    mPositiveButtonListener.onClick();
+                    close();
+                    return true;
+                } else {
+                    positiveBtn.clickState = ButtonEnty.ButtonClickOn;
+                }
+            } else if (GameUtil.equalsTouch(appClass.touch,
+                    negativeBtn.drawX, negativeBtn.drawY, negativeBtn.clipW, negativeBtn.clipH)) {
+                if (appClass.touch.action == MotionEvent.ACTION_UP) {
+                    negativeBtn.clickState = ButtonEnty.ButtonClickOff;
+                    mNegativeButtonListener.onClick();
+                    close();
+                    return true;
+                } else {
+                    negativeBtn.clickState = ButtonEnty.ButtonClickOn;
+                }
+            } else {
+                positiveBtn.clickState = ButtonEnty.ButtonClickOff;
+                negativeBtn.clickState = ButtonEnty.ButtonClickOff;
+            }
+        }
         return false;
     }
 
@@ -122,117 +155,130 @@ public class GameDialog {
         this.title = title;
     }
 
-    public void setImage(Bitmap bitmap) {
-        this.bitmap = bitmap;
-    }
-
     public void setText(String text) {
         this.text = text;
     }
 
-    public void setButtonTitle(String title) {
-        buttonTitleList.add(title);
+    public void setImage(Bitmap bitmap) {
+        if(bitmap != null)
+            this.bitmap = bitmap;
     }
 
-    public void setOnButtonListener(onOneClickListener listener) {
-        mOneClickListener = listener;
+    public void setPositiveBtnTitle(String title) {
+        this.positiveBtn.name = title;
     }
 
-    public void setTwoButtonListener(onTwoClickListener listener) {
-        mTwoClickListener = listener;
+    public void setNegativeBtnTitle(String title) {
+        this.negativeBtn.name = title;
     }
 
-    public void draw(Canvas mCanvas, Bitmap img_mainBtn) {
-        int canvasHalfW = canvasW/2;
-        DrawUtil.drawBox(mCanvas, Color.argb(180, 0, 0, 0), true,
+    public void setOnNegativeButtonListener(onNegativeButtonListener listener) {
+        mNegativeButtonListener = listener;
+    }
+
+    public void setPositiveButtonListener(onPositiveButtonListener listener) {
+        mPositiveButtonListener = listener;
+    }
+
+    public void show() {
+        isDialogShow = true;
+    }
+
+    public boolean getShow() {
+        return isDialogShow;
+    }
+
+    public void close(){
+        DrawUtil.recycleBitmap(bitmap);
+        title = null;
+        text = null;
+        mNegativeButtonListener = null;
+        mPositiveButtonListener = null;
+
+        isDialogShow = false;
+    }
+
+    public void draw(Canvas mCanvas) {
+        int canvasHalfW = canvasW / 2;
+        DrawUtil.drawBox(mCanvas, Color.argb(160, 0, 0, 0), true,
                 0, 0, appClass.getGameCanvasWidth(), appClass.getGameCanvasHeight());
         if (img_alertBox == null)
             return;
         int alertY = (canvasH - img_alertBox.getHeight()) / 2;
         // alert bg
-        DrawUtil.drawBitmap(img_alertBox, mCanvas, (canvasW - img_alertBox.getWidth()) / 2
-                , alertY);
+        DrawUtil.drawClip(img_alertBox, mCanvas, 0, 0, img_alertBox.getWidth(), img_alertBoxH
+                , (canvasW - img_alertBox.getWidth()) / 2, alertY);
 
-        // draw button
-        if (mOneClickListener != null) {
-            drawOneButton(mCanvas, img_mainBtn);
-        } else if (mTwoClickListener != null) {
-            drawTwoButton(mCanvas, img_mainBtn);
+        if (mPositiveButtonListener != null && mNegativeButtonListener == null) {
+            drawSingleButton(mCanvas, positiveBtn);
+        } else if (mPositiveButtonListener == null && mNegativeButtonListener != null) {
+            drawSingleButton(mCanvas, negativeBtn);
+        } else if ((mPositiveButtonListener != null && mNegativeButtonListener != null)) {
+            drawTwinButton(mCanvas, positiveBtn, negativeBtn);
         }
 
         // title
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setTextAlign(Paint.Align.CENTER);
         if (title != null) {
-            paint.setColor(Color.BLACK);
-            paint.setTextSize(30);
-            DrawUtil.drawString(mCanvas, title, paint, canvasHalfW, alertY + 35);
+            DrawUtil.drawBoldString(mCanvas, title, 30, Color.WHITE, Paint.Align.CENTER,
+                    canvasHalfW, alertY + 35);
         }
 
         // text
         if (text != null) {
-            paint.setTextAlign(Paint.Align.LEFT);
-            paint.setColor(Color.DKGRAY);
-            paint.setTextSize(30);
-            alertY = img_alertBox.getHeight() / 2 + alertY;
-            DrawUtil.drawString(mCanvas, text, paint, canvasHalfW - 150, alertY);
+            DrawUtil.drawString(mCanvas, text, 25, Color.WHITE, Paint.Align.LEFT,
+                    canvasHalfW - 150, alertY + img_alertBoxH / 2);
         }
 
         //image
-        if(bitmap != null){
+        if (bitmap == null || bitmap.isRecycled()) {}else{
             DrawUtil.drawBitmap(bitmap, mCanvas, canvasHalfW + 15, alertY + 105);
         }
     }
 
-    private void drawOneButton(Canvas mCanvas, Bitmap img_mainBtn) {
-        // alert button
-        int alertBtnClipX = alertBtn.clipX;
-        if (alertBtn.clickState == ButtonEnty.ButtonClickOn) {
-            alertBtnClipX += alertBtn.clipW;
+    private void drawSingleButton(Canvas mCanvas, ButtonEnty mBtn) {
+        int mBtnClipX = mBtn.clipX;
+        if (mBtn.clickState == ButtonEnty.ButtonClickOn) {
+            mBtnClipX += mBtn.clipW;
         }
 
-        DrawUtil.drawClip(img_mainBtn, mCanvas,
-                alertBtnClipX, alertBtn.clipY,
-                alertBtn.clipW, alertBtn.clipH, alertBtn.drawX, alertBtn.drawY);
+        DrawUtil.drawClip(img_alertBox, mCanvas,
+                mBtnClipX, mBtn.clipY,
+                mBtn.clipW, mBtn.clipH, singleBtnX, mBtn.drawY);
 
-        if (!buttonTitleList.isEmpty()) {
-            DrawUtil.drawBoldString(mCanvas, buttonTitleList.get(0), 20,
-                    Color.argb(255, 255, 255, 255),
-                    Paint.Align.CENTER, alertBtn.drawX + alertBtn.drawW / 2, alertBtn.drawY);
-        }
+        DrawUtil.drawBoldString(mCanvas, mBtn.name, 25,
+                Color.argb(255, 255, 255, 255), Paint.Align.CENTER,
+                singleBtnX + mBtn.clipW / 2, mBtn.drawY + mBtn.clipH / 3);
     }
 
-    private void drawTwoButton(Canvas mCanvas, Bitmap img_mainBtn) {
-        // alert button
-        int alertBtnClipX = alertBtn.clipX;
-        if (alertBtn.clickState == ButtonEnty.ButtonClickOn) {
-            alertBtnClipX += alertBtn.clipW;
-        }
-        DrawUtil.drawClip(img_mainBtn, mCanvas,
-                alertBtnClipX, alertBtn.clipY,
-                alertBtn.clipW, alertBtn.clipH, alertBtn.drawX, alertBtn.drawY);
-
-        int fontSize = 25;
-        if (!buttonTitleList.isEmpty()) {
-            DrawUtil.drawBoldString(mCanvas, buttonTitleList.get(0), fontSize,
-                    Color.argb(255, 255, 255, 255), Paint.Align.CENTER,
-                    alertBtn.drawX + alertBtn.clipW / 2, alertBtn.drawY + alertBtn.clipH / 3);
+    private void drawTwinButton(Canvas mCanvas, ButtonEnty mBtn1, ButtonEnty mBtn2) {
+        // positive button
+        int positiveBtnClipX = mBtn1.clipX;
+        if (positiveBtn.clickState == ButtonEnty.ButtonClickOn) {
+            positiveBtnClipX += mBtn1.clipW;
         }
 
-        // cancel button
-        int cancelBtnClipX = cancelBtn.clipX;
-        if (cancelBtn.clickState == ButtonEnty.ButtonClickOn) {
-            cancelBtnClipX += cancelBtn.clipW;
-        }
-        DrawUtil.drawClip(img_mainBtn, mCanvas,
-                cancelBtnClipX, cancelBtn.clipY,
-                cancelBtn.clipW, cancelBtn.clipH, cancelBtn.drawX, cancelBtn.drawY);
+        DrawUtil.drawClip(img_alertBox, mCanvas,
+                positiveBtnClipX, mBtn1.clipY,
+                mBtn1.clipW, mBtn1.clipH, mBtn1.drawX, mBtn1.drawY);
 
-        if (buttonTitleList.size() > 1) {
-            DrawUtil.drawBoldString(mCanvas, buttonTitleList.get(1), fontSize,
-                    Color.argb(255, 255, 255, 255), Paint.Align.CENTER,
-                    cancelBtn.drawX + cancelBtn.clipW / 2, cancelBtn.drawY + cancelBtn.clipH / 3);
+        DrawUtil.drawBoldString(mCanvas, mBtn1.name, 25,
+                Color.argb(255, 255, 255, 255), Paint.Align.CENTER,
+                mBtn1.drawX + mBtn1.clipW / 2, mBtn1.drawY + mBtn1.clipH / 3);
+
+
+        // negative button
+        int negativeBtnClipX = mBtn2.clipX;
+        if (negativeBtn.clickState == ButtonEnty.ButtonClickOn) {
+            negativeBtnClipX += mBtn2.clipW;
         }
+        DrawUtil.drawClip(img_alertBox, mCanvas,
+                negativeBtnClipX, mBtn2.clipY,
+                mBtn2.clipW, mBtn2.clipH, mBtn2.drawX, mBtn2.drawY);
+
+
+        DrawUtil.drawBoldString(mCanvas, mBtn2.name, 25,
+                Color.argb(255, 255, 255, 255), Paint.Align.CENTER,
+                mBtn2.drawX + mBtn2.clipW / 2, mBtn2.drawY + mBtn2.clipH / 3);
+
     }
 }

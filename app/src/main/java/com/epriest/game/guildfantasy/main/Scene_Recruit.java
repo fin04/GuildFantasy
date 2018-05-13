@@ -50,13 +50,13 @@ public class Scene_Recruit extends Scene {
 
         drawBtn(mCanvas);
 
-        if (gameRecruit.gameMain.showAlertType == GameDialog.ALERT_TYPE_RECRUIT_SUMMON) {
-            gameRecruit.summonDialog.draw(mCanvas, gameRecruit.gameMain.img_mainBtn);
-        } else if (gameRecruit.gameMain.showAlertType == GameDialog.ALERT_TYPE_RECRUIT_BONDAGE) {
-            gameRecruit.bondageDialog.draw(mCanvas, gameRecruit.gameMain.img_mainBtn);
-        } else if (gameRecruit.gameMain.showAlertType == GameDialog.ALERT_TYPE_RECRUIT_COVENANT) {
-            gameRecruit.covenantDialog.draw(mCanvas, gameRecruit.gameMain.img_mainBtn);
-        }
+//        if (gameRecruit.gameMain.showAlertType == GameDialog.ALERT_TYPE_RECRUIT_SUMMON) {
+//            gameRecruit.summonDialog.draw(mCanvas, gameRecruit.gameMain.img_mainBtn);
+//        } else if (gameRecruit.gameMain.showAlertType == GameDialog.ALERT_TYPE_RECRUIT_BONDAGE) {
+//            gameRecruit.bondageDialog.draw(mCanvas, gameRecruit.gameMain.img_mainBtn);
+//        } else if (gameRecruit.gameMain.showAlertType == GameDialog.ALERT_TYPE_RECRUIT_COVENANT) {
+//            gameRecruit.covenantDialog.draw(mCanvas, gameRecruit.gameMain.img_mainBtn);
+//        }
 //        if(gameRecruit.gameMain.showAlertType == GameDialog.ALERT_TYPE_GETNEWMEMBER) {
 //            gameRecruit.gameMain.drawMemberAlert(mCanvas, gameRecruit.recruitImg, gameRecruit.recruitEnty);
 //        }else if(gameRecruit.gameMain.showAlertType == GameDialog.ALERT_TYPE_EMPTYGOLD) {

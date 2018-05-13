@@ -39,8 +39,8 @@ public class Game_Home extends Game {
     public Bitmap img_homeBtn;
     public Bitmap img_defCha;
 
-    public GameDialog turnOffDialog;
-    public GameDialog turnOnDialog;
+//    public GameDialog turnOffDialog;
+//    public GameDialog turnOnDialog;
 //    public Bitmap img_char_01;
 //    private Bitmap img_card;
 
@@ -66,63 +66,20 @@ public class Game_Home extends Game {
         img_defCha = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/def_cha.png", null);
 //        img_card = GLUtil.loadAssetsBitmap(appClass, "main/membercard.png", null);
 
-
         mMainScreenY = 0;
         setMenuIcon(canvasW, canvasH);
 
-        try {
-            turnButton = new ButtonEnty();
-            turnButton.name = INN.MENU_TURNEND;
-            turnButton.clipW = 220;
-            turnButton.clipH = 150;
-            turnButton.clipX = 0;
-            turnButton.clipY = 0;
-            turnButton.drawX = canvasW - (turnButton.clipW + 5);
-            turnButton.drawY = canvasH - (turnButton.clipH * 3);
+        turnButton = new ButtonEnty();
+        turnButton.name = INN.MENU_TURNEND;
+        turnButton.clipW = 220;
+        turnButton.clipH = 150;
+        turnButton.clipX = 0;
+        turnButton.clipY = 0;
+        turnButton.drawX = canvasW - (turnButton.clipW + 5);
+        turnButton.drawY = canvasH - (turnButton.clipH * 3);
 
-            turnOffDialog = new GameDialog(gameMain.appClass);
-            turnOffDialog.setTwoButtonListener(new GameDialog.onTwoClickListener() {
-                @Override
-                public void onPositiveClick() {
-                    gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
-                    gameMain.turnManager.turnCycle(gameMain.userEnty.TURN++);
-                }
-
-                @Override
-                public void onNegativeClick() {
-                    gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
-                }
-            });
-            turnOffDialog.setTitle("다음 턴");
-            turnOffDialog.setText("현재 턴을 끝내겠습니까?");
-            turnOffDialog.setButtonTitle("턴 종료");
-            turnOffDialog.setButtonTitle("취소");
-        } catch (Exception e) {
-        }
-
-        try {
-            turnOnDialog = new GameDialog(gameMain.appClass);
-            turnOnDialog.setOnButtonListener(new GameDialog.onOneClickListener() {
-                @Override
-                public void onClick() {
-                    gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
-                }
-            });
-            turnOnDialog.setTitle(gameMain.userEnty.TURN + "턴 시작");
-            StringBuilder sb = new StringBuilder("Turn : ");
-            sb.append(gameMain.userEnty.TURN);
-            sb.append("\n");
-            sb.append("Clear Quest : ");
-            sb.append("\n");
-            sb.append("Income : ");
-            sb.append(gameMain.userEnty.eventEnty.Gold + "Gold");
-            sb.append("\n");
-            sb.append("New Quest : ");
-            sb.append(gameMain.userEnty.eventEnty.QuestIDList.size());
-            turnOnDialog.setText(sb.toString());
-            turnOffDialog.setButtonTitle("확인");
-        } catch (Exception e) {
-        }
+//        setTurnOffDialog();
+//        setTurnOnDialog();
     }
 
     private void setMenuIcon(int canvasW, int canvasH) {
@@ -160,6 +117,56 @@ public class Game_Home extends Game {
     public void gUpdate() {
 
     }
+
+//    private void setTurnOffDialog() {
+//        try {
+//            turnOffDialog = new GameDialog(gameMain.appClass);
+//            turnOffDialog.setTwoButtonListener(new GameDialog.onTwoClickListener() {
+//                @Override
+//                public void onPositiveClick() {
+//                    gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+//                    gameMain.turnManager.turnCycle(gameMain.userEnty.TURN++);
+//                }
+//
+//                @Override
+//                public void onNegativeClick() {
+//
+//                    gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+//                }
+//            });
+//            turnOffDialog.setTitle("다음 턴");
+//            turnOffDialog.setText("현재 턴을 끝내겠습니까?");
+//            turnOffDialog.setButtonTitle("턴 종료");
+//            turnOffDialog.setButtonTitle("취소");
+//        } catch (Exception e) {
+//        }
+//    }
+
+//    private void setTurnOnDialog() {
+//        try {
+//            turnOnDialog = new GameDialog(gameMain.appClass);
+//            turnOnDialog.setOnButtonListener(new GameDialog.onOneClickListener() {
+//                @Override
+//                public void onClick() {
+//                    gameMain.showAlertType = GameDialog.ALERT_TYPE_NONE;
+//                }
+//            });
+//            turnOnDialog.setTitle(gameMain.userEnty.TURN + "턴 시작");
+//            StringBuilder sb = new StringBuilder("Turn : ");
+//            sb.append(gameMain.userEnty.TURN);
+//            sb.append("\n");
+//            sb.append("Clear Quest : ");
+//            sb.append("\n");
+//            sb.append("Income : ");
+//            sb.append(gameMain.userEnty.eventEnty.Gold + "Gold");
+//            sb.append("\n");
+//            sb.append("New Quest : ");
+//            sb.append(gameMain.userEnty.eventEnty.QuestIDList.size());
+//            turnOnDialog.setText(sb.toString());
+//            turnOnDialog.setButtonTitle("확인");
+//        } catch (Exception e) {
+//        }
+//    }
 
     private void startProlog1() {
         String str = null;
@@ -215,15 +222,15 @@ public class Game_Home extends Game {
         // 턴 버튼
         if (onTurnButtonTouch())
             return;
-
-        // 턴 종료 알림
-        if (gameMain.showAlertType == GameDialog.ALERT_TYPE_CURRENT_TURNOFF) {
-            if (turnOffDialog.onTouch())
-                return;
-        }else if (gameMain.showAlertType == GameDialog.ALERT_TYPE_NEXT_TURNON) {
-            if (turnOnDialog.onTouch())
-                return;
-        }
+//
+//        // 턴 종료 알림
+//        if (gameMain.showAlertType == GameDialog.ALERT_TYPE_CURRENT_TURNOFF) {
+//            if (turnOffDialog.onTouch())
+//                return;
+//        } else if (gameMain.showAlertType == GameDialog.ALERT_TYPE_NEXT_TURNON) {
+//            if (turnOnDialog.onTouch())
+//                return;
+//        }
 //
 //        if (gameMain.alertManager.showAlertType == AlertManager.ALERT_TYPE_NEXT_TURNSTART) {
 //            if(gameMain.alertManager.onAlertTouch())
@@ -240,10 +247,26 @@ public class Game_Home extends Game {
             turnButton.clickState = ButtonEnty.ButtonClickOn;
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 turnButton.clickState = ButtonEnty.ButtonClickOff;
-                gameMain.showAlertType = GameDialog.ALERT_TYPE_CURRENT_TURNOFF;
-//                gameMain.alertManager.onAlertTouch();
+                gameMain.Dialog.setPositiveButtonListener(new GameDialog.onPositiveButtonListener() {
+                    @Override
+                    public void onClick() {
+                        gameMain.turnManager.turnCycle(gameMain.userEnty.TURN++);
+                    }
+                });
+                gameMain.Dialog.setOnNegativeButtonListener(new GameDialog.onNegativeButtonListener() {
+                    @Override
+                    public void onClick() {
+
+                    }
+                });
+                gameMain.Dialog.setTitle("다음 턴");
+                gameMain.Dialog.setText("현재 턴을 끝내겠습니까?");
+                gameMain.Dialog.setPositiveBtnTitle("턴 종료");
+                gameMain.Dialog.setNegativeBtnTitle("취소");
+                gameMain.Dialog.show();
                 return true;
             }
+
         } else {
             turnButton.clickState = ButtonEnty.ButtonClickOff;
         }
@@ -280,17 +303,17 @@ public class Game_Home extends Game {
         return false;
     }
 
-    public void onScrollBg(){
-        int bgHalfWidth = bg.getWidth()/2;
+    public void onScrollBg() {
+        int bgHalfWidth = bg.getWidth() / 2;
         if (gameMain.appClass.touch.action == MotionEvent.ACTION_DOWN) {
             prevScrollX = scrollX;
         }
         scrollX = prevScrollX - (int) (gameMain.appClass.touch.mLastTouchX - gameMain.appClass.touch.mDownX);
-        int maxScrollX = bgHalfWidth-canvasW/2;
-        int minScrollX = -bgHalfWidth+canvasW/2;
+        int maxScrollX = bgHalfWidth - canvasW / 2;
+        int minScrollX = -bgHalfWidth + canvasW / 2;
         if (scrollX < minScrollX) {
             scrollX = minScrollX;
-        }else if (scrollX > maxScrollX) {
+        } else if (scrollX > maxScrollX) {
             scrollX = maxScrollX;
         }
     }

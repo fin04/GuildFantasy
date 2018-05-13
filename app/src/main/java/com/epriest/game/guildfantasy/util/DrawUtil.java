@@ -48,7 +48,7 @@ public class DrawUtil {
         mCanvas.drawText(text, picX, picY + size, paint);
     }
 
-    static public void drawString(Canvas mCanvas, String text, int size, int color, Paint.Align align,
+/*    static public void drawString(Canvas mCanvas, String text, int size, int color, Paint.Align align,
                                   int picX, int picY) {
         Paint paint = new Paint();
         paint.setTypeface(Typeface.create(Typeface.SERIF, Typeface.NORMAL));
@@ -57,7 +57,7 @@ public class DrawUtil {
         paint.setTextAlign(align);
         paint.setAntiAlias(true);
         mCanvas.drawText(text, picX, picY + size, paint);
-    }
+    }*/
 
     static public void drawString(Canvas mCanvas, String text, Paint paint, int picX, int picY) {
         paint.setTypeface(Typeface.create(Typeface.SERIF, Typeface.NORMAL));
@@ -65,6 +65,23 @@ public class DrawUtil {
         float textSize = paint.getTextSize();
         for (int i = 0; i < strArr.length; i++) {
             mCanvas.drawText(strArr[i], picX, (i + 1) * textSize + (textSize / 4 * i) + picY, paint);
+        }
+    }
+
+
+    static public void drawString(Canvas mCanvas, String text, int textSize, int color, Paint.Align align,
+                                  int leftX, int centerY) {
+        Paint paint = new Paint();
+        paint.setColor(color);
+        paint.setTextSize(textSize);
+        paint.setTextAlign(align);
+        paint.setAntiAlias(true);
+        paint.setTypeface(Typeface.create(Typeface.SERIF, Typeface.NORMAL));
+        String[] strArr = text.split("\n");
+        int cy = (int)((strArr.length-1)*0.5*textSize);
+        for (int i = 0; i < strArr.length; i++) {
+
+            mCanvas.drawText(strArr[i], leftX, (i + 1) * textSize + (textSize / 4 * i) + centerY-cy, paint);
         }
     }
 
