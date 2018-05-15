@@ -10,7 +10,6 @@ import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 import com.epriest.game.guildfantasy.main.enty.PartyEnty;
-import com.epriest.game.guildfantasy.main.play.AlertManager;
 import com.epriest.game.guildfantasy.main.play.DataManager;
 import com.epriest.game.guildfantasy.main.play.GameDialog;
 import com.epriest.game.guildfantasy.util.INN;
