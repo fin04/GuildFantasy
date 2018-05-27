@@ -10,16 +10,14 @@ public class QuestEnty {
 	public String type;
 	public String title;
 	public String text;
+	public String time;
 	public ArrayList<String> textArr = new ArrayList<>();
     public String tip;
-	public String map;
+	public String dungeon;
 	public String image;
 	public int rewardGold;
 	public int rewardExp;
 	public int difficult;
 	public int needMember;
-	public String monster1;
-	public String monster2;
-	public int monsterLV;
 	public ButtonEnty btnEnty = new ButtonEnty();
 }

@@ -61,16 +61,12 @@ public class GameDbAdapter {
     public static final String KEY_QUESTID = "quest_id";
     public static final String KEY_QUESTTITLE = "quest_title";
     public static final String KEY_QUESTTYPE = "quest_type";
-    public static final String KEY_QUESTMAP = "quest_map";
+    public static final String KEY_QUESTDUNGEON = "quest_dungeon";
     public static final String KEY_QUESTTIME = "quest_time";
-    public static final String KEY_QUESTMONSTER1 = "quest_monster1";
-    public static final String KEY_QUESTMONSTER2 = "quest_monster2";
     public static final String KEY_QUESTDIFFICULT = "quest_difficult";
-    public static final String KEY_QUESTMONSTERLV = "quest_monsterlv";
     public static final String KEY_QUESTNEEDMEMBER = "quest_needmember";
     public static final String KEY_QUESTREWARD_GOLD = "quest_reward_gold";
     public static final String KEY_QUESTREWARD_EXP = "quest_reward_exp";
-
     public static final String KEY_QUESTIMAGENAME = "quest_image";
     public static final String KEY_QUESTTEXT = "quest_text";
 
@@ -82,6 +78,28 @@ public class GameDbAdapter {
     public static final String KEY_EVENTITEM = "event_item";
     public static final String KEY_EVENTIMAGE = "event_image";
     public static final String KEY_EVENTTEXT = "event_text";
+
+    public static final String KEY_MONSTERID = "monster_id";
+    public static final String KEY_MONSTERNAME = "monster_name";
+    public static final String KEY_MONSTERENGNAME = "monster_engname";
+    public static final String KEY_MONSTERCLASS = "monster_class";
+    public static final String KEY_MONSTERHP = "monster_hp";
+    public static final String KEY_MONSTERMP = "monster_mp";
+    public static final String KEY_MONSTERGRADE = "monster_grade";
+    public static final String KEY_MONSTERRELOAD = "monster_reload";
+//    public static final String KEY_MONSTERPROFILE = "monster_profile";
+//    public static final String KEY_MONSTERICON = "monster_icon";
+//    public static final String KEY_MONSTERIMAGENAME = "monster_imagename";
+
+    public static final String KEY_DUNGEONID = "dungeon_id";
+    public static final String KEY_DUNGEONNAME = "dungeon_name";
+    public static final String KEY_DUNGEONMAP = "dungeon_map";
+    public static final String KEY_DUNGEONTILE = "dungeon_tile";
+    public static final String KEY_DUNGEONMON1 = "dungeon_mon1";
+    public static final String KEY_DUNGEONMON2 = "dungeon_mon2";
+    public static final String KEY_DUNGEONMONBOSS = "dungeon_monboss";
+    public static final String KEY_DUNGEONMONLVMIN = "dungeon_lv_min";
+    public static final String KEY_DUNGEONMONLVMAX = "dungeon_lv_max";
 
     public static final String KEY_PLAYERID = "player_id";
     public static final String KEY_USERNAME = "player_name";
@@ -130,13 +148,15 @@ public class GameDbAdapter {
 
     private static String[] MemberColumns = new String[]{
             KEY_MEMBERID, KEY_MEMBERNAME, KEY_MEMBERENGNAME, KEY_MEMBERSEX,
-            KEY_MEMBERAGE, KEY_MEMBERRACE, KEY_MEMBERCLASS, KEY_MEMBERMERCY, KEY_MEMBERIMAGENAME, KEY_MEMBERICONID,
-            KEY_MEMBERGRADE, KEY_MEMBERRELOAD, KEY_MEMBERPROFILE, KEY_MEMBERDIALOG1
+            KEY_MEMBERAGE, KEY_MEMBERRACE, KEY_MEMBERCLASS, KEY_MEMBERMERCY,
+            KEY_MEMBERIMAGENAME, KEY_MEMBERICONID, KEY_MEMBERGRADE, KEY_MEMBERRELOAD,
+            KEY_MEMBERPROFILE, KEY_MEMBERDIALOG1
     };
 
     private static String[] ClassColumns = new String[]{
             KEY_CLASSID, KEY_CLASSNAME, KEY_CLASSSTR, KEY_CLASSDEX,
-            KEY_CLASSINT, KEY_CLASSVIT, KEY_CLASSMAINARMS, KEY_CLASSSUBARMS, KEY_CLASSHEAD, KEY_CLASSBODY
+            KEY_CLASSINT, KEY_CLASSVIT, KEY_CLASSMAINARMS, KEY_CLASSSUBARMS,
+            KEY_CLASSHEAD, KEY_CLASSBODY
     };
 
     private static String[] RaceColumns = new String[]{
@@ -145,14 +165,25 @@ public class GameDbAdapter {
     };
 
     private static String[] QuestColumns = new String[]{
-            KEY_QUESTID, KEY_QUESTTITLE, KEY_QUESTTYPE, KEY_QUESTMAP,
-            KEY_QUESTMONSTER1, KEY_QUESTMONSTER2, KEY_QUESTDIFFICULT, KEY_QUESTMONSTERLV, KEY_QUESTNEEDMEMBER,
-            KEY_QUESTREWARD_GOLD, KEY_QUESTREWARD_EXP, KEY_QUESTIMAGENAME, KEY_QUESTTEXT
+            KEY_QUESTID, KEY_QUESTTITLE, KEY_QUESTTYPE, KEY_QUESTDUNGEON,
+            KEY_QUESTTIME, KEY_QUESTDIFFICULT, KEY_QUESTNEEDMEMBER, KEY_QUESTREWARD_GOLD,
+            KEY_QUESTREWARD_EXP, KEY_QUESTIMAGENAME, KEY_QUESTTEXT
     };
 
     private static String[] EventColumns = new String[]{
             KEY_EVENTID, KEY_EVENTTURN, KEY_EVENTQUEST, KEY_EVENTMEMBER,
             KEY_EVENTGOLD, KEY_EVENTITEM, KEY_EVENTIMAGE, KEY_EVENTTEXT
+    };
+
+    private static String[] MonsterColumns = new String[]{
+            KEY_MONSTERID, KEY_MONSTERNAME, KEY_MONSTERENGNAME, KEY_MONSTERCLASS,
+            KEY_MONSTERHP, KEY_MONSTERMP, KEY_MONSTERGRADE, KEY_MONSTERRELOAD,
+//            KEY_MONSTERPROFILE, KEY_MONSTERICON, KEY_MONSTERIMAGENAME
+    };
+
+    private static String[] DungeonColumns = new String[]{
+            KEY_DUNGEONID, KEY_DUNGEONNAME, KEY_DUNGEONMAP, KEY_DUNGEONTILE, KEY_DUNGEONMON1,
+            KEY_DUNGEONMON2, KEY_DUNGEONMONBOSS, KEY_DUNGEONMONLVMIN, KEY_DUNGEONMONLVMAX
     };
 
     private static String[] PlayerMainColumns = new String[]{
@@ -172,16 +203,16 @@ public class GameDbAdapter {
     };
 
     private static String[] PlayerQuestColumns = new String[]{
-            KEY_QUESTID, KEY_USERNAME, KEY_QUESTTITLE, KEY_QUESTTYPE, KEY_QUESTMAP,
-            KEY_QUESTMONSTER1, KEY_QUESTMONSTER2, KEY_QUESTDIFFICULT, KEY_QUESTMONSTERLV, KEY_QUESTNEEDMEMBER,
-            KEY_QUESTREWARD_GOLD, KEY_QUESTREWARD_EXP, KEY_QUESTIMAGENAME, KEY_QUESTTEXT
+            KEY_QUESTID, KEY_USERNAME, KEY_QUESTTITLE, KEY_QUESTTYPE, KEY_QUESTDUNGEON,
+            KEY_QUESTDIFFICULT, KEY_QUESTNEEDMEMBER, KEY_QUESTREWARD_GOLD, KEY_QUESTREWARD_EXP,
+            KEY_QUESTIMAGENAME, KEY_QUESTTEXT
     };
 
     private static String[] PlayerPartyColumns = new String[]{
             KEY_PARTYID, KEY_PARTYTITLE, KEY_PARTYNUM, KEY_USERNAME, KEY_PARTYBIRTH,
-            KEY_QUESTID, KEY_QUESTTIME, KEY_PARTY_EXP, KEY_PARTY_GOLD, KEY_PARTYPOS_1,
-            KEY_PARTYPOS_2, KEY_PARTYPOS_3, KEY_PARTYPOS_4, KEY_PARTYPOS_5, KEY_PARTYPOS_6,
-            KEY_PARTYPOS_7, KEY_PARTYPOS_8, KEY_PARTYPOS_9
+            KEY_QUESTID, KEY_QUESTTIME, KEY_PARTY_EXP, KEY_PARTY_GOLD,
+            KEY_PARTYPOS_1, KEY_PARTYPOS_2, KEY_PARTYPOS_3, KEY_PARTYPOS_4, KEY_PARTYPOS_5,
+            KEY_PARTYPOS_6, KEY_PARTYPOS_7, KEY_PARTYPOS_8, KEY_PARTYPOS_9
     };
 
     private static final String TAG = "GameDbAdapter";
@@ -198,6 +229,8 @@ public class GameDbAdapter {
     public static final String RACE_TABLE = "race";
     public static final String QUEST_TABLE = "quest";
     public static final String EVENT_TABLE = "event";
+    public static final String MONSTER_TABLE = "monster";
+    public static final String DUNGEON_TABLE = "dungeon";
     public static final String PLAYER_MAIN_TABLE = "player_main";
     public static final String PLAYER_MEMBER_TABLE = "player_member";
     public static final String PLAYER_QUEST_TABLE = "player_quest";
@@ -221,6 +254,8 @@ public class GameDbAdapter {
             createMemberTable(db, RACE_TABLE, RaceColumns);
             createMemberTable(db, QUEST_TABLE, QuestColumns);
             createMemberTable(db, EVENT_TABLE, EventColumns);
+            createMemberTable(db, MONSTER_TABLE, MonsterColumns);
+            createMemberTable(db, DUNGEON_TABLE, DungeonColumns);
 
             createPlayerTable(db, PLAYER_MAIN_TABLE, PlayerMainColumns);
             createPlayerTable(db, PLAYER_MEMBER_TABLE, PlayerMemberColumns);
@@ -262,6 +297,10 @@ public class GameDbAdapter {
                         sheetNum = 3;
                     else if (tableName.equals(EVENT_TABLE))
                         sheetNum = 4;
+                    else if (tableName.equals(MONSTER_TABLE))
+                        sheetNum = 5;
+                    else if (tableName.equals(DUNGEON_TABLE))
+                        sheetNum = 6;
                     Sheet sheet = workbook.getSheet(sheetNum);
                     if (sheet != null) {
 
@@ -311,6 +350,8 @@ public class GameDbAdapter {
             db.execSQL("DROP TABLE IF EXISTS " + RACE_TABLE);
             db.execSQL("DROP TABLE IF EXISTS " + QUEST_TABLE);
             db.execSQL("DROP TABLE IF EXISTS " + EVENT_TABLE);
+            db.execSQL("DROP TABLE IF EXISTS " + MONSTER_TABLE);
+            db.execSQL("DROP TABLE IF EXISTS " + DUNGEON_TABLE);
             onCreate(db);
         }
     }
@@ -380,6 +421,10 @@ public class GameDbAdapter {
             return QuestColumns;
         else if (TableName.equals(EVENT_TABLE))
             return EventColumns;
+        else if (TableName.equals(MONSTER_TABLE))
+            return MonsterColumns;
+        else if (TableName.equals(DUNGEON_TABLE))
+            return DungeonColumns;
         else if (TableName.equals(PLAYER_MAIN_TABLE))
             return PlayerMainColumns;
         else if (TableName.equals(PLAYER_MEMBER_TABLE))

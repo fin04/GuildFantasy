@@ -1,5 +1,6 @@
 package com.epriest.game.guildfantasy.main;
 
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.view.MotionEvent;
@@ -7,13 +8,16 @@ import android.view.MotionEvent;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
+import com.epriest.game.guildfantasy.main.enty.DungeonEnty;
 import com.epriest.game.guildfantasy.main.enty.MapEnty;
 import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 import com.epriest.game.guildfantasy.main.enty.MonsterEnty;
 import com.epriest.game.guildfantasy.main.enty.PartyEnty;
+import com.epriest.game.guildfantasy.main.enty.QuestEnty;
 import com.epriest.game.guildfantasy.main.enty.StatusEnty;
 import com.epriest.game.guildfantasy.main.enty.UnitEnty;
 import com.epriest.game.guildfantasy.main.play.DataManager;
+import com.epriest.game.guildfantasy.main.play.GameDbAdapter;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -38,6 +42,10 @@ public class Game_Dungeon extends Game {
     public Bitmap img_mapBg;
     public Bitmap img_curTile;
 
+    private MonsterEnty monsterEnty;
+    private QuestEnty questEnty;
+    private DungeonEnty dungeonEnty;
+
     /**
      * 파티 유닛
      */
@@ -56,6 +64,9 @@ public class Game_Dungeon extends Game {
     public void gStart() {
         this.canvasW = gameMain.appClass.getGameCanvasWidth();
         this.canvasH = gameMain.appClass.getGameCanvasHeight();
+
+        questEnty = DataManager.getUserQuestEnty(gameMain.dbAdapter, gameMain.userEnty.Name, gameMain.selectQuestId);
+        dungeonEnty = DataManager.getDungeonEnty(gameMain.dbAdapter, questEnty.dungeon);
 
         // 맵 설정
         img_mapBg = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/tilemap1.png", null);
@@ -95,7 +106,7 @@ public class Game_Dungeon extends Game {
 
         // 몬스터 설정
         monsterList = new ArrayList<>();
-
+        setMonsterData();
     }
 
     @Override
@@ -170,25 +181,16 @@ public class Game_Dungeon extends Game {
         mapTotalH = mapLayer.terrainColumnList.size() * mapLayer.mTileHeightForMap;
     }
 
-    private void setTestMonsterData(){
-        int num = 3;
+    private void setMonsterData(){
+        int num = 6;
+//        String monsterId = questEnty.monster1;
+        Cursor c = gameMain.dbAdapter.getCursor(GameDbAdapter.MONSTER_TABLE, GameDbAdapter.KEY_MONSTERENGNAME, dungeonEnty.mon1);
+        String monsterId = c.getString(c.getColumnIndex(GameDbAdapter.KEY_MONSTERID));
+
         for(int i=0; i<num; i++){
-            MonsterEnty enty = new MonsterEnty();
-            enty.status = new StatusEnty();
+            MonsterEnty enty = DataManager.getMonsterEnty(gameMain.dbAdapter, monsterId);
             enty.num = i;
-            enty.name = "자이언트랫";
-            enty.race = "rat";
-            enty.memberclass = "rogue";
-            enty.reward_gold = 20;
-            enty.reward_item = "-";
-            enty.status.MAX_HP = 20;
-            enty.status.MAX_MP = 3;
-            enty.status.MAX_AP = 10;
-            enty.status.LEVEL = 1;
-            enty.status.STR = 5;
-            enty.status.DEX = 3;
-            enty.status.INT = 1;
-            enty.status.VIT = 8;
+
             monsterList.add(enty);
         }
     }
