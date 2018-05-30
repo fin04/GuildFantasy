@@ -3,14 +3,14 @@ package com.epriest.game.guildfantasy.main.enty;
 import android.graphics.Bitmap;
 
 public class UnitEnty {
-    final public int unitW = 80;
-    final public int unitH = 100;
-    final public int unitprofileW = 70;
-    final public int uinitprofileH = 80;
+    final public int unitW = 70;
+    final public int unitH = 70;
+    final public int unitprofileW = 60;
+    final public int uinitprofileH = 70;
     final public int unitbarW = 10;
-    final public int untibarH = 80;
-    final public int unitnamebarW = 80;
-    final public int unitnamebarH = 20;
+    final public int untibarH = 60;
+    final public int unitnamebarW = 70;
+    final public int unitnamebarH = 15;
     final public int unitfontsize = 15;
 
     public MemberEnty memberEnty;
@@ -28,5 +28,5 @@ public class UnitEnty {
     public int nextAxisX;
     public int nextAxisY;
 
-    public Bitmap profile;
+    public Bitmap chr_img;
 }

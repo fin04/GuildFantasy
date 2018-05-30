@@ -102,22 +102,25 @@ public class Scene_Dungeon extends Scene{
     }
 
     private void drawUnit(Canvas mCanvas, UnitEnty unitEnty){
-        int bitmapW = unitEnty.profile.getWidth();
-        int bitmapH = unitEnty.profile.getHeight();
+        int bitmapW = unitEnty.chr_img.getWidth();
+        int bitmapH = unitEnty.chr_img.getHeight();
 
         //unitBg
-        DrawUtil.drawBox(mCanvas, Color.argb(255, 60, 60, 60), true,
+        DrawUtil.drawBox(mCanvas, Color.argb(255, 200, 180, 50), true,
                 unitEnty.curAxisX, unitEnty.curAxisY, unitEnty.unitW, unitEnty.unitH);
 
         //profile
-        DrawUtil.drawClip(unitEnty.profile, mCanvas, (bitmapW - unitEnty.unitprofileW) / 2, 0,
+        DrawUtil.drawClip(unitEnty.chr_img, mCanvas, (bitmapW - unitEnty.unitprofileW) / 2, 0,
                 unitEnty.unitprofileW, unitEnty.uinitprofileH, unitEnty.curAxisX+10, unitEnty.curAxisY);
         //hp
         int hpGuage = (int)((float)unitEnty.memberEnty.status.USE_HP/(float)unitEnty.memberEnty.status.MAX_HP*unitEnty.untibarH);
         DrawUtil.drawBox(mCanvas, Color.GREEN, true, unitEnty.curAxisX, unitEnty.curAxisY+(unitEnty.untibarH-hpGuage),
                 unitEnty.unitbarW, hpGuage);
         //name
+        int nameY = unitEnty.curAxisY+unitEnty.unitH-unitEnty.unitnamebarH;
+        DrawUtil.drawBox(mCanvas, Color.argb(150, 50,50, 160), true,
+                unitEnty.curAxisX, nameY, unitEnty.unitnamebarW, unitEnty.unitnamebarH);
         DrawUtil.drawString(mCanvas, unitEnty.memberEnty.name, unitEnty.unitfontsize, Color.WHITE, Paint.Align.CENTER,
-                unitEnty.curAxisX+unitEnty.unitW/2, unitEnty.curAxisY+unitEnty.unitH-unitEnty.unitnamebarH);
+                unitEnty.curAxisX+unitEnty.unitW/2, nameY);
     }
 }

@@ -1,5 +1,7 @@
 package com.epriest.game.guildfantasy.main.enty;
 
+import android.graphics.Bitmap;
+
 public class MonsterEnty {
 
     public int num;
@@ -36,4 +38,6 @@ public class MonsterEnty {
     public int partyPos;
 
     public String skill_1;
+
+    public Bitmap mon_img;
 }

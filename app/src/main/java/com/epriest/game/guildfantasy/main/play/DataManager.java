@@ -697,7 +697,7 @@ public class DataManager {
     public static long insertUserQuest(GameDbAdapter dbAdapter, QuestEnty questEnty, String userName) {
         String TableName = GameDbAdapter.PLAYER_QUEST_TABLE;
         String[] columns = {questEnty.id, userName, questEnty.title, questEnty.type,
-                questEnty.time, questEnty.dungeon,
+                questEnty.dungeon, questEnty.time,
                 Integer.toString(questEnty.difficult), Integer.toString(questEnty.needMember),
                 Integer.toString(questEnty.rewardGold), Integer.toString(questEnty.rewardExp),
                 questEnty.image, questEnty.text};
@@ -784,5 +784,90 @@ public class DataManager {
         for (int i = 0; i < partyEnty.memberPos.length; i++) {
             values.put("party_pos" + (i + 1), partyEnty.memberPos[i]);
         }
+
+        dbAdapter.updateData(TableName, values, GameDbAdapter.KEY_PARTYNUM, partyNum);
+    }
+
+    public static void updateUserPartyMember(GameDbAdapter dbAdapter, String memberID, String userName, int partyNum, int position) {
+        String TableName = GameDbAdapter.PLAYER_PARTY_TABLE;
+        PartyEnty partyEnty = getPartyData(dbAdapter, userName, partyNum);
+
+        ContentValues values = new ContentValues();
+//        values.put(GameDbAdapter.KEY_PARTYID, partyEnty.partyId);
+        values.put(GameDbAdapter.KEY_PARTYTITLE, partyEnty.partyName);
+//        values.put(GameDbAdapter.KEY_USERNAME, userName);
+        values.put(GameDbAdapter.KEY_QUESTID, partyEnty.questId);
+        values.put(GameDbAdapter.KEY_QUESTTIME, partyEnty.questTime);
+        values.put(GameDbAdapter.KEY_PARTYBIRTH, partyEnty.birthTime);
+        values.put(GameDbAdapter.KEY_PARTY_EXP, partyEnty.party_exp);
+        values.put(GameDbAdapter.KEY_PARTY_GOLD, partyEnty.party_gold);
+        for (int i = 0; i < partyEnty.memberPos.length; i++) {
+            if (i == position) {
+                values.put("party_pos" + (i + 1), memberID);
+            } else {
+                values.put("party_pos" + (i + 1), partyEnty.memberPos[i]);
+            }
+        }
+
+        dbAdapter.updateData(TableName, values, GameDbAdapter.KEY_PARTYNUM, Integer.toString(partyNum));
+    }
+
+    /**
+     * 지정된 user data를 모두 삭제함
+     *
+     * @param playerName
+     * @return true
+     */
+    public static boolean deleteUserData(GameDbAdapter dbAdapter, String playerName) {
+        boolean delUser = dbAdapter.deleteUserROW(GameDbAdapter.PLAYER_MAIN_TABLE, -1, playerName);
+        boolean delMember = dbAdapter.deleteUserROW(GameDbAdapter.PLAYER_MEMBER_TABLE, -1, playerName);
+        boolean delQuest = dbAdapter.deleteUserROW(GameDbAdapter.PLAYER_QUEST_TABLE, -1, playerName);
+        if (!delUser || !delMember || !delQuest)
+            return false;
+        else
+            return true;
+    }
+
+    /**
+     * 해당테이블의 user의 컬럼을 모두 삭제한다.
+     *
+     * @param playerName
+     * @return true;
+     */
+    public static boolean deleteUserColumn(GameDbAdapter dbAdapter, String table, String playerName) {
+        return dbAdapter.deleteUserROW(table, -1, playerName);
+    }
+
+    /**
+     * memberID의 멤버를 삭제한다
+     *
+     * @param memberId
+     * @return true
+     */
+    public static boolean deleteUserMemberData(GameDbAdapter dbAdapter, String username, String memberId) {
+        return dbAdapter.deleteROW(GameDbAdapter.PLAYER_MEMBER_TABLE, -1, username,
+                GameDbAdapter.KEY_MEMBERID, memberId);
+    }
+
+    /**
+     * questID의 quest를 삭제한다
+     *
+     * @param questId
+     * @return true
+     */
+    public static boolean deleteUserQuest(GameDbAdapter dbAdapter, String username, String questId) {
+        return dbAdapter.deleteROW(GameDbAdapter.PLAYER_QUEST_TABLE, -1, username,
+                GameDbAdapter.KEY_QUESTID, questId);
+    }
+
+    /**
+     * partyId의 party를 삭제한다
+     *
+     * @param partyId
+     * @return true
+     */
+    public static boolean deleteUserParty(GameDbAdapter dbAdapter, String username, String partyId) {
+        return dbAdapter.deleteROW(GameDbAdapter.PLAYER_PARTY_TABLE, -1, username,
+                GameDbAdapter.KEY_PARTYID, partyId);
     }
 }

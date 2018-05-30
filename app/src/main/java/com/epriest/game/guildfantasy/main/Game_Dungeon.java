@@ -42,7 +42,6 @@ public class Game_Dungeon extends Game {
     public Bitmap img_mapBg;
     public Bitmap img_curTile;
 
-    private MonsterEnty monsterEnty;
     private QuestEnty questEnty;
     private DungeonEnty dungeonEnty;
 
@@ -88,8 +87,8 @@ public class Game_Dungeon extends Game {
             if (!id.equals("0")) {
                 UnitEnty enty = new UnitEnty();
                 String imgPath = DataManager.getMemberData(gameMain.dbAdapter, id).image;
-                enty.profile = GLUtil.loadAssetsBitmap(
-                        gameMain.appClass, "member/" + imgPath, null, 5);
+                enty.chr_img = GLUtil.loadAssetsBitmap(
+                        gameMain.appClass, "member/" + imgPath, null, 6);
                 enty.id = id;
                 enty.num = memberCnt;
                 enty.pos = i;
@@ -100,6 +99,9 @@ public class Game_Dungeon extends Game {
                 enty.curAxisY = enty.startAxisy;
                 enty.memberEnty = new MemberEnty();
                 enty.memberEnty = DataManager.getMemberData(gameMain.dbAdapter, id);
+                enty.memberEnty.status.USE_HP = enty.memberEnty.status.MAX_HP;
+                enty.memberEnty.status.USE_MP = enty.memberEnty.status.MAX_MP;
+                enty.memberEnty.status.USE_AP = enty.memberEnty.status.MAX_AP;
                 partyUnitList.add(enty);
             }
         }
