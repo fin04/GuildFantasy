@@ -41,6 +41,7 @@ public class Game_Dungeon extends Game {
 
     public Bitmap img_mapBg;
     public Bitmap img_curTile;
+    public Bitmap img_unit;
 
     private QuestEnty questEnty;
     private DungeonEnty dungeonEnty;
@@ -64,12 +65,15 @@ public class Game_Dungeon extends Game {
         this.canvasW = gameMain.appClass.getGameCanvasWidth();
         this.canvasH = gameMain.appClass.getGameCanvasHeight();
 
+        mMainScreenY = Game_Main.statusBarH;
+
         questEnty = DataManager.getUserQuestEnty(gameMain.dbAdapter, gameMain.userEnty.Name, gameMain.selectQuestId);
         dungeonEnty = DataManager.getDungeonEnty(gameMain.dbAdapter, questEnty.dungeon);
 
         // 맵 설정
         img_mapBg = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/tilemap1.png", null);
         img_curTile = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/tilecursor.png", null);
+        img_unit = GLUtil.loadAssetsBitmap(gameMain.appClass, "main/unit_1.png", null);
         setMapLayer();
         setMapInit();
 
@@ -93,8 +97,12 @@ public class Game_Dungeon extends Game {
                 enty.num = memberCnt;
                 enty.pos = i;
                 memberCnt++;
-                enty.startAxisX = enty.pos%3*enty.unitW;
-                enty.startAxisy = enty.pos/3*enty.unitH+Game_Main.statusBarH;
+//                enty.startAxisX = enty.pos%3*enty.unitW;
+//                enty.startAxisy = enty.pos/3*enty.unitH+Game_Main.statusBarH;
+
+                enty.startAxisX = enty.pos%3;
+                enty.startAxisy = mapLayer.mMapTileRowNum-enty.pos/3-3;
+
                 enty.curAxisX = enty.startAxisX;
                 enty.curAxisY = enty.startAxisy;
                 enty.memberEnty = new MemberEnty();

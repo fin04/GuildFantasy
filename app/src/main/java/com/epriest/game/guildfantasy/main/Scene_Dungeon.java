@@ -11,6 +11,8 @@ import com.epriest.game.CanvasGL.util.Scene;
 import com.epriest.game.guildfantasy.main.enty.UnitEnty;
 import com.epriest.game.guildfantasy.util.DrawUtil;
 
+import java.util.ArrayList;
+
 /**
  * Created by darka on 2018-02-01.
  */
@@ -19,6 +21,7 @@ public class Scene_Dungeon extends Scene{
     private Game_Dungeon gameDungeon;
 
     private int cursorTileAnimCnt;
+    private int tileW, tileH;
 
     public Scene_Dungeon(Game_Dungeon gameDungeon, Scene_Main sceneMain) {
         this.gameDungeon = gameDungeon;
@@ -26,7 +29,8 @@ public class Scene_Dungeon extends Scene{
 
     @Override
     public void initScene(ApplicationClass appClass) {
-
+        tileW = gameDungeon.mapLayer.getTileWidth();
+        tileH = gameDungeon.mapLayer.getTileHeight();
     }
 
     @Override
@@ -41,7 +45,8 @@ public class Scene_Dungeon extends Scene{
 
     @Override
     public void draw(Canvas mCanvas) {
-        DrawUtil.drawBox(mCanvas, Color.BLUE, true, 0, 0, gameDungeon.canvasW, gameDungeon.canvasH);
+        DrawUtil.drawBox(mCanvas, Color.argb(255, 40,60,60), true,
+                0, 0, gameDungeon.canvasW, gameDungeon.canvasH);
 
         //map draw
         drawMap(mCanvas);
@@ -56,28 +61,23 @@ public class Scene_Dungeon extends Scene{
     }
 
     private void drawMap(Canvas mCanvas) {
-        int tileW = gameDungeon.mapLayer.getTileWidth();
-        int tileH = gameDungeon.mapLayer.getTileHeight();
-        int row = gameDungeon.mapLayer.mMapTileRowNum;
-        int column = gameDungeon.mapLayer.mMapTileColumnNum;
-        int mapLeftTileNum = gameDungeon.mapLayer.LeftTopTileNum.x;
-        int mapTopTileNum = gameDungeon.mapLayer.LeftTopTileNum.y;
-        int tempW = tileW / 2; // Hex DrawX per Line
-        int tempH = gameDungeon.mapLayer.mTileHeightForMap; // Hex DrawY per Line
-        int startY = gameDungeon.mMainScreenY - (tileH / 4) - gameDungeon.mapLayer.mMapAxis.y;
 
-        for (int i = mapTopTileNum; i < column + mapTopTileNum; i++) {
-            int startX = gameDungeon.mapLayer.mMapAxis.x;
-            if (i % 2 == 0)
-                startX = gameDungeon.mapLayer.mMapAxis.x - tempW;
-            int drawY = i * tempH + startY;
+        for (int i = gameDungeon.mapLayer.LeftTopTileNum.y;
+             i < gameDungeon.mapLayer.mMapTileColumnNum + gameDungeon.mapLayer.LeftTopTileNum.y; i++) {
 
-            for (int j = mapLeftTileNum; j < row + mapLeftTileNum; j++) {
-                int drawX = j * tileW + startX;
+            for (int j = gameDungeon.mapLayer.LeftTopTileNum.x;
+                 j < gameDungeon.mapLayer.mMapTileRowNum + gameDungeon.mapLayer.LeftTopTileNum.x; j++) {
+
+                int[] hexaAxis = hexaDrawX(j, i);
+
                 int mapNum = gameDungeon.mapLayer.terrainColumnList.get(i)[j] - 1;
                 int buildNum = gameDungeon.mapLayer.buildiingColumnList.get(i)[j] - 1;
-                CanvasUtil.drawClip(gameDungeon.img_mapBg, mCanvas, (mapNum % 4) * tileW, (mapNum / 4) * tileH, tileW, tileH, drawX, drawY);
-                CanvasUtil.drawClip(gameDungeon.img_mapBg, mCanvas, (buildNum % 4) * tileW, (buildNum / 4) * tileH, tileW, tileH, drawX, drawY);
+                CanvasUtil.drawClip(gameDungeon.img_mapBg, mCanvas,
+                        (mapNum % 4) * tileW, (mapNum / 4) * tileH,
+                        tileW, tileH, hexaAxis[0], hexaAxis[1]);
+                CanvasUtil.drawClip(gameDungeon.img_mapBg, mCanvas,
+                        (buildNum % 4) * tileW, (buildNum / 4) * tileH,
+                        tileW, tileH, hexaAxis[0], hexaAxis[1]);
             }
         }
     }
@@ -102,25 +102,48 @@ public class Scene_Dungeon extends Scene{
     }
 
     private void drawUnit(Canvas mCanvas, UnitEnty unitEnty){
-        int bitmapW = unitEnty.chr_img.getWidth();
-        int bitmapH = unitEnty.chr_img.getHeight();
+        int chrImgW = unitEnty.chr_img.getWidth();
+        int chrImgH = unitEnty.chr_img.getHeight();
+
+//        int drawX = unitEnty.curAxisX * tileW;
+//        int drawY = unitEnty.curAxisY * tileH;
+
+        int[] drawAxis = hexaDrawX(unitEnty.curAxisX, unitEnty.curAxisY);
 
         //unitBg
-        DrawUtil.drawBox(mCanvas, Color.argb(255, 200, 180, 50), true,
-                unitEnty.curAxisX, unitEnty.curAxisY, unitEnty.unitW, unitEnty.unitH);
+        DrawUtil.drawBitmap(gameDungeon.img_unit, mCanvas, drawAxis[0]+=(tileW-unitEnty.unitW)/2, drawAxis[1]+=(tileH-unitEnty.unitH)/2);
 
         //profile
-        DrawUtil.drawClip(unitEnty.chr_img, mCanvas, (bitmapW - unitEnty.unitprofileW) / 2, 0,
-                unitEnty.unitprofileW, unitEnty.uinitprofileH, unitEnty.curAxisX+10, unitEnty.curAxisY);
+        DrawUtil.drawClip(unitEnty.chr_img, mCanvas, (chrImgW - unitEnty.unitprofileW) / 2, 0,
+                unitEnty.unitprofileW, unitEnty.uinitprofileH, drawAxis[0]+10, drawAxis[1]);
         //hp
         int hpGuage = (int)((float)unitEnty.memberEnty.status.USE_HP/(float)unitEnty.memberEnty.status.MAX_HP*unitEnty.untibarH);
-        DrawUtil.drawBox(mCanvas, Color.GREEN, true, unitEnty.curAxisX, unitEnty.curAxisY+(unitEnty.untibarH-hpGuage),
+        DrawUtil.drawBox(mCanvas, Color.GREEN, true, drawAxis[0]+1, drawAxis[1]+(unitEnty.untibarH-hpGuage),
                 unitEnty.unitbarW, hpGuage);
         //name
-        int nameY = unitEnty.curAxisY+unitEnty.unitH-unitEnty.unitnamebarH;
+        int nameY = drawAxis[1]+unitEnty.unitH-unitEnty.unitnamebarH;
         DrawUtil.drawBox(mCanvas, Color.argb(150, 50,50, 160), true,
-                unitEnty.curAxisX, nameY, unitEnty.unitnamebarW, unitEnty.unitnamebarH);
+                drawAxis[0], nameY, unitEnty.unitnamebarW, unitEnty.unitnamebarH);
         DrawUtil.drawString(mCanvas, unitEnty.memberEnty.name, unitEnty.unitfontsize, Color.WHITE, Paint.Align.CENTER,
-                unitEnty.curAxisX+unitEnty.unitW/2, nameY);
+                drawAxis[0]+unitEnty.unitW/2, nameY);
+    }
+
+    private int[] hexaDrawX(int hexaX, int hexaY){
+        int[] drawAxis = new int[2];
+        int startX = gameDungeon.mapLayer.mMapAxis.x;
+        if (hexaY % 2 == 0)
+            startX = gameDungeon.mapLayer.mMapAxis.x - (tileW / 2);
+        drawAxis[0] = hexaX * tileW + startX;
+        drawAxis[1] = hexaY * gameDungeon.mapLayer.mTileHeightForMap + gameDungeon.mMainScreenY;
+        return drawAxis;
+    }
+
+    private boolean isZOC(int hexaX, int hexaY, int targetX, int targetY){
+        if(hexaY < targetY-1 || hexaY > targetY+1){} else{
+            if(hexaX < targetX-1 || hexaX > targetX+1){}else{
+                return true;
+            }
+        }
+        return false;
     }
 }
