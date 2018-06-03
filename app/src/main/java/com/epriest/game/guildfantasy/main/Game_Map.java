@@ -78,7 +78,7 @@ public class Game_Map extends Game {
         mapLayer.terrainColumnList = new ArrayList<>();
         mapLayer.buildiingColumnList = new ArrayList<>();
         mapLayer.cursor = new MapEnty.CursorTile();
-        mapLayer.cursor.point = new Point();
+//        mapLayer.cursor.point = new Point();
         mapLayer.cursor.curTile = new Point();
         int rowNum = mapLayer.getLayers().get(0).getWidth();
         int columnNum = mapLayer.getLayers().get(0).getHeight();
@@ -116,12 +116,12 @@ public class Game_Map extends Game {
 
     @Override
     public void gUpdate() {
-        switch(mapLayer.cursor.state){
-            case Game_Map.MAPTILE_TOWN:
-                break;
-            default:
-                break;
-        }
+//        switch(mapLayer.cursor.state){
+//            case Game_Map.MAPTILE_TOWN:
+//                break;
+//            default:
+//                break;
+//        }
     }
 
     @Override
@@ -165,35 +165,35 @@ public class Game_Map extends Game {
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-                if (hasTouchMap && mapLayer.isClick) {
-                    mapLayer.cursor.point.x = (int)gameMain.appClass.touch.mLastTouchX - mapLayer.mMapAxis.x;
-                    mapLayer.cursor.point.y = (int)gameMain.appClass.touch.mLastTouchY +
-                            mapLayer.mMapAxis.y - mMapScreenTop;
-                    mapLayer.getTileNum(mapLayer.cursor.curTile,
-                            mapLayer.cursor.point.x, mapLayer.cursor.point.y);
-
-                    mapLayer.cursor.tileNum = mapLayer.buildiingColumnList.get(
-                            mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x]-1;
-                    if(mapLayer.cursor.tileNum == -1)
-                        mapLayer.cursor.tileNum = mapLayer.terrainColumnList.get(
-                                mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x]-1;
-
-//                            gameMain.mapLayer.cursor.tileNum = gameMain.mapLayer.buildiingColumnList.get(
-//                                    gameMain.mapLayer.cursor.curTile.y)[gameMain.mapLayer.cursor.curTile.x] - 1;
-//                    if(gameMain.mapLayer.cursor.tileNum > 12 )
-                    mapLayer.cursor.state = mapLayer.cursor.tileNum;
-//                    else
-//                        gameMain.mapLayer.cursor.state = -1;
-                    switch(mapLayer.cursor.state) {
-                        case Game_Map.MAPTILE_TOWN:
-                            //temp party list에서 파티리스트를 불러온다
-                            break;
-                        default:
-                            break;
-                    }
-
-                }
-                mapLayer.isClick = false;
+//                if (hasTouchMap && mapLayer.isClick) {
+//                    mapLayer.cursor.point.x = (int)gameMain.appClass.touch.mLastTouchX - mapLayer.mMapAxis.x;
+//                    mapLayer.cursor.point.y = (int)gameMain.appClass.touch.mLastTouchY +
+//                            mapLayer.mMapAxis.y - mMapScreenTop;
+//                    mapLayer.getTileNum(mapLayer.cursor.curTile,
+//                            mapLayer.cursor.point.x, mapLayer.cursor.point.y);
+//
+//                    mapLayer.cursor.tileNum = mapLayer.buildiingColumnList.get(
+//                            mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x]-1;
+//                    if(mapLayer.cursor.tileNum == -1)
+//                        mapLayer.cursor.tileNum = mapLayer.terrainColumnList.get(
+//                                mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x]-1;
+//
+////                            gameMain.mapLayer.cursor.tileNum = gameMain.mapLayer.buildiingColumnList.get(
+////                                    gameMain.mapLayer.cursor.curTile.y)[gameMain.mapLayer.cursor.curTile.x] - 1;
+////                    if(gameMain.mapLayer.cursor.tileNum > 12 )
+//                    mapLayer.cursor.state = mapLayer.cursor.tileNum;
+////                    else
+////                        gameMain.mapLayer.cursor.state = -1;
+//                    switch(mapLayer.cursor.state) {
+//                        case Game_Map.MAPTILE_TOWN:
+//                            //temp party list에서 파티리스트를 불러온다
+//                            break;
+//                        default:
+//                            break;
+//                    }
+//
+//                }
+//                mapLayer.isClick = false;
                 break;
         }
     }

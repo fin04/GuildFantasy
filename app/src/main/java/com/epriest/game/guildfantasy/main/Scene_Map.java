@@ -68,13 +68,13 @@ public class Scene_Map extends Scene {
         DrawUtil.drawString(mCanvas, curStr, 20, Color.argb(200,50,50,50), Paint.Align.RIGHT,
                 20, 8);
 
-        switch (gameMap.mapLayer.cursor.state ) {
-            case Game_Map.MAPTILE_TOWN:
-                drawPartyControl(mCanvas);
-                break;
-            default:
-                break;
-        }
+//        switch (gameMap.mapLayer.cursor.state ) {
+//            case Game_Map.MAPTILE_TOWN:
+//                drawPartyControl(mCanvas);
+//                break;
+//            default:
+//                break;
+//        }
 
         gameMap.gameMain.drawStatusTab(mCanvas);
     }

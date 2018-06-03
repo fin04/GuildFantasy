@@ -103,10 +103,10 @@ public class MapEnty {
     }
 
     public static class CursorTile{
-        public Point point;
+//        public Point point;
         public Point curTile;
         public int tileNum;
         public int animCnt;
-        public int state;
+//        public int state;
     }
 }
