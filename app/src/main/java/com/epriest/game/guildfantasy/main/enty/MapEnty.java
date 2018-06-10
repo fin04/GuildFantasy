@@ -35,8 +35,17 @@ public class MapEnty {
             return mapList;
         }
 
+        public String tileImageName;
+
+        /**
+         * 맵 지형의 컬럼 리스트
+         */
         public ArrayList<int[]> terrainColumnList;
-        public ArrayList<int[]> buildiingColumnList;
+
+        /**
+         * 맵 오브젝트의 컬럼 리스트
+         */
+        public ArrayList<int[]> objectColumnList;
 
         public int mMapTileRowNum;
         public int mMapTileColumnNum;
@@ -73,7 +82,7 @@ public class MapEnty {
         private String height;
 
         @SerializedName("data")
-        private List<Integer> layer = new ArrayList<Integer>();
+        private List<Integer> map = new ArrayList<Integer>();
 
         @SerializedName("x")
         private String x;
@@ -90,7 +99,7 @@ public class MapEnty {
         }
 
         public List<Integer> getDataList() {
-            return layer;
+            return map;
         }
 
         public int getX() {

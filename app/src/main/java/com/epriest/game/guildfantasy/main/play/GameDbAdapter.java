@@ -79,17 +79,17 @@ public class GameDbAdapter {
     public static final String KEY_EVENTIMAGE = "event_image";
     public static final String KEY_EVENTTEXT = "event_text";
 
-    public static final String KEY_MONSTERID = "monster_id";
-    public static final String KEY_MONSTERNAME = "monster_name";
-    public static final String KEY_MONSTERENGNAME = "monster_engname";
-    public static final String KEY_MONSTERCLASS = "monster_class";
-    public static final String KEY_MONSTERHP = "monster_hp";
-    public static final String KEY_MONSTERMP = "monster_mp";
-    public static final String KEY_MONSTERGRADE = "monster_grade";
-    public static final String KEY_MONSTERRELOAD = "monster_reload";
-//    public static final String KEY_MONSTERPROFILE = "monster_profile";
-//    public static final String KEY_MONSTERICON = "monster_icon";
-//    public static final String KEY_MONSTERIMAGENAME = "monster_imagename";
+    public static final String KEY_MONSTER_ID = "monster_id";
+    public static final String KEY_MONSTER_NAME = "monster_name";
+    public static final String KEY_MONSTER_ENGNAME = "monster_engname";
+    public static final String KEY_MONSTER_CLASS = "monster_class";
+    public static final String KEY_MONSTER_HP = "monster_hp";
+    public static final String KEY_MONSTER_MP = "monster_mp";
+    public static final String KEY_MONSTER_GRADE = "monster_grade";
+    public static final String KEY_MONSTER_RELOAD = "monster_reload";
+    public static final String KEY_MONSTER_PROFILE = "monster_profile";
+    public static final String KEY_MONSTER_ICON = "monster_icon";
+    public static final String KEY_MONSTER_IMAGENAME = "monster_imagename";
 
     public static final String KEY_DUNGEONID = "dungeon_id";
     public static final String KEY_DUNGEONNAME = "dungeon_name";
@@ -176,9 +176,9 @@ public class GameDbAdapter {
     };
 
     private static String[] MonsterColumns = new String[]{
-            KEY_MONSTERID, KEY_MONSTERNAME, KEY_MONSTERENGNAME, KEY_MONSTERCLASS,
-            KEY_MONSTERHP, KEY_MONSTERMP, KEY_MONSTERGRADE, KEY_MONSTERRELOAD,
-//            KEY_MONSTERPROFILE, KEY_MONSTERICON, KEY_MONSTERIMAGENAME
+            KEY_MONSTER_ID, KEY_MONSTER_NAME, KEY_MONSTER_ENGNAME, KEY_MONSTER_CLASS,
+            KEY_MONSTER_HP, KEY_MONSTER_MP, KEY_MONSTER_GRADE, KEY_MONSTER_RELOAD,
+            KEY_MONSTER_IMAGENAME, KEY_MONSTER_PROFILE//, KEY_MONSTER_ICON,
     };
 
     private static String[] DungeonColumns = new String[]{

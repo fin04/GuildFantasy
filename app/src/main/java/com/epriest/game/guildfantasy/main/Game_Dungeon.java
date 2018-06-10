@@ -76,7 +76,7 @@ public class Game_Dungeon extends Game {
         dungeonEnty = DataManager.getDungeonEnty(gameMain.dbAdapter, questEnty.dungeon);
 
         // 맵 설정
-        img_mapBg = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/tilemap1.png", null);
+        img_mapBg = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/tilemap01.png", null);
         img_curTile = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/tilecursor.png", null);
         img_unit = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/unit.png", null);
         img_zoc = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/areahexa.png", null);
@@ -102,11 +102,11 @@ public class Game_Dungeon extends Game {
     }
 
     private void setMapLayer() {
-        String jsonStr = GameUtil.getAssetString(gameMain.appClass.getBaseContext(), "map/stage01.json");
+        String jsonStr = GameUtil.getAssetString(gameMain.appClass.getBaseContext(), "map/stage02.json");
         Gson gson = new Gson();
         mapLayer = gson.fromJson(jsonStr, MapEnty.MapLayer.class);
         mapLayer.terrainColumnList = new ArrayList<>();
-        mapLayer.buildiingColumnList = new ArrayList<>();
+        mapLayer.objectColumnList = new ArrayList<>();
         mapLayer.cursor = new MapEnty.CursorTile();
 //        mapLayer.cursor.point = new Point();
         mapLayer.cursor.curTile = new Point();
@@ -125,7 +125,7 @@ public class Game_Dungeon extends Game {
                 }
                 if (j == rowNum - 1) {
                     mapLayer.terrainColumnList.add(mRowArray_t);
-                    mapLayer.buildiingColumnList.add(mRowArray_b);
+                    mapLayer.objectColumnList.add(mRowArray_b);
                 }
             }
         }
@@ -162,7 +162,7 @@ public class Game_Dungeon extends Game {
         mapTotalH = mapLayer.terrainColumnList.size() * mapLayer.mTileHeightForMap;
     }
 
-    private void setUnitData(){
+    private void setUnitData() {
         partyUnitList = new ArrayList<>();
 
         PartyEnty currentParty = DataManager.getPartyData(
@@ -200,78 +200,94 @@ public class Game_Dungeon extends Game {
 
     private void setMonsterData() {
         monsterList = new ArrayList<>();
-        int num = 6;
-//        String monsterId = questEnty.monster1;
-        Cursor c = gameMain.dbAdapter.getCursor(GameDbAdapter.MONSTER_TABLE, GameDbAdapter.KEY_MONSTERENGNAME, dungeonEnty.mon1);
-        String monsterId = c.getString(c.getColumnIndex(GameDbAdapter.KEY_MONSTERID));
-
-        for (int i = 0; i < num; i++) {
-            MonsterEnty enty = DataManager.getMonsterEnty(gameMain.dbAdapter, monsterId);
-            enty.num = i;
-
-            monsterList.add(enty);
+        int num = 0;
+        for (int i = 0; i < mapLayer.objectColumnList.size(); i++) {
+            int[] arr = mapLayer.objectColumnList.get(i);
+            for (int j = 0; j < arr.length; j++) {
+                if (arr[j] == 18 || arr[j] == 19 || arr[j] == 20) {
+                    String name = null;
+                    if (arr[j] == 18) {
+                        name = dungeonEnty.mon2;
+                    } else if (arr[j] == 19) {
+                        name = dungeonEnty.mon1;
+                    } else if (arr[j] == 20) {
+                        name = dungeonEnty.monboss;
+                    }
+                    Cursor c = gameMain.dbAdapter.getCursor(GameDbAdapter.MONSTER_TABLE, GameDbAdapter.KEY_MONSTER_ENGNAME, name);
+                    String monsterId = c.getString(c.getColumnIndex(GameDbAdapter.KEY_MONSTER_ID));
+                    MonsterEnty enty = DataManager.getMonsterEnty(gameMain.dbAdapter, monsterId);
+                    enty.mon_img = GLUtil.loadAssetsBitmap(
+                            gameMain.appClass, "mon/" + enty.image, null, 1);
+                    enty.num = num;
+                    enty.startAxisX = j;
+                    enty.startAxisy = i;
+                            monsterList.add(enty);
+                    num++;
+                }
+            }
         }
     }
 
     /**
      * ZOC를 체크
+     *
      * @param hexaX
      * @param hexaY
      * @return
      */
-    private ArrayList<HexaEnty> checkZOC(int hexaX, int hexaY){
+    private ArrayList<HexaEnty> checkZOC(int hexaX, int hexaY) {
         ArrayList<HexaEnty> hexaList = new ArrayList<>();
         HexaEnty enty = new HexaEnty();
         enty.num = 0;
-        enty.x = hexaX-1;
+        enty.x = hexaX - 1;
         enty.y = hexaY;
         hexaList.add(enty);
 
         enty = new HexaEnty();
         enty.num = 1;
-        if(hexaY%2 == 0){
-            enty.x = hexaX-1;
-        }else{
+        if (hexaY % 2 == 0) {
+            enty.x = hexaX - 1;
+        } else {
             enty.x = hexaX;
         }
-        enty.y = hexaY+1;
+        enty.y = hexaY + 1;
         hexaList.add(enty);
 
         enty = new HexaEnty();
         enty.num = 2;
-        if(hexaY%2 == 0){
+        if (hexaY % 2 == 0) {
             enty.x = hexaX;
-        }else{
-            enty.x = hexaX+1;
+        } else {
+            enty.x = hexaX + 1;
         }
 
-        enty.y = hexaY+1;
+        enty.y = hexaY + 1;
         hexaList.add(enty);
 
         enty = new HexaEnty();
         enty.num = 3;
-        enty.x = hexaX+1;
+        enty.x = hexaX + 1;
         enty.y = hexaY;
         hexaList.add(enty);
 
         enty = new HexaEnty();
         enty.num = 4;
-        if(hexaY%2 == 0){
+        if (hexaY % 2 == 0) {
             enty.x = hexaX;
-        }else{
-            enty.x = hexaX+1;
+        } else {
+            enty.x = hexaX + 1;
         }
-        enty.y = hexaY-1;
+        enty.y = hexaY - 1;
         hexaList.add(enty);
 
         enty = new HexaEnty();
         enty.num = 5;
-        if(hexaY%2 == 0){
-            enty.x = hexaX-1;
-        }else{
+        if (hexaY % 2 == 0) {
+            enty.x = hexaX - 1;
+        } else {
             enty.x = hexaX;
         }
-        enty.y = hexaY-1;
+        enty.y = hexaY - 1;
         hexaList.add(enty);
 
         return hexaList;
@@ -301,16 +317,21 @@ public class Game_Dungeon extends Game {
 
                 if (hasTouchMap) {
                     mapLayer.mMapAxis.x = (int) (gameMain.appClass.touch.mPosX);
-                    if (mapLayer.mMapAxis.x > 0)
-                        mapLayer.mMapAxis.x = 0;
-                    else if (mapLayer.mMapAxis.x < (mapTotalW - mapDrawW) * -1)
+                    if (mapLayer.mMapAxis.x > 0) {
+                        gameMain.appClass.touch.mPosX = 0;
+                    }else if (mapLayer.mMapAxis.x < (mapTotalW - mapDrawW) * -1) {
+                        gameMain.appClass.touch.mPosX = (mapTotalW - mapDrawW) * -1;
                         mapLayer.mMapAxis.x = (mapTotalW - mapDrawW) * -1;
+                    }
 
                     mapLayer.mMapAxis.y = (int) (gameMain.appClass.touch.mPosY);
-                    if (mapLayer.mMapAxis.y < 0)
-                        mapLayer.mMapAxis.y = 0;
-                    else if (mapLayer.mMapAxis.y > mapTotalH - mapDrawH)
-                        mapLayer.mMapAxis.y = mapTotalH - mapDrawH;
+                    if (mapLayer.mMapAxis.y < 0) {
+                        gameMain.appClass.touch.mPosY = 0;
+                    }else if (mapLayer.mMapAxis.y > mapTotalH - mapDrawH) {
+                        gameMain.appClass.touch.mPosY = mapTotalH - mapDrawH;
+                    }
+                    mapLayer.mMapAxis.x = (int)gameMain.appClass.touch.mPosX;
+                    mapLayer.mMapAxis.y = (int)gameMain.appClass.touch.mPosY;
 
                     mapLayer.getTileNum(mapLayer.LeftTopTileNum,
                             mapLayer.mMapAxis.x, mapLayer.mMapAxis.y);
@@ -327,7 +348,7 @@ public class Game_Dungeon extends Game {
                     mapLayer.getTileNum(mapLayer.cursor.curTile, x, y);
 
                     // 커서가 위치할 타일의 타입(넘버) 체크
-                    mapLayer.cursor.tileNum = mapLayer.buildiingColumnList.get(
+                    mapLayer.cursor.tileNum = mapLayer.objectColumnList.get(
                             mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x] - 1;
                     if (mapLayer.cursor.tileNum == -1)
                         mapLayer.cursor.tileNum = mapLayer.terrainColumnList.get(
@@ -343,9 +364,9 @@ public class Game_Dungeon extends Game {
 
                     // 유닛이 선택될 경우 zoc 체크
                     unitZocList = null;
-                    for(UnitEnty unitEnty : partyUnitList){
-                        if(mapLayer.cursor.curTile.x == unitEnty.curAxisX &&
-                                mapLayer.cursor.curTile.y == unitEnty.curAxisY){
+                    for (UnitEnty unitEnty : partyUnitList) {
+                        if (mapLayer.cursor.curTile.x == unitEnty.curAxisX &&
+                                mapLayer.cursor.curTile.y == unitEnty.curAxisY) {
                             unitZocList = checkZOC(unitEnty.curAxisX, unitEnty.curAxisY);
                             break;
                         }

@@ -106,7 +106,7 @@ public class DataManager {
      * @return cursor
      */
     public static Cursor getMonsterCursor(GameDbAdapter dbAdapter, String monsterID) {
-        return dbAdapter.getCursor(GameDbAdapter.MONSTER_TABLE, GameDbAdapter.KEY_MONSTERID, monsterID);
+        return dbAdapter.getCursor(GameDbAdapter.MONSTER_TABLE, GameDbAdapter.KEY_MONSTER_ID, monsterID);
     }
 
     /**
@@ -242,21 +242,22 @@ public class DataManager {
         MonsterEnty enty = new MonsterEnty();
         enty.status = new StatusEnty();
         Cursor cursor = getMonsterCursor(dbAdapter, monsterID);
-        enty.monsterId = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTERID));
-        enty.name = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTERNAME));
-        enty.engname = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTERENGNAME));
-        String _class = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTERCLASS));
+        enty.monsterId = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTER_ID));
+        enty.name = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTER_NAME));
+        enty.engname = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTER_ENGNAME));
+        String _class = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTER_CLASS));
         Cursor _cursor = getClassCursor(dbAdapter, _class);
         enty.status.STR = Integer.parseInt(_cursor.getString(_cursor.getColumnIndex(GameDbAdapter.KEY_CLASSSTR)));
         enty.status.INT = Integer.parseInt(_cursor.getString(_cursor.getColumnIndex(GameDbAdapter.KEY_CLASSINT)));
         enty.status.VIT = Integer.parseInt(_cursor.getString(_cursor.getColumnIndex(GameDbAdapter.KEY_CLASSVIT)));
         enty.status.DEX = Integer.parseInt(_cursor.getString(_cursor.getColumnIndex(GameDbAdapter.KEY_CLASSDEX)));
 
-        enty.status.MAX_HP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTERHP)));
-        enty.status.MAX_MP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTERMP)));
+        enty.status.MAX_HP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTER_HP)));
+        enty.status.MAX_MP = Integer.parseInt(cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTER_MP)));
 
-        enty.grade = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTERGRADE));
-        enty.reload = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTERRELOAD));
+        enty.grade = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTER_GRADE));
+        enty.reload = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTER_RELOAD));
+        enty.image = cursor.getString(cursor.getColumnIndex(GameDbAdapter.KEY_MONSTER_IMAGENAME));
         cursor.close();
         _cursor.close();
 
