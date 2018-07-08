@@ -1,20 +1,15 @@
 package com.epriest.game.guildfantasy.main;
 
-import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.view.MotionEvent;
-import android.widget.Toast;
 
 import com.epriest.game.CanvasGL.graphics.GLUtil;
-import com.epriest.game.CanvasGL.util.ButtonSprite;
 import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.PartyEnty;
 import com.epriest.game.guildfantasy.main.enty.QuestEnty;
 import com.epriest.game.guildfantasy.main.play.DataManager;
-import com.epriest.game.guildfantasy.util.DialogActivity;
 import com.epriest.game.guildfantasy.util.INN;
 
 import java.util.ArrayList;
@@ -168,7 +163,7 @@ public class Game_Quest extends Game {
             nextBtnEnty.clickState = ButtonEnty.ButtonClickOn;
             if (gameMain.appClass.touch.action == MotionEvent.ACTION_UP) {
                 nextBtnEnty.clickState = ButtonEnty.ButtonClickOff;
-                gameMain.mainButtonAct(INN.GAME_DUNGEON);
+                gameMain.mainButtonAct(INN.GAME_STAGE);
             }
             return;
         }

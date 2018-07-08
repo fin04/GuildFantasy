@@ -15,7 +15,6 @@ import com.epriest.game.guildfantasy.main.enty.MemberEnty;
 import com.epriest.game.guildfantasy.main.enty.MonsterEnty;
 import com.epriest.game.guildfantasy.main.enty.PartyEnty;
 import com.epriest.game.guildfantasy.main.enty.QuestEnty;
-import com.epriest.game.guildfantasy.main.enty.StatusEnty;
 import com.epriest.game.guildfantasy.main.enty.UnitEnty;
 import com.epriest.game.guildfantasy.main.play.DataManager;
 import com.epriest.game.guildfantasy.main.play.GameDbAdapter;
@@ -27,13 +26,33 @@ import java.util.ArrayList;
  * Created by darka on 2018-02-01.
  */
 
-public class Game_Dungeon extends Game {
+public class Game_Stage extends Game {
+    public final static int MAPTILE_VILLAGE = 12;
+    public final static int MAPTILE_TOWN = 13;
+    public final static int MAPTILE_CASTLE = 14;
+    public final static int MAPTILE_FORT = 15;
+    public final static int MAPTILE_MINE = 16;
+    public final static int MAPTILE_RUIN = 17;
+    public final static int MAPTILE_NEST = 18;
+
     public Game_Main gameMain;
+
+    public final String[] MapTileNameArr = {
+            "평지", "언덕", "산", "모래", "숲", "개울", "늪", "바다", "눈", "설원", "빙벽",
+            "", "chest", "trap", "poison", "rest", "gate", "mon2", "mon1", "boss"};
+    public final String[] MapTileAttrArr = {"흙", "흙", "불", "불", "흙", "물", "물", "물", "얼음", "얼음", "얼음"};
+    public final int cardW = 130;
+    public final int cardH = 300;
+    public final int infoH = 180;
 
     public int canvasW, canvasH;
     public int mapDrawW, mapDrawH;
     public int mapTotalW, mapTotalH;
-    private int tileTouchArea;
+
+    /**
+     * 타일에서 터치를 인식하는 영역 - 드래그로 영역밖으로 나가면 터치오프
+     */
+    private int touchableTileArea;
 
     /**
      * 맵이 그려지는 Top 위치
@@ -61,7 +80,11 @@ public class Game_Dungeon extends Game {
      */
     public ArrayList<MonsterEnty> monsterList;
 
-    public Game_Dungeon(Game_Main gameMain) {
+
+    public UnitEnty selectUnitEnty;
+    public MonsterEnty selectMonsterEnty;
+
+    public Game_Stage(Game_Main gameMain) {
         this.gameMain = gameMain;
     }
 
@@ -119,7 +142,7 @@ public class Game_Dungeon extends Game {
                 int index = i * rowNum + j;
                 mRowArray_t[j] = mapLayer.getLayers().get(0).getDataList().get(index);
                 mRowArray_b[j] = mapLayer.getLayers().get(1).getDataList().get(index);
-                if (mRowArray_b[j] == Game_Map.MAPTILE_TOWN) {
+                if (mRowArray_b[j] == Game_Stage.MAPTILE_TOWN) {
                     mapLayer.cursor.curTile.x = j;
                     mapLayer.cursor.curTile.y = i;
                 }
@@ -136,20 +159,22 @@ public class Game_Dungeon extends Game {
         mapLayer.mMapAxis.y = 0;
         mapLayer.getTileNum(mapLayer.LeftTopTileNum, mapLayer.mMapAxis.x, mapLayer.mMapAxis.y);
 
+        //맵에 실제로 그려지는 Tile의 Height값 계산
         mapLayer.mTileHeightForMap = mapLayer.getTileHeight() / 4 * 3;
     }
 
     private void setMapInit() {
         int tileW = mapLayer.getTileWidth();
         int tileH = mapLayer.getTileHeight();
-        tileTouchArea = tileW / 3;
+        touchableTileArea = tileH / 2;
         mapLayer.mMapTileRowNum = mapLayer.getLayers().get(0).getWidth();
         if (mapLayer.mMapTileRowNum * tileW > canvasW + tileW) {
             mapLayer.mMapTileRowNum = gameMain.appClass.getGameCanvasWidth() / tileW + 2;
         }
 
-//        mapLayer.mMapTileColumnNum = 11;
-        mapLayer.mMapTileColumnNum = canvasH / (tileH * 3 / 4);
+        // map이 그려질 영역
+        int mapH = canvasH - cardH - infoH;
+        mapLayer.mMapTileColumnNum = mapH / (tileH * 3 / 4);
         if (mapLayer.mMapTileColumnNum > mapLayer.getLayers().get(0).getHeight())
             mapLayer.mMapTileColumnNum = mapLayer.getLayers().get(0).getHeight();
 
@@ -221,7 +246,7 @@ public class Game_Dungeon extends Game {
                     enty.num = num;
                     enty.startAxisX = j;
                     enty.startAxisy = i;
-                            monsterList.add(enty);
+                    monsterList.add(enty);
                     num++;
                 }
             }
@@ -308,7 +333,7 @@ public class Game_Dungeon extends Game {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (mapLayer.isClick) {
-                    if (Math.abs(gameMain.appClass.touch.mDownX - gameMain.appClass.touch.mLastTouchX) > tileTouchArea) {
+                    if (Math.abs(gameMain.appClass.touch.mDownX - gameMain.appClass.touch.mLastTouchX) > touchableTileArea) {
                         mapLayer.isClick = false;
                     } else {
                         return;
@@ -319,7 +344,7 @@ public class Game_Dungeon extends Game {
                     mapLayer.mMapAxis.x = (int) (gameMain.appClass.touch.mPosX);
                     if (mapLayer.mMapAxis.x > 0) {
                         gameMain.appClass.touch.mPosX = 0;
-                    }else if (mapLayer.mMapAxis.x < (mapTotalW - mapDrawW) * -1) {
+                    } else if (mapLayer.mMapAxis.x < (mapTotalW - mapDrawW) * -1) {
                         gameMain.appClass.touch.mPosX = (mapTotalW - mapDrawW) * -1;
                         mapLayer.mMapAxis.x = (mapTotalW - mapDrawW) * -1;
                     }
@@ -327,11 +352,11 @@ public class Game_Dungeon extends Game {
                     mapLayer.mMapAxis.y = (int) (gameMain.appClass.touch.mPosY);
                     if (mapLayer.mMapAxis.y < 0) {
                         gameMain.appClass.touch.mPosY = 0;
-                    }else if (mapLayer.mMapAxis.y > mapTotalH - mapDrawH) {
+                    } else if (mapLayer.mMapAxis.y > mapTotalH - mapDrawH) {
                         gameMain.appClass.touch.mPosY = mapTotalH - mapDrawH;
                     }
-                    mapLayer.mMapAxis.x = (int)gameMain.appClass.touch.mPosX;
-                    mapLayer.mMapAxis.y = (int)gameMain.appClass.touch.mPosY;
+                    mapLayer.mMapAxis.x = (int) gameMain.appClass.touch.mPosX;
+                    mapLayer.mMapAxis.y = (int) gameMain.appClass.touch.mPosY;
 
                     mapLayer.getTileNum(mapLayer.LeftTopTileNum,
                             mapLayer.mMapAxis.x, mapLayer.mMapAxis.y);
@@ -348,26 +373,39 @@ public class Game_Dungeon extends Game {
                     mapLayer.getTileNum(mapLayer.cursor.curTile, x, y);
 
                     // 커서가 위치할 타일의 타입(넘버) 체크
-                    mapLayer.cursor.tileNum = mapLayer.objectColumnList.get(
+                    mapLayer.cursor.tileObjectNum = mapLayer.objectColumnList.get(
                             mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x] - 1;
-                    if (mapLayer.cursor.tileNum == -1)
-                        mapLayer.cursor.tileNum = mapLayer.terrainColumnList.get(
-                                mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x] - 1;
+//                    if (mapLayer.cursor.tileNum == -1)
+                    mapLayer.cursor.tileTerrianNum = mapLayer.terrainColumnList.get(
+                            mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x] - 1;
 
-                    switch (mapLayer.cursor.tileNum) {
-                        case Game_Map.MAPTILE_TOWN:
+                    switch (mapLayer.cursor.tileObjectNum) {
+                        case MAPTILE_TOWN:
                             //temp party list에서 파티리스트를 불러온다
                             break;
                         default:
                             break;
                     }
 
-                    // 유닛이 선택될 경우 zoc 체크
+                    // 커서가 유닛을 선택할 경우 zoc 체크
                     unitZocList = null;
+                    selectUnitEnty = null;
+                    selectMonsterEnty = null;
                     for (UnitEnty unitEnty : partyUnitList) {
                         if (mapLayer.cursor.curTile.x == unitEnty.curAxisX &&
                                 mapLayer.cursor.curTile.y == unitEnty.curAxisY) {
                             unitZocList = checkZOC(unitEnty.curAxisX, unitEnty.curAxisY);
+                            selectUnitEnty = unitEnty;
+                            break;
+                        }
+                    }
+
+                    //커서가 몬스터를 선택할 경우 zoc 체크
+                    for(MonsterEnty monEnty : monsterList){
+                        if (mapLayer.cursor.curTile.x == monEnty.curAxisX &&
+                                mapLayer.cursor.curTile.y == monEnty.curAxisY) {
+                            unitZocList = checkZOC(monEnty.curAxisX, monEnty.curAxisY);
+                            selectMonsterEnty = monEnty;
                             break;
                         }
                     }

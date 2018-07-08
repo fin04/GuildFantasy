@@ -9,19 +9,18 @@ import android.graphics.Point;
 import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
+import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.HexaEnty;
 import com.epriest.game.guildfantasy.main.enty.MonsterEnty;
 import com.epriest.game.guildfantasy.main.enty.UnitEnty;
 import com.epriest.game.guildfantasy.util.DrawUtil;
 
-import java.util.ArrayList;
-
 /**
  * Created by darka on 2018-02-01.
  */
 
-public class Scene_Dungeon extends Scene {
-    private Game_Dungeon gameDungeon;
+public class Scene_Stage extends Scene {
+    private Game_Stage gameDungeon;
 
     private int cursorTileAnimCnt;
     private int tileW, tileH;
@@ -31,7 +30,7 @@ public class Scene_Dungeon extends Scene {
      */
     private int cursorCorr;
 
-    public Scene_Dungeon(Game_Dungeon gameDungeon, Scene_Main sceneMain) {
+    public Scene_Stage(Game_Stage gameDungeon, Scene_Main sceneMain) {
         this.gameDungeon = gameDungeon;
     }
 
@@ -74,11 +73,68 @@ public class Scene_Dungeon extends Scene {
 
         drawUnitZOC(mCanvas);
         drawCursor(mCanvas);
+        drawUnitInfo(mCanvas);
 
         DrawUtil.drawString(mCanvas, gameDungeon.mapLayer.mMapAxis.x+",,"+gameDungeon.mapLayer.mMapAxis.y,
                 20, Color.RED, Paint.Align.LEFT, 10,90);
 
-        gameDungeon.gameMain.drawStatusTab(mCanvas);
+        drawMapTab(mCanvas);
+    }
+
+    private void drawMapTab(Canvas mCanvas) {
+        int statusBarW = gameDungeon.gameMain.statusBarW;
+        int statusBarH = gameDungeon.gameMain.statusBarH;
+        int barNum = gameDungeon.canvasW / statusBarW;
+        for (int i = 0; i <= barNum; i++) {
+            DrawUtil.drawClip(gameDungeon.gameMain.img_statusBar, mCanvas, 0, 0,
+                    statusBarW, statusBarH, statusBarW * i, 0);
+        }
+
+        Paint paint = new Paint();
+        int fontSize = 30;
+        int drawY = (statusBarH - fontSize) / 2;
+        int drawX = (gameDungeon.canvasW - 120) / 5 + 60;
+        paint.setColor(Color.argb(255, 50, 50, 50));
+        paint.setTextSize(fontSize);
+
+        // tile Name
+        int i = gameDungeon.mapLayer.cursor.tileObjectNum;
+        if(i > -1) {
+            String curTileName = gameDungeon.MapTileNameArr[i];
+            DrawUtil.drawString(mCanvas, curTileName, paint, 10, drawY);
+        }
+
+        // cursor tile axis
+        String curAxis =  gameDungeon.mapLayer.cursor.curTile.x+","+gameDungeon.mapLayer.cursor.curTile.y;
+        DrawUtil.drawString(mCanvas, curAxis, paint, drawX, drawY);
+
+        // tile type
+        String curTileType = gameDungeon.MapTileNameArr[gameDungeon.mapLayer.cursor.tileTerrianNum];
+        DrawUtil.drawString(mCanvas, curTileType, paint, drawX + 85, drawY);
+
+        // tile attribute
+        String curTileAttr = gameDungeon.MapTileAttrArr[gameDungeon.mapLayer.cursor.tileTerrianNum];
+        DrawUtil.drawString(mCanvas, curTileAttr, paint, drawX + 200, drawY);
+
+
+        //Turn
+//        DrawUtil.drawString(mCanvas, "Turn " + userEnty.TURN, paint, canvasW - 250, drawY);
+
+        ButtonEnty menuBtn = gameDungeon.gameMain.optionBtn;
+        //Option Button
+        int clipY = menuBtn.clipY;
+        if (menuBtn.clickState == ButtonEnty.ButtonClickOn) {
+            clipY = 53;
+        }
+        DrawUtil.drawClip(gameDungeon.gameMain.img_statusBar, mCanvas, menuBtn.clipX, clipY,
+                menuBtn.clipW, menuBtn.clipH, menuBtn.drawX, menuBtn.drawY);
+
+
+                DrawUtil.drawClip(gameDungeon.gameMain.img_statusBar, mCanvas, 121, 107,
+                        82, 23, menuBtn.drawX + (menuBtn.clipW - 82) / 2,
+                        menuBtn.drawY + (menuBtn.clipH - 23) / 2);
+
+
     }
 
     private void drawMap(Canvas mCanvas) {
@@ -154,6 +210,63 @@ public class Scene_Dungeon extends Scene {
         DrawUtil.drawBitmap(monEnty.mon_img, mCanvas, monAxis.x+monMargin, monAxis.y+monMargin);
     }
 
+    private void drawUnitInfo(Canvas mCanvas){
+        if(gameDungeon.selectUnitEnty == null && gameDungeon.selectMonsterEnty == null)
+            return;
+
+        int infoY = gameDungeon.mMainScreenTop + gameDungeon.mapDrawH;
+        DrawUtil.drawBox(mCanvas, Color.argb(200, 50, 150, 90), true,
+                0, infoY, gameDungeon.canvasW, gameDungeon.infoH);
+
+        Paint paint  = new Paint();
+        paint.setAntiAlias(true);
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setColor(Color.YELLOW);
+        paint.setTextSize(30);
+
+        String _name;
+        String _lv;
+        String _class;
+
+        if(gameDungeon.selectUnitEnty != null) {
+            _name = gameDungeon.selectUnitEnty.memberEnty.name;
+            _lv = "Lv." + gameDungeon.selectUnitEnty.memberEnty.status.LEVEL;
+            _class = gameDungeon.selectUnitEnty.memberEnty.memberclass;
+        }else{
+            _name = gameDungeon.selectMonsterEnty.name;
+            _lv = "Lv." + gameDungeon.selectMonsterEnty.status.LEVEL;
+            _class = gameDungeon.selectMonsterEnty.memberclass;
+        }
+        DrawUtil.drawString(mCanvas, _lv, paint, 50, infoY+35);
+        DrawUtil.drawString(mCanvas, _name, paint, 50, infoY+75);
+        DrawUtil.drawString(mCanvas, _class, paint, 50, infoY+115);
+
+
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(25);
+
+        String _ap, _hp, _mp;
+        if(gameDungeon.selectUnitEnty != null) {
+            _ap = "AP."+gameDungeon.selectUnitEnty.memberEnty.status.USE_AP+
+                    "/"+gameDungeon.selectUnitEnty.memberEnty.status.MAX_AP;
+            _hp = "HP."+gameDungeon.selectUnitEnty.memberEnty.status.USE_HP+
+                    "/"+gameDungeon.selectUnitEnty.memberEnty.status.MAX_HP;
+            _mp = "MP."+gameDungeon.selectUnitEnty.memberEnty.status.USE_MP+
+                    "/"+gameDungeon.selectUnitEnty.memberEnty.status.MAX_MP;
+        }else{
+            _ap = "AP."+gameDungeon.selectMonsterEnty.status.USE_AP+
+                    "/"+gameDungeon.selectMonsterEnty.status.MAX_AP;
+            _hp = "HP."+gameDungeon.selectMonsterEnty.status.USE_HP+
+                    "/"+gameDungeon.selectMonsterEnty.status.MAX_HP;
+            _mp = "MP."+gameDungeon.selectMonsterEnty.status.USE_MP+
+                    "/"+gameDungeon.selectMonsterEnty.status.MAX_MP;
+        }
+        DrawUtil.drawString(mCanvas, _ap, paint, 300, infoY+50);
+        DrawUtil.drawString(mCanvas, _hp, paint, 450, infoY+50);
+        DrawUtil.drawString(mCanvas, _mp, paint, 600, infoY+50);
+
+    }
+
     /**
      * hexa 좌표를 draw 좌표로 전환
      *
@@ -166,9 +279,9 @@ public class Scene_Dungeon extends Scene {
         int startX = gameDungeon.mapLayer.mMapAxis.x;
         if (hexaY % 2 == 0)
             startX = gameDungeon.mapLayer.mMapAxis.x - (tileW / 2);
-        int startY = gameDungeon.mMainScreenTop - gameDungeon.mapLayer.mMapAxis.y ;//- (tileH / 4);
+
         point.x = hexaX * tileW + startX;
-        point.y = hexaY * gameDungeon.mapLayer.mTileHeightForMap + gameDungeon.mMainScreenTop + startY;
+        point.y = hexaY * gameDungeon.mapLayer.mTileHeightForMap + gameDungeon.mMainScreenTop;
         return point;
     }
 }

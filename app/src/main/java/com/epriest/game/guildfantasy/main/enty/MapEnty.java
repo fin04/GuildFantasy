@@ -58,12 +58,18 @@ public class MapEnty {
         public boolean isMapTouch;
         public boolean isClick;
 
+        /**
+         * 맵에 그려지는 타일의 height값 (tile Height의 3/4)
+         */
         public int mTileHeightForMap;
 
         public Point getTileNum(Point point, int x, int y) {
             if (x < 0)
                 x *= -1;
-            point.y = y / (getTileHeight() / 4 * 3);
+            int selectTileMarginTop = getTileHeight() / 8;
+            point.y = (y - selectTileMarginTop) / (getTileHeight() / 4 * 3);
+            if (point.y < 0)
+                point.y = 0;
 
             if (point.y % 2 == 0)
                 point.x = (x + getTileWidth() / 2) / getTileWidth();
@@ -111,10 +117,20 @@ public class MapEnty {
         }
     }
 
-    public static class CursorTile{
+    public static class CursorTile {
 //        public Point point;
+        /**
+         * 커서가 가리키는 타일의 Axis
+         */
         public Point curTile;
-        public int tileNum;
+        /**
+         * 커서가 카리키는 타일의 지형넘버
+         */
+        public int tileTerrianNum;
+        /**
+         * 커서가 가리키는 타일의 오브젝트 넘버
+         */
+        public int tileObjectNum;
         public int animCnt;
 //        public int state;
     }

@@ -13,7 +13,7 @@ import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.graphics.GLView;
 import com.epriest.game.CanvasGL.util.Scene;
 import com.epriest.game.guildfantasy.main.Game_Battle;
-import com.epriest.game.guildfantasy.main.Game_Dungeon;
+import com.epriest.game.guildfantasy.main.Game_Stage;
 import com.epriest.game.guildfantasy.main.Game_Main;
 import com.epriest.game.guildfantasy.main.Game_Event;
 import com.epriest.game.guildfantasy.main.Game_Home;
@@ -26,7 +26,7 @@ import com.epriest.game.guildfantasy.main.Game_Shop;
 import com.epriest.game.guildfantasy.main.Game_Temple;
 import com.epriest.game.guildfantasy.main.Game_Title;
 import com.epriest.game.guildfantasy.main.Scene_Battle;
-import com.epriest.game.guildfantasy.main.Scene_Dungeon;
+import com.epriest.game.guildfantasy.main.Scene_Stage;
 import com.epriest.game.guildfantasy.main.Scene_Event;
 import com.epriest.game.guildfantasy.main.Scene_Home;
 import com.epriest.game.guildfantasy.main.Scene_Main;
@@ -59,7 +59,7 @@ public class MainGLView extends GLView {
     private Game_Temple gameTemple;
     private Game_QuestList gameQuestList;
     private Game_Quest gameQuest;
-    private Game_Dungeon gameDungeon;
+    private Game_Stage gameDungeon;
     private Game_Battle gameBattle;
 
 
@@ -209,9 +209,9 @@ public class MainGLView extends GLView {
                 }
                 gameQuest.gUpdate();
                 break;
-            case INN.GAME_DUNGEON:
+            case INN.GAME_STAGE:
                 if (appClass.isGameInit) {
-                    gameDungeon = new Game_Dungeon(gameMain);
+                    gameDungeon = new Game_Stage(gameMain);
                     gameDungeon.Start();
                     appClass.isGameInit = false;
                 }
@@ -307,8 +307,8 @@ public class MainGLView extends GLView {
                     mScene.initScene(appClass);
                     appClass.isSceneInit = false;
                     break;
-                case INN.GAME_DUNGEON:
-                    mScene = new Scene_Dungeon(gameDungeon, sceneMain);
+                case INN.GAME_STAGE:
+                    mScene = new Scene_Stage(gameDungeon, sceneMain);
                     mScene.initScene(appClass);
                     appClass.isSceneInit = false;
                     break;
@@ -435,7 +435,7 @@ public class MainGLView extends GLView {
             case INN.GAME_TEMPLE:
                 gameTemple.gOnTouchEvent(event);
                 break;
-            case INN.GAME_DUNGEON:
+            case INN.GAME_STAGE:
                 gameDungeon.gOnTouchEvent(event);
                 break;
             case INN.GAME_BATTLE:
@@ -485,7 +485,7 @@ public class MainGLView extends GLView {
             case INN.GAME_MEMBER_FROM_PARTY:
                 gameMain.mainButtonAct(INN.GAME_PARTY);
                 break;
-            case INN.GAME_DUNGEON:
+            case INN.GAME_STAGE:
                 gameMain.mainButtonAct(INN.GAME_QUEST);
                 break;
 
