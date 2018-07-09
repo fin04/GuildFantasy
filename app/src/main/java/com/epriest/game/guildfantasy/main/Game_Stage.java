@@ -65,6 +65,7 @@ public class Game_Stage extends Game {
     public Bitmap img_curTile;
     public Bitmap img_unit;
     public Bitmap img_zoc;
+    public Bitmap img_unitCard;
 
     private QuestEnty questEnty;
     private DungeonEnty dungeonEnty;
@@ -103,6 +104,7 @@ public class Game_Stage extends Game {
         img_curTile = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/tilecursor.png", null);
         img_unit = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/unit.png", null);
         img_zoc = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/areahexa.png", null);
+        img_unitCard = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/unitcard.png", null);
 
         setMapLayer();
         setMapInit();
@@ -125,7 +127,7 @@ public class Game_Stage extends Game {
     }
 
     private void setMapLayer() {
-        String jsonStr = GameUtil.getAssetString(gameMain.appClass.getBaseContext(), "map/stage02.json");
+        String jsonStr = GameUtil.getAssetString(gameMain.appClass.getBaseContext(), "map/stage00.json");
         Gson gson = new Gson();
         mapLayer = gson.fromJson(jsonStr, MapEnty.MapLayer.class);
         mapLayer.terrainColumnList = new ArrayList<>();
@@ -202,7 +204,7 @@ public class Game_Stage extends Game {
                 UnitEnty enty = new UnitEnty();
                 String imgPath = DataManager.getMemberData(gameMain.dbAdapter, id).image;
                 enty.chr_img = GLUtil.loadAssetsBitmap(
-                        gameMain.appClass, "member/" + imgPath, null, 6);
+                        gameMain.appClass, "member/" + imgPath, null, 3);
                 enty.id = id;
                 enty.num = memberCnt;
                 enty.pos = i;
@@ -391,14 +393,15 @@ public class Game_Stage extends Game {
                     unitZocList = null;
                     selectUnitEnty = null;
                     selectMonsterEnty = null;
-                    for (UnitEnty unitEnty : partyUnitList) {
+//                    for (UnitEnty unitEnty : partyUnitList) {
+                        UnitEnty unitEnty = partyUnitList.get(0);
                         if (mapLayer.cursor.curTile.x == unitEnty.curAxisX &&
                                 mapLayer.cursor.curTile.y == unitEnty.curAxisY) {
                             unitZocList = checkZOC(unitEnty.curAxisX, unitEnty.curAxisY);
                             selectUnitEnty = unitEnty;
                             break;
                         }
-                    }
+//                    }
 
                     //커서가 몬스터를 선택할 경우 zoc 체크
                     for(MonsterEnty monEnty : monsterList){

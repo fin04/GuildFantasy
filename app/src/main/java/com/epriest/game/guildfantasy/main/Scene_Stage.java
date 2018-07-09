@@ -62,9 +62,10 @@ public class Scene_Stage extends Scene {
 
 
         //member draw
-        for (UnitEnty unitEnty : gameDungeon.partyUnitList) {
-            drawUnit(mCanvas, unitEnty);
-        }
+        drawUnit(mCanvas, gameDungeon.partyUnitList.get(0));
+//        for (UnitEnty unitEnty : gameDungeon.partyUnitList) {
+//            drawUnit(mCanvas, unitEnty);
+//        }
 
         //monster draw
         for (MonsterEnty monEnty : gameDungeon.monsterList) {
@@ -75,8 +76,8 @@ public class Scene_Stage extends Scene {
         drawCursor(mCanvas);
         drawUnitInfo(mCanvas);
 
-        DrawUtil.drawString(mCanvas, gameDungeon.mapLayer.mMapAxis.x+",,"+gameDungeon.mapLayer.mMapAxis.y,
-                20, Color.RED, Paint.Align.LEFT, 10,90);
+        DrawUtil.drawString(mCanvas, gameDungeon.mapLayer.mMapAxis.x + ",," + gameDungeon.mapLayer.mMapAxis.y,
+                20, Color.RED, Paint.Align.LEFT, 10, 90);
 
         drawMapTab(mCanvas);
     }
@@ -90,31 +91,43 @@ public class Scene_Stage extends Scene {
                     statusBarW, statusBarH, statusBarW * i, 0);
         }
 
-        Paint paint = new Paint();
         int fontSize = 30;
         int drawY = (statusBarH - fontSize) / 2;
         int drawX = (gameDungeon.canvasW - 120) / 5 + 60;
-        paint.setColor(Color.argb(255, 50, 50, 50));
+        Paint paint = new Paint();
         paint.setTextSize(fontSize);
 
+
+        // tile Attr
+        String curTileAttr = gameDungeon.MapTileAttrArr[gameDungeon.mapLayer.cursor.tileTerrianNum];
+        if (curTileAttr.equals("흙")) {
+            paint.setColor(Color.argb(255, 100, 200, 0));
+        } else if (curTileAttr.equals("불")) {
+            paint.setColor(Color.argb(255, 200, 50, 0));
+        } else if (curTileAttr.equals("물")) {
+            paint.setColor(Color.argb(255, 0, 50, 200));
+        } else if (curTileAttr.equals("바람")) {
+            paint.setColor(Color.argb(255, 50, 150, 200));
+        } else if (curTileAttr.equals("얼음")) {
+            paint.setColor(Color.argb(255, 100, 0, 200));
+        }
+        DrawUtil.drawBoldString(mCanvas, curTileAttr, fontSize, paint.getColor(), paint.getTextAlign(), 20, drawY);
+
         // tile Name
+        String curTileName = gameDungeon.MapTileNameArr[gameDungeon.mapLayer.cursor.tileTerrianNum];
+        paint.setColor(Color.argb(255, 50, 50, 50));
+        DrawUtil.drawString(mCanvas, curTileName, paint, 100, drawY);
+
+        // tile Object
         int i = gameDungeon.mapLayer.cursor.tileObjectNum;
-        if(i > -1) {
-            String curTileName = gameDungeon.MapTileNameArr[i];
-            DrawUtil.drawString(mCanvas, curTileName, paint, 10, drawY);
+        if (i > -1) {
+            String curTileObj = gameDungeon.MapTileNameArr[i];
+            DrawUtil.drawString(mCanvas, curTileObj, paint, 250, drawY);
         }
 
         // cursor tile axis
-        String curAxis =  gameDungeon.mapLayer.cursor.curTile.x+","+gameDungeon.mapLayer.cursor.curTile.y;
-        DrawUtil.drawString(mCanvas, curAxis, paint, drawX, drawY);
-
-        // tile type
-        String curTileType = gameDungeon.MapTileNameArr[gameDungeon.mapLayer.cursor.tileTerrianNum];
-        DrawUtil.drawString(mCanvas, curTileType, paint, drawX + 85, drawY);
-
-        // tile attribute
-        String curTileAttr = gameDungeon.MapTileAttrArr[gameDungeon.mapLayer.cursor.tileTerrianNum];
-        DrawUtil.drawString(mCanvas, curTileAttr, paint, drawX + 200, drawY);
+        String curAxis = gameDungeon.mapLayer.cursor.curTile.x + "," + gameDungeon.mapLayer.cursor.curTile.y;
+        DrawUtil.drawString(mCanvas, curAxis, paint, 400, drawY);
 
 
         //Turn
@@ -130,9 +143,9 @@ public class Scene_Stage extends Scene {
                 menuBtn.clipW, menuBtn.clipH, menuBtn.drawX, menuBtn.drawY);
 
 
-                DrawUtil.drawClip(gameDungeon.gameMain.img_statusBar, mCanvas, 121, 107,
-                        82, 23, menuBtn.drawX + (menuBtn.clipW - 82) / 2,
-                        menuBtn.drawY + (menuBtn.clipH - 23) / 2);
+        DrawUtil.drawClip(gameDungeon.gameMain.img_statusBar, mCanvas, 121, 107,
+                82, 23, menuBtn.drawX + (menuBtn.clipW - 82) / 2,
+                menuBtn.drawY + (menuBtn.clipH - 23) / 2);
 
 
     }
@@ -206,65 +219,55 @@ public class Scene_Stage extends Scene {
 
     private void drawMon(Canvas mCanvas, MonsterEnty monEnty) {
         Point monAxis = getHexaDrawAxis(monEnty.startAxisX, monEnty.startAxisy);
-        int monMargin = (tileH - monEnty.mon_img.getHeight())/2;
-        DrawUtil.drawBitmap(monEnty.mon_img, mCanvas, monAxis.x+monMargin, monAxis.y+monMargin);
+        int monMargin = (tileH - monEnty.mon_img.getHeight()) / 2;
+        DrawUtil.drawBitmap(monEnty.mon_img, mCanvas, monAxis.x + monMargin, monAxis.y + monMargin);
     }
 
-    private void drawUnitInfo(Canvas mCanvas){
-        if(gameDungeon.selectUnitEnty == null && gameDungeon.selectMonsterEnty == null)
+    private void drawUnitInfo(Canvas mCanvas) {
+        if (gameDungeon.selectUnitEnty == null && gameDungeon.selectMonsterEnty == null)
             return;
 
-        int infoY = gameDungeon.mMainScreenTop + gameDungeon.mapDrawH;
-        DrawUtil.drawBox(mCanvas, Color.argb(200, 50, 150, 90), true,
-                0, infoY, gameDungeon.canvasW, gameDungeon.infoH);
+        if (gameDungeon.selectUnitEnty == null) {
+            //monster
+        } else {
+            //unit
+            for (UnitEnty enty : gameDungeon.partyUnitList) {
+                drawUnitInfoCard(mCanvas, enty);
+            }
+        }
 
-        Paint paint  = new Paint();
+    }
+
+    private void drawUnitInfoCard(Canvas mCanvas, UnitEnty enty) {
+        int infoCardW = gameDungeon.canvasW / 4;
+        int infoX = enty.num * infoCardW + 10;
+        int infoY = gameDungeon.mMainScreenTop + gameDungeon.mapDrawH;
+        DrawUtil.drawBitmap(gameDungeon.img_unitCard, mCanvas, infoX, infoY);
+        DrawUtil.drawClip(enty.chr_img, mCanvas, 0, 0, 150, 130, infoX, infoY+10);
+        Paint paint = new Paint();
         paint.setAntiAlias(true);
         paint.setTextAlign(Paint.Align.LEFT);
-        paint.setColor(Color.YELLOW);
-        paint.setTextSize(30);
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(20);
+        infoX += 20;
+        infoY += 140;
+        DrawUtil.drawString(mCanvas, enty.memberEnty.name, paint, infoX, infoY);
 
-        String _name;
-        String _lv;
-        String _class;
+        paint.setColor(Color.DKGRAY);
+        paint.setTextSize(18);
+        infoY += 22;
+        DrawUtil.drawString(mCanvas, enty.memberEnty.memberclass, paint, infoX, infoY);
+        DrawUtil.drawString(mCanvas, Integer.toString(enty.memberEnty.status.LEVEL), paint, infoX + 80, infoY);
 
-        if(gameDungeon.selectUnitEnty != null) {
-            _name = gameDungeon.selectUnitEnty.memberEnty.name;
-            _lv = "Lv." + gameDungeon.selectUnitEnty.memberEnty.status.LEVEL;
-            _class = gameDungeon.selectUnitEnty.memberEnty.memberclass;
-        }else{
-            _name = gameDungeon.selectMonsterEnty.name;
-            _lv = "Lv." + gameDungeon.selectMonsterEnty.status.LEVEL;
-            _class = gameDungeon.selectMonsterEnty.memberclass;
-        }
-        DrawUtil.drawString(mCanvas, _lv, paint, 50, infoY+35);
-        DrawUtil.drawString(mCanvas, _name, paint, 50, infoY+75);
-        DrawUtil.drawString(mCanvas, _class, paint, 50, infoY+115);
-
-
-        paint.setColor(Color.WHITE);
-        paint.setTextSize(25);
-
-        String _ap, _hp, _mp;
-        if(gameDungeon.selectUnitEnty != null) {
-            _ap = "AP."+gameDungeon.selectUnitEnty.memberEnty.status.USE_AP+
-                    "/"+gameDungeon.selectUnitEnty.memberEnty.status.MAX_AP;
-            _hp = "HP."+gameDungeon.selectUnitEnty.memberEnty.status.USE_HP+
-                    "/"+gameDungeon.selectUnitEnty.memberEnty.status.MAX_HP;
-            _mp = "MP."+gameDungeon.selectUnitEnty.memberEnty.status.USE_MP+
-                    "/"+gameDungeon.selectUnitEnty.memberEnty.status.MAX_MP;
-        }else{
-            _ap = "AP."+gameDungeon.selectMonsterEnty.status.USE_AP+
-                    "/"+gameDungeon.selectMonsterEnty.status.MAX_AP;
-            _hp = "HP."+gameDungeon.selectMonsterEnty.status.USE_HP+
-                    "/"+gameDungeon.selectMonsterEnty.status.MAX_HP;
-            _mp = "MP."+gameDungeon.selectMonsterEnty.status.USE_MP+
-                    "/"+gameDungeon.selectMonsterEnty.status.MAX_MP;
-        }
-        DrawUtil.drawString(mCanvas, _ap, paint, 300, infoY+50);
-        DrawUtil.drawString(mCanvas, _hp, paint, 450, infoY+50);
-        DrawUtil.drawString(mCanvas, _mp, paint, 600, infoY+50);
-
+        paint.setColor(Color.RED);
+        paint.setTextSize(17);
+        infoY += 20;
+        String _hp = "HP." + enty.memberEnty.status.USE_HP +
+                "/" + enty.memberEnty.status.MAX_HP;
+        String _mp = "MP." + enty.memberEnty.status.USE_MP +
+                "/" + enty.memberEnty.status.MAX_MP;
+        DrawUtil.drawString(mCanvas, _hp, paint, infoX, infoY);
+        DrawUtil.drawString(mCanvas, _mp, paint, infoX+70, infoY);
     }
 
     /**
