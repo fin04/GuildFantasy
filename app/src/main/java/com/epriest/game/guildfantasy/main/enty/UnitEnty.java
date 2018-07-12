@@ -22,7 +22,7 @@ public class UnitEnty {
     public String id;
 
     public int startAxisX;
-    public int startAxisy;
+    public int startAxisY;
     public int curAxisX;
     public int curAxisY;
     public int nextAxisX;

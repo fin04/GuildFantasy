@@ -18,6 +18,7 @@ import com.epriest.game.guildfantasy.main.enty.QuestEnty;
 import com.epriest.game.guildfantasy.main.enty.UnitEnty;
 import com.epriest.game.guildfantasy.main.play.DataManager;
 import com.epriest.game.guildfantasy.main.play.GameDbAdapter;
+import com.epriest.game.guildfantasy.util.INN;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -40,13 +41,25 @@ public class Game_Stage extends Game {
     public final String[] MapTileNameArr = {
             "평지", "언덕", "산", "모래", "숲", "개울", "늪", "바다", "눈", "설원", "빙벽",
             "", "chest", "trap", "poison", "rest", "gate", "mon2", "mon1", "boss"};
-    public final String[] MapTileAttrArr = {"흙", "흙", "불", "불", "흙", "물", "물", "물", "얼음", "얼음", "얼음"};
-    public final int cardW = 130;
-    public final int cardH = 300;
-    public final int infoH = 180;
+    public final String[] MapTileAttrArr = {INN.TILEATTR_EARTH, INN.TILEATTR_EARTH, INN.TILEATTR_FIRE, INN.TILEATTR_FIRE, INN.TILEATTR_EARTH,
+            INN.TILEATTR_WATER, INN.TILEATTR_WATER, INN.TILEATTR_WATER, INN.TILEATTR_ICE, INN.TILEATTR_ICE, INN.TILEATTR_ICE};
+
+    /**
+     * unit card width, height
+     */
+    public int cardW, cardH;
+
+    /**
+     * info창 height
+     */
+    public int infoH = 180;
 
     public int canvasW, canvasH;
     public int mapDrawW, mapDrawH;
+
+    /**
+     * map의 width, height
+     */
     public int mapTotalW, mapTotalH;
 
     /**
@@ -55,9 +68,9 @@ public class Game_Stage extends Game {
     private int touchableTileArea;
 
     /**
-     * 맵이 그려지는 Top 위치
+     * 맵이 그려지는 Top, Left 위치
      */
-    public int mMainScreenTop;
+    public int mapMarginTop, mapMarginLeft;
 
     public MapEnty.MapLayer mapLayer;
 
@@ -66,7 +79,13 @@ public class Game_Stage extends Game {
     public Bitmap img_unit;
     public Bitmap img_zoc;
     public Bitmap img_unitCard;
+    public Bitmap img_map_object;
+    public Bitmap img_chr_unit;
 
+    /**
+     * 파티의 대표 멤버 enty
+     */
+    public UnitEnty unitEnty;
     private QuestEnty questEnty;
     private DungeonEnty dungeonEnty;
     public ArrayList<HexaEnty> unitZocList;
@@ -94,8 +113,6 @@ public class Game_Stage extends Game {
         this.canvasW = gameMain.appClass.getGameCanvasWidth();
         this.canvasH = gameMain.appClass.getGameCanvasHeight();
 
-        mMainScreenTop = Game_Main.statusBarH;
-
         questEnty = DataManager.getUserQuestEnty(gameMain.dbAdapter, gameMain.userEnty.Name, gameMain.selectQuestId);
         dungeonEnty = DataManager.getDungeonEnty(gameMain.dbAdapter, questEnty.dungeon);
 
@@ -105,12 +122,20 @@ public class Game_Stage extends Game {
         img_unit = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/unit.png", null);
         img_zoc = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/areahexa.png", null);
         img_unitCard = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/unitcard.png", null);
+        img_map_object = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/map_object0.png", null);
+        img_chr_unit = GLUtil.loadAssetsBitmap(gameMain.appClass, "map/chr_unit.png", null);
+
+        cardW = img_unitCard.getWidth();
+        cardH = img_unitCard.getHeight();
 
         setMapLayer();
         setMapInit();
 
-        // 파티 유닛 설정
-        setUnitData();
+        // 파티 리더유닛 설정
+        setUnitEnty(3);
+
+        // 파티 설정
+        setPartyData();
 
         // 몬스터 설정
         setMonsterData();
@@ -162,7 +187,7 @@ public class Game_Stage extends Game {
         mapLayer.getTileNum(mapLayer.LeftTopTileNum, mapLayer.mMapAxis.x, mapLayer.mMapAxis.y);
 
         //맵에 실제로 그려지는 Tile의 Height값 계산
-        mapLayer.mTileHeightForMap = mapLayer.getTileHeight() / 4 * 3;
+        mapLayer.mTileHeightOnMap = mapLayer.getTileHeight() / 4 * 3;
     }
 
     private void setMapInit() {
@@ -182,14 +207,76 @@ public class Game_Stage extends Game {
 
         //그려지는 맵의 크기
         mapDrawW = mapLayer.mMapTileRowNum * tileW;
-        mapDrawH = mapLayer.mMapTileColumnNum * mapLayer.mTileHeightForMap;
+        mapDrawH = mapLayer.mMapTileColumnNum * mapLayer.mTileHeightOnMap;
 
         //맵의 총 크기
-        mapTotalW = mapLayer.terrainColumnList.get(0).length * tileW;
-        mapTotalH = mapLayer.terrainColumnList.size() * mapLayer.mTileHeightForMap;
+        mapTotalW = mapLayer.mapList.get(0).getWidth();//mapLayer.terrainColumnList.get(0).length * tileW;
+        mapTotalH = mapLayer.mapList.get(0).getHeight();//mapLayer.terrainColumnList.size() * mapLayer.mTileHeightOnMap;
+
+        //맵이 그려지는 top margin 계산
+        mapMarginTop = Game_Main.statusBarH;
+        int mDrawMapAxisH = mapTotalH * mapLayer.mTileHeightOnMap;
+        if (mDrawMapAxisH < mapH) {
+            mapMarginTop = Game_Main.statusBarH + (mapH - mDrawMapAxisH) / 2;
+        }
+
+        //맵이 그려지는 left margin 계산
+        mapMarginLeft = 0;
+        int mDrawMapAxisW = mapTotalW * mapLayer.getTileWidth();
+        if (mDrawMapAxisW < canvasW) {
+            mapMarginLeft = (canvasW - mDrawMapAxisW) / 2;
+        }
     }
 
-    private void setUnitData() {
+    private void setUnitEnty(int memberNum) {
+        unitEnty = new UnitEnty();
+        PartyEnty currentParty = DataManager.getPartyData(
+                gameMain.dbAdapter, gameMain.userEnty.Name, gameMain.getSelectPartyNum());
+
+        //파티멤버에서 memberNum의 맴버 id를 선택
+        int cnt = 0;
+        for (int i = 0; i < currentParty.memberPos.length; i++) {
+            String id = currentParty.memberPos[i];
+            if (!id.equals("0")) {
+                if (cnt == memberNum) {
+                    unitEnty.id = id;
+                    break;
+                }
+                cnt++;
+            }
+        }
+
+        String imgPath = DataManager.getMemberData(gameMain.dbAdapter, unitEnty.id).image;
+        unitEnty.chr_img = GLUtil.loadAssetsBitmap(
+                gameMain.appClass, "member/" + imgPath, null, 3);
+
+        unitEnty.num = memberNum;
+
+        // unit초기 위치는 gate가 있는 스타트 위치.
+        for (int i = mapLayer.LeftTopTileNum.y;
+             i < mapLayer.mMapTileColumnNum + mapLayer.LeftTopTileNum.y; i++) {
+
+            for (int j = mapLayer.LeftTopTileNum.x;
+                 j < mapLayer.mMapTileRowNum + mapLayer.LeftTopTileNum.x; j++) {
+                int objNum = mapLayer.objectColumnList.get(i)[j] - 1;
+                if (objNum == INN.TILETYPE_GATE) {
+                    unitEnty.startAxisX = j;
+                    unitEnty.startAxisY = i;
+                    break;
+                }
+            }
+        }
+        unitEnty.curAxisX = unitEnty.startAxisX;
+        unitEnty.curAxisY = unitEnty.startAxisY;
+        unitEnty.memberEnty = new MemberEnty();
+        unitEnty.memberEnty = DataManager.getMemberData(gameMain.dbAdapter, unitEnty.id);
+        unitEnty.memberEnty.status.USE_HP = unitEnty.memberEnty.status.MAX_HP;
+        unitEnty.memberEnty.status.USE_MP = unitEnty.memberEnty.status.MAX_MP;
+        unitEnty.memberEnty.status.USE_AP = unitEnty.memberEnty.status.MAX_AP;
+
+    }
+
+    private void setPartyData() {
         partyUnitList = new ArrayList<>();
 
         PartyEnty currentParty = DataManager.getPartyData(
@@ -211,10 +298,10 @@ public class Game_Stage extends Game {
                 memberCnt++;
 
                 enty.startAxisX = enty.pos % 3 + 1;
-                enty.startAxisy = mapLayer.mMapTileColumnNum - enty.pos / 3 - 3;
+                enty.startAxisY = mapLayer.mMapTileColumnNum - enty.pos / 3 - 3;
 
                 enty.curAxisX = enty.startAxisX;
-                enty.curAxisY = enty.startAxisy;
+                enty.curAxisY = enty.startAxisY;
                 enty.memberEnty = new MemberEnty();
                 enty.memberEnty = DataManager.getMemberData(gameMain.dbAdapter, id);
                 enty.memberEnty.status.USE_HP = enty.memberEnty.status.MAX_HP;
@@ -256,6 +343,40 @@ public class Game_Stage extends Game {
     }
 
     /**
+     * tile좌표로 terrain 타일 넘버를 get
+     *
+     * @param tileX
+     * @param tileY
+     * @return
+     */
+    public int getTerrainTileNumber(int tileX, int tileY) {
+        return mapLayer.terrainColumnList.get(tileY)[tileX] - 1;
+    }
+
+    /**
+     * tile좌표로 object 타일 넘버를 get
+     *
+     * @param tileX
+     * @param tileY
+     * @return
+     */
+    public int getObjectTileNumber(int tileX, int tileY) {
+        return mapLayer.objectColumnList.get(tileY)[tileX] - 1;
+    }
+
+    /**
+     * 이동할 수 있는 타일여부
+     * @param terrainNum
+     * @return
+     */
+    public boolean isMoveableTile(int terrainNum) {
+        if (terrainNum == INN.TILETYPE_MOUNTINE || terrainNum == INN.TILETYPE_SEA || terrainNum == INN.TILETYPE_ICEBERG)
+            return false;
+        else
+            return true;
+    }
+
+    /**
      * ZOC를 체크
      *
      * @param hexaX
@@ -264,59 +385,59 @@ public class Game_Stage extends Game {
      */
     private ArrayList<HexaEnty> checkZOC(int hexaX, int hexaY) {
         ArrayList<HexaEnty> hexaList = new ArrayList<>();
-        HexaEnty enty = new HexaEnty();
-        enty.num = 0;
-        enty.x = hexaX - 1;
-        enty.y = hexaY;
-        hexaList.add(enty);
-
-        enty = new HexaEnty();
-        enty.num = 1;
-        if (hexaY % 2 == 0) {
-            enty.x = hexaX - 1;
-        } else {
-            enty.x = hexaX;
+        for (int i = 0; i < 6; i++) {
+            HexaEnty enty = new HexaEnty();
+            enty.num = i;
+            switch (i) {
+                case 0:
+                    enty.x = hexaX - 1;
+                    enty.y = hexaY;
+                    break;
+                case 1:
+                    if (hexaY % 2 == 0) {
+                        enty.x = hexaX - 1;
+                    } else {
+                        enty.x = hexaX;
+                    }
+                    enty.y = hexaY + 1;
+                    break;
+                case 2:
+                    if (hexaY % 2 == 0) {
+                        enty.x = hexaX;
+                    } else {
+                        enty.x = hexaX + 1;
+                    }
+                    enty.y = hexaY + 1;
+                    break;
+                case 3:
+                    enty.x = hexaX + 1;
+                    enty.y = hexaY;
+                    break;
+                case 4:
+                    if (hexaY % 2 == 0) {
+                        enty.x = hexaX;
+                    } else {
+                        enty.x = hexaX + 1;
+                    }
+                    enty.y = hexaY - 1;
+                    break;
+                case 5:
+                    if (hexaY % 2 == 0) {
+                        enty.x = hexaX - 1;
+                    } else {
+                        enty.x = hexaX;
+                    }
+                    enty.y = hexaY - 1;
+                    break;
+            }
+            if (enty.x >= mapLayer.mapList.get(0).getWidth() || enty.y >= mapLayer.mapList.get(0).getHeight()) {
+                enty = null;
+            } else {
+                enty.terrain = getTerrainTileNumber(enty.x, enty.y);
+                enty.object = getObjectTileNumber(enty.x, enty.y);
+            }
+            hexaList.add(enty);
         }
-        enty.y = hexaY + 1;
-        hexaList.add(enty);
-
-        enty = new HexaEnty();
-        enty.num = 2;
-        if (hexaY % 2 == 0) {
-            enty.x = hexaX;
-        } else {
-            enty.x = hexaX + 1;
-        }
-
-        enty.y = hexaY + 1;
-        hexaList.add(enty);
-
-        enty = new HexaEnty();
-        enty.num = 3;
-        enty.x = hexaX + 1;
-        enty.y = hexaY;
-        hexaList.add(enty);
-
-        enty = new HexaEnty();
-        enty.num = 4;
-        if (hexaY % 2 == 0) {
-            enty.x = hexaX;
-        } else {
-            enty.x = hexaX + 1;
-        }
-        enty.y = hexaY - 1;
-        hexaList.add(enty);
-
-        enty = new HexaEnty();
-        enty.num = 5;
-        if (hexaY % 2 == 0) {
-            enty.x = hexaX - 1;
-        } else {
-            enty.x = hexaX;
-        }
-        enty.y = hexaY - 1;
-        hexaList.add(enty);
-
         return hexaList;
     }
 
@@ -326,7 +447,7 @@ public class Game_Stage extends Game {
             return;
 
         boolean hasTouchMap = false;
-        if (GameUtil.equalsTouch(gameMain.appClass.touch, 0, mMainScreenTop, mapDrawW, mapDrawH)) {
+        if (GameUtil.equalsTouch(gameMain.appClass.touch, mapMarginLeft, mapMarginTop, mapDrawW, mapDrawH)) {
             hasTouchMap = true;
         }
         switch (gameMain.appClass.touch.action) {
@@ -369,17 +490,17 @@ public class Game_Stage extends Game {
             case MotionEvent.ACTION_UP:
                 if (hasTouchMap && mapLayer.isClick) {
                     //커서가 위치할 타일의 axis 계산
-                    int x = (int) gameMain.appClass.touch.mLastTouchX - mapLayer.mMapAxis.x;
+                    int x = (int) gameMain.appClass.touch.mLastTouchX - mapLayer.mMapAxis.x - mapMarginLeft;
                     int y = (int) gameMain.appClass.touch.mLastTouchY +
-                            mapLayer.mMapAxis.y - mMainScreenTop;
+                            mapLayer.mMapAxis.y - mapMarginTop;
                     mapLayer.getTileNum(mapLayer.cursor.curTile, x, y);
 
                     // 커서가 위치할 타일의 타입(넘버) 체크
-                    mapLayer.cursor.tileObjectNum = mapLayer.objectColumnList.get(
-                            mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x] - 1;
+                    mapLayer.cursor.tileObjectNum = getObjectTileNumber(mapLayer.cursor.curTile.x, mapLayer.cursor.curTile.y);
+//                    mapLayer.objectColumnList.get(mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x] - 1;
 //                    if (mapLayer.cursor.tileNum == -1)
-                    mapLayer.cursor.tileTerrianNum = mapLayer.terrainColumnList.get(
-                            mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x] - 1;
+                    mapLayer.cursor.tileTerrianNum = getTerrainTileNumber(mapLayer.cursor.curTile.x, mapLayer.cursor.curTile.y);
+//                    mapLayer.terrainColumnList.get(mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x] - 1;
 
                     switch (mapLayer.cursor.tileObjectNum) {
                         case MAPTILE_TOWN:
@@ -393,18 +514,16 @@ public class Game_Stage extends Game {
                     unitZocList = null;
                     selectUnitEnty = null;
                     selectMonsterEnty = null;
-//                    for (UnitEnty unitEnty : partyUnitList) {
-                        UnitEnty unitEnty = partyUnitList.get(0);
-                        if (mapLayer.cursor.curTile.x == unitEnty.curAxisX &&
-                                mapLayer.cursor.curTile.y == unitEnty.curAxisY) {
-                            unitZocList = checkZOC(unitEnty.curAxisX, unitEnty.curAxisY);
-                            selectUnitEnty = unitEnty;
-                            break;
-                        }
-//                    }
+
+                    if (mapLayer.cursor.curTile.x == unitEnty.curAxisX &&
+                            mapLayer.cursor.curTile.y == unitEnty.curAxisY) {
+                        unitZocList = checkZOC(unitEnty.curAxisX, unitEnty.curAxisY);
+                        selectUnitEnty = unitEnty;
+                        break;
+                    }
 
                     //커서가 몬스터를 선택할 경우 zoc 체크
-                    for(MonsterEnty monEnty : monsterList){
+                    for (MonsterEnty monEnty : monsterList) {
                         if (mapLayer.cursor.curTile.x == monEnty.curAxisX &&
                                 mapLayer.cursor.curTile.y == monEnty.curAxisY) {
                             unitZocList = checkZOC(monEnty.curAxisX, monEnty.curAxisY);

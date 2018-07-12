@@ -21,7 +21,7 @@ public class MapEnty {
         private int tileheight;
 
         @SerializedName("layers")
-        private List<MapData> mapList = new ArrayList<MapData>();
+        public List<MapData> mapList = new ArrayList();
 
         public int getTileWidth() {
             return tilewidth;//Integer.parseInt(tilewidth);
@@ -61,7 +61,7 @@ public class MapEnty {
         /**
          * 맵에 그려지는 타일의 height값 (tile Height의 3/4)
          */
-        public int mTileHeightForMap;
+        public int mTileHeightOnMap;
 
         public Point getTileNum(Point point, int x, int y) {
             if (x < 0)

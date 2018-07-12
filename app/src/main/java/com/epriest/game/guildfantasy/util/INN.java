@@ -48,11 +48,10 @@ public interface INN {
     public final static String[] menuIconName = {MENU_INN, MENU_BAR, MENU_GUILD, MENU_SHOP, MENU_TEMPLE, MENU_GATE};
     public final static int[] menuIconNum = {4, 1, 0, 3, 2, 5};
 
-    //    public final static int statusBarH = 45;
     public final static String[] tileName = {
             "Field", "Hill", "Mountine", "Sand", "Forest",
-            "River", "Swamp","Sea","Icefield", "Icehill",
-            "Glacier","", "Village","Town","Castle",
+            "Fountain", "Swamp","Sea","Icefield", "Icehill",
+            "Iceberg","", "Village","Town","Castle",
             "Fort","Mine","Ruin","Nest",""};
 
     public final static int USER_START_EXP = 0;
@@ -65,4 +64,32 @@ public interface INN {
     public final static int CREATE_PLAYER_LIMITED = 3;
 
     public final static boolean setTempImg = false;
+
+    public final static int TILETYPE_FIELD = 0;
+    public final static int TILETYPE_HILL = 1;
+    public final static int TILETYPE_MOUNTINE = 2;
+    public final static int TILETYPE_SAND = 3;
+    public final static int TILETYPE_FOREST = 4;
+    public final static int TILETYPE_FOUNTAIN = 5;
+    public final static int TILETYPE_SWAMP = 6;
+    public final static int TILETYPE_SEA = 7;
+    public final static int TILETYPE_ICEFIELD = 8;
+    public final static int TILETYPE_ICEHILL = 9;
+    public final static int TILETYPE_ICEBERG = 10;
+    public final static int TILETYPE_CHEST = 12;
+    public final static int TILETYPE_TRAP = 13;
+    public final static int TILETYPE_POISON = 14;
+    public final static int TILETYPE_REST = 15;
+    public final static int TILETYPE_GATE = 16;
+    public final static int TILETYPE_MON2 = 17;
+    public final static int TILETYPE_MON1 = 18;
+    public final static int TILETYPE_BOSS = 19;
+
+    public final static String TILEATTR_EARTH = "대지";
+    public final static String TILEATTR_WATER = "물";
+    public final static String TILEATTR_WIND = "바람";
+    public final static String TILEATTR_FIRE = "불";
+    public final static String TILEATTR_TREE = "숲";
+    public final static String TILEATTR_ICE = "얼음";
+
 }

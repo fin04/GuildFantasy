@@ -14,6 +14,7 @@ import com.epriest.game.guildfantasy.main.enty.HexaEnty;
 import com.epriest.game.guildfantasy.main.enty.MonsterEnty;
 import com.epriest.game.guildfantasy.main.enty.UnitEnty;
 import com.epriest.game.guildfantasy.util.DrawUtil;
+import com.epriest.game.guildfantasy.util.INN;
 
 /**
  * Created by darka on 2018-02-01.
@@ -62,7 +63,7 @@ public class Scene_Stage extends Scene {
 
 
         //member draw
-        drawUnit(mCanvas, gameDungeon.partyUnitList.get(0));
+        drawUnit(mCanvas, gameDungeon.unitEnty);
 //        for (UnitEnty unitEnty : gameDungeon.partyUnitList) {
 //            drawUnit(mCanvas, unitEnty);
 //        }
@@ -78,6 +79,9 @@ public class Scene_Stage extends Scene {
 
         DrawUtil.drawString(mCanvas, gameDungeon.mapLayer.mMapAxis.x + ",," + gameDungeon.mapLayer.mMapAxis.y,
                 20, Color.RED, Paint.Align.LEFT, 10, 90);
+
+        DrawUtil.drawBox(mCanvas, Color.argb(200, 0, 180, 30), true,
+                0, gameDungeon.canvasH - gameDungeon.infoH, gameDungeon.canvasW, gameDungeon.infoH);
 
         drawMapTab(mCanvas);
     }
@@ -100,15 +104,15 @@ public class Scene_Stage extends Scene {
 
         // tile Attr
         String curTileAttr = gameDungeon.MapTileAttrArr[gameDungeon.mapLayer.cursor.tileTerrianNum];
-        if (curTileAttr.equals("흙")) {
+        if (curTileAttr.equals(INN.TILEATTR_EARTH)) {
             paint.setColor(Color.argb(255, 100, 200, 0));
-        } else if (curTileAttr.equals("불")) {
+        } else if (curTileAttr.equals(INN.TILEATTR_FIRE)) {
             paint.setColor(Color.argb(255, 200, 50, 0));
-        } else if (curTileAttr.equals("물")) {
+        } else if (curTileAttr.equals(INN.TILEATTR_WATER)) {
             paint.setColor(Color.argb(255, 0, 50, 200));
-        } else if (curTileAttr.equals("바람")) {
+        } else if (curTileAttr.equals(INN.TILEATTR_WIND)) {
             paint.setColor(Color.argb(255, 50, 150, 200));
-        } else if (curTileAttr.equals("얼음")) {
+        } else if (curTileAttr.equals(INN.TILEATTR_ICE)) {
             paint.setColor(Color.argb(255, 100, 0, 200));
         }
         DrawUtil.drawBoldString(mCanvas, curTileAttr, fontSize, paint.getColor(), paint.getTextAlign(), 20, drawY);
@@ -176,6 +180,10 @@ public class Scene_Stage extends Scene {
             return;
         int tileCenter = tileH / 2;
         for (HexaEnty enty : gameDungeon.unitZocList) {
+            if (enty == null)
+                continue;
+            if(!gameDungeon.isMoveableTile(enty.terrain))
+                continue;
             Point zocAxis = getHexaDrawAxis(enty.x, enty.y);
             CanvasUtil.drawBitmap(gameDungeon.img_zoc, mCanvas, zocAxis.x, zocAxis.y);
             CanvasUtil.drawString(mCanvas, Integer.toString(enty.num), 20, Color.rgb(180, 0, 0),
@@ -241,9 +249,9 @@ public class Scene_Stage extends Scene {
     private void drawUnitInfoCard(Canvas mCanvas, UnitEnty enty) {
         int infoCardW = gameDungeon.canvasW / 4;
         int infoX = enty.num * infoCardW + 10;
-        int infoY = gameDungeon.mMainScreenTop + gameDungeon.mapDrawH;
+        int infoY = gameDungeon.mapMarginTop + gameDungeon.mapDrawH;
         DrawUtil.drawBitmap(gameDungeon.img_unitCard, mCanvas, infoX, infoY);
-        DrawUtil.drawClip(enty.chr_img, mCanvas, 0, 0, 150, 130, infoX, infoY+10);
+        DrawUtil.drawClip(enty.chr_img, mCanvas, 0, 0, 150, 130, infoX, infoY + 10);
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         paint.setTextAlign(Paint.Align.LEFT);
@@ -267,7 +275,7 @@ public class Scene_Stage extends Scene {
         String _mp = "MP." + enty.memberEnty.status.USE_MP +
                 "/" + enty.memberEnty.status.MAX_MP;
         DrawUtil.drawString(mCanvas, _hp, paint, infoX, infoY);
-        DrawUtil.drawString(mCanvas, _mp, paint, infoX+70, infoY);
+        DrawUtil.drawString(mCanvas, _mp, paint, infoX + 70, infoY);
     }
 
     /**
@@ -283,8 +291,8 @@ public class Scene_Stage extends Scene {
         if (hexaY % 2 == 0)
             startX = gameDungeon.mapLayer.mMapAxis.x - (tileW / 2);
 
-        point.x = hexaX * tileW + startX;
-        point.y = hexaY * gameDungeon.mapLayer.mTileHeightForMap + gameDungeon.mMainScreenTop;
+        point.x = hexaX * tileW + startX + gameDungeon.mapMarginLeft;
+        point.y = hexaY * gameDungeon.mapLayer.mTileHeightOnMap + gameDungeon.mapMarginTop;
         return point;
     }
 }
