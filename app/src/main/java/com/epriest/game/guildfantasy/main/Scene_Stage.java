@@ -75,18 +75,20 @@ public class Scene_Stage extends Scene {
 
         drawUnitZOC(mCanvas);
         drawCursor(mCanvas);
-        drawUnitInfo(mCanvas);
+        drawPartyCard(mCanvas);
 
         DrawUtil.drawString(mCanvas, gameDungeon.mapLayer.mMapAxis.x + ",," + gameDungeon.mapLayer.mMapAxis.y,
                 20, Color.RED, Paint.Align.LEFT, 10, 90);
 
         DrawUtil.drawBox(mCanvas, Color.argb(200, 0, 180, 30), true,
-                0, gameDungeon.canvasH - gameDungeon.infoH, gameDungeon.canvasW, gameDungeon.infoH);
+                0, gameDungeon.canvasH - gameDungeon.commandBtnH, gameDungeon.canvasW, gameDungeon.commandBtnH);
 
-        drawMapTab(mCanvas);
+        drawUnitCommand(mCanvas);
+
+        drawStageTab(mCanvas);
     }
 
-    private void drawMapTab(Canvas mCanvas) {
+    private void drawStageTab(Canvas mCanvas) {
         int statusBarW = gameDungeon.gameMain.statusBarW;
         int statusBarH = gameDungeon.gameMain.statusBarH;
         int barNum = gameDungeon.canvasW / statusBarW;
@@ -152,6 +154,19 @@ public class Scene_Stage extends Scene {
                 menuBtn.drawY + (menuBtn.clipH - 23) / 2);
 
 
+    }
+
+    private void drawUnitCommand(Canvas mCanvas){
+        CanvasUtil.drawBox(mCanvas, Color.argb(255,80,80,80), true,
+                0, gameDungeon.commandBtnList.get(0).drawY-5, gameDungeon.canvasW, gameDungeon.commandBtnH+10);
+        for(ButtonEnty enty : gameDungeon.commandBtnList){
+            CanvasUtil.drawClip(gameDungeon.gameMain.img_defBtn, mCanvas, enty.clipX, enty.clipY,
+                    enty.clipW, enty.clipH, enty.drawX, enty.drawY);
+            if(gameDungeon.unitZocList != null) {
+                CanvasUtil.drawString(mCanvas, enty.name, 25, Color.argb(255, 200, 230, 250),
+                        Paint.Align.CENTER, enty.drawX + enty.clipW / 2, enty.drawY + (enty.clipH - 25) / 2);
+            }
+        }
     }
 
     private void drawMap(Canvas mCanvas) {
@@ -231,7 +246,7 @@ public class Scene_Stage extends Scene {
         DrawUtil.drawBitmap(monEnty.mon_img, mCanvas, monAxis.x + monMargin, monAxis.y + monMargin);
     }
 
-    private void drawUnitInfo(Canvas mCanvas) {
+    private void drawPartyCard(Canvas mCanvas) {
         if (gameDungeon.selectUnitEnty == null && gameDungeon.selectMonsterEnty == null)
             return;
 
@@ -240,16 +255,16 @@ public class Scene_Stage extends Scene {
         } else {
             //unit
             for (UnitEnty enty : gameDungeon.partyUnitList) {
-                drawUnitInfoCard(mCanvas, enty);
+                drawPartyCard(mCanvas, enty);
             }
         }
 
     }
 
-    private void drawUnitInfoCard(Canvas mCanvas, UnitEnty enty) {
+    private void drawPartyCard(Canvas mCanvas, UnitEnty enty) {
         int infoCardW = gameDungeon.canvasW / 4;
         int infoX = enty.num * infoCardW + 10;
-        int infoY = gameDungeon.mapMarginTop + gameDungeon.mapDrawH;
+        int infoY = gameDungeon.mapMarginTop + gameDungeon.mapDrawH + gameDungeon.commandBtnH;
         DrawUtil.drawBitmap(gameDungeon.img_unitCard, mCanvas, infoX, infoY);
         DrawUtil.drawClip(enty.chr_img, mCanvas, 0, 0, 150, 130, infoX, infoY + 10);
         Paint paint = new Paint();

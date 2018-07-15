@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import com.epriest.game.CanvasGL.graphics.GLUtil;
 import com.epriest.game.CanvasGL.util.Game;
 import com.epriest.game.CanvasGL.util.GameUtil;
+import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.DungeonEnty;
 import com.epriest.game.guildfantasy.main.enty.HexaEnty;
 import com.epriest.game.guildfantasy.main.enty.MapEnty;
@@ -38,6 +39,9 @@ public class Game_Stage extends Game {
 
     public Game_Main gameMain;
 
+    public final String[] unitCommandArr = {
+            "move", "magic", "item", "wait", "retreat"
+    };
     public final String[] MapTileNameArr = {
             "평지", "언덕", "산", "모래", "숲", "개울", "늪", "바다", "눈", "설원", "빙벽",
             "", "chest", "trap", "poison", "rest", "gate", "mon2", "mon1", "boss"};
@@ -49,13 +53,10 @@ public class Game_Stage extends Game {
      */
     public int cardW, cardH;
 
-    /**
-     * info창 height
-     */
-    public int infoH = 180;
+    public int commandBtnW = 83;
+    public int commandBtnH = 80;
 
     public int canvasW, canvasH;
-    public int mapDrawW, mapDrawH;
 
     /**
      * map의 width, height
@@ -63,16 +64,23 @@ public class Game_Stage extends Game {
     public int mapTotalW, mapTotalH;
 
     /**
-     * 타일에서 터치를 인식하는 영역 - 드래그로 영역밖으로 나가면 터치오프
+     * 실제 그려지는 map의 width, height
      */
-    private int touchableTileArea;
+    public int mapDrawW, mapDrawH;
 
     /**
      * 맵이 그려지는 Top, Left 위치
      */
     public int mapMarginTop, mapMarginLeft;
 
+    /**
+     * 타일에서 터치를 인식하는 영역 - 드래그로 영역밖으로 나가면 터치오프
+     */
+    private int touchableTileArea;
+
     public MapEnty.MapLayer mapLayer;
+
+    public ArrayList<ButtonEnty> commandBtnList;
 
     public Bitmap img_mapBg;
     public Bitmap img_curTile;
@@ -139,6 +147,9 @@ public class Game_Stage extends Game {
 
         // 몬스터 설정
         setMonsterData();
+
+        // 명령버튼 설정
+        setCommandBtn();
     }
 
     @Override
@@ -200,7 +211,7 @@ public class Game_Stage extends Game {
         }
 
         // map이 그려질 영역
-        int mapH = canvasH - cardH - infoH;
+        int mapH = canvasH - cardH - commandBtnH;
         mapLayer.mMapTileColumnNum = mapH / (tileH * 3 / 4);
         if (mapLayer.mMapTileColumnNum > mapLayer.getLayers().get(0).getHeight())
             mapLayer.mMapTileColumnNum = mapLayer.getLayers().get(0).getHeight();
@@ -342,6 +353,25 @@ public class Game_Stage extends Game {
         }
     }
 
+    private void setCommandBtn() {
+        commandBtnList = new ArrayList<>();
+        int btnX = (canvasW - commandBtnW*unitCommandArr.length)/2;
+        for (int i = 0; i < unitCommandArr.length; i++) {
+            ButtonEnty enty = new ButtonEnty();
+            enty.name = unitCommandArr[i];
+            enty.num = i;
+            enty.drawX = i * commandBtnW + btnX;
+            enty.drawY = mapMarginTop + mapDrawH;
+            enty.drawW = commandBtnW;
+            enty.drawH = commandBtnH-10;
+            enty.clipX = 210;
+            enty.clipY = 0;
+            enty.clipW = commandBtnW;
+            enty.clipH = commandBtnH-10;
+            commandBtnList.add(enty);
+        }
+    }
+
     /**
      * tile좌표로 terrain 타일 넘버를 get
      *
@@ -366,6 +396,7 @@ public class Game_Stage extends Game {
 
     /**
      * 이동할 수 있는 타일여부
+     *
      * @param terrainNum
      * @return
      */
