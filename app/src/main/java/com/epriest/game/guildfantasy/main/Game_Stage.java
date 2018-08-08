@@ -190,12 +190,12 @@ public class Game_Stage extends Game {
                 }
             }
         }
-        mapLayer.LeftTopTileNum = new Point();
-        mapLayer.mMapAxis = new Point();
-        //게임 처음 맵에서 보여지는 위치 설정 (임시로 0)
-        mapLayer.mMapAxis.x = 0;
-        mapLayer.mMapAxis.y = 0;
-        mapLayer.getTileNum(mapLayer.LeftTopTileNum, mapLayer.mMapAxis.x, mapLayer.mMapAxis.y);
+        mapLayer.LeftTopTileAxis = new Point();
+        mapLayer.mMapScrollAxis = new Point();
+        //게임 처음 맵이 보여지는 위치 설정 (임시로 0)
+        mapLayer.mMapScrollAxis.x = 0;
+        mapLayer.mMapScrollAxis.y = 0;
+        mapLayer.LeftTopTileAxis = mapLayer.getTileAxis(mapLayer.mMapScrollAxis.x, mapLayer.mMapScrollAxis.y);
 
         //맵에 실제로 그려지는 Tile의 Height값 계산
         mapLayer.mTileHeightOnMap = mapLayer.getTileHeight() / 4 * 3;
@@ -264,11 +264,11 @@ public class Game_Stage extends Game {
         unitEnty.num = memberNum;
 
         // unit초기 위치는 gate가 있는 스타트 위치.
-        for (int i = mapLayer.LeftTopTileNum.y;
-             i < mapLayer.mMapTileColumnNum + mapLayer.LeftTopTileNum.y; i++) {
+        for (int i = mapLayer.LeftTopTileAxis.y;
+             i < mapLayer.mMapTileColumnNum + mapLayer.LeftTopTileAxis.y; i++) {
 
-            for (int j = mapLayer.LeftTopTileNum.x;
-                 j < mapLayer.mMapTileRowNum + mapLayer.LeftTopTileNum.x; j++) {
+            for (int j = mapLayer.LeftTopTileAxis.x;
+                 j < mapLayer.mMapTileRowNum + mapLayer.LeftTopTileAxis.x; j++) {
                 int objNum = mapLayer.objectColumnList.get(i)[j] - 1;
                 if (objNum == INN.TILETYPE_GATE) {
                     unitEnty.startAxisX = j;
@@ -355,7 +355,7 @@ public class Game_Stage extends Game {
 
     private void setCommandBtn() {
         commandBtnList = new ArrayList<>();
-        int btnX = (canvasW - commandBtnW*unitCommandArr.length)/2;
+        int btnX = (canvasW - commandBtnW * unitCommandArr.length) / 2;
         for (int i = 0; i < unitCommandArr.length; i++) {
             ButtonEnty enty = new ButtonEnty();
             enty.name = unitCommandArr[i];
@@ -363,11 +363,11 @@ public class Game_Stage extends Game {
             enty.drawX = i * commandBtnW + btnX;
             enty.drawY = mapMarginTop + mapDrawH;
             enty.drawW = commandBtnW;
-            enty.drawH = commandBtnH-10;
+            enty.drawH = commandBtnH - 10;
             enty.clipX = 210;
             enty.clipY = 0;
             enty.clipW = commandBtnW;
-            enty.clipH = commandBtnH-10;
+            enty.clipH = commandBtnH - 10;
             commandBtnList.add(enty);
         }
     }
@@ -477,13 +477,13 @@ public class Game_Stage extends Game {
         if (gameMain.onStatusTouch())
             return;
 
-        boolean hasTouchMap = false;
-        if (GameUtil.equalsTouch(gameMain.appClass.touch, mapMarginLeft, mapMarginTop, mapDrawW, mapDrawH)) {
-            hasTouchMap = true;
-        }
+        boolean isTouchMap = false;
+        if (GameUtil.equalsTouch(gameMain.appClass.touch, mapMarginLeft, mapMarginTop, mapDrawW, mapDrawH))
+            isTouchMap = true;
         switch (gameMain.appClass.touch.action) {
             case MotionEvent.ACTION_DOWN:
-                mapLayer.isClick = true;
+                if (GameUtil.equalsTouch(gameMain.appClass.touch, mapMarginLeft, mapMarginTop, mapDrawW, mapDrawH))
+                    mapLayer.isClick = true;
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (mapLayer.isClick) {
@@ -494,78 +494,87 @@ public class Game_Stage extends Game {
                     }
                 }
 
-                if (hasTouchMap) {
-                    mapLayer.mMapAxis.x = (int) (gameMain.appClass.touch.mPosX);
-                    if (mapLayer.mMapAxis.x > 0) {
+                if (isTouchMap) {
+                    mapLayer.mMapScrollAxis.x = (int) (gameMain.appClass.touch.mPosX);
+                    if (mapLayer.mMapScrollAxis.x > 0) {
                         gameMain.appClass.touch.mPosX = 0;
-                    } else if (mapLayer.mMapAxis.x < (mapTotalW - mapDrawW) * -1) {
+                    } else if (mapLayer.mMapScrollAxis.x < (mapTotalW - mapDrawW) * -1) {
                         gameMain.appClass.touch.mPosX = (mapTotalW - mapDrawW) * -1;
-                        mapLayer.mMapAxis.x = (mapTotalW - mapDrawW) * -1;
+                        mapLayer.mMapScrollAxis.x = (mapTotalW - mapDrawW) * -1;
                     }
 
-                    mapLayer.mMapAxis.y = (int) (gameMain.appClass.touch.mPosY);
-                    if (mapLayer.mMapAxis.y < 0) {
+                    mapLayer.mMapScrollAxis.y = (int) (gameMain.appClass.touch.mPosY);
+                    if (mapLayer.mMapScrollAxis.y < 0) {
                         gameMain.appClass.touch.mPosY = 0;
-                    } else if (mapLayer.mMapAxis.y > mapTotalH - mapDrawH) {
+                    } else if (mapLayer.mMapScrollAxis.y > mapTotalH - mapDrawH) {
                         gameMain.appClass.touch.mPosY = mapTotalH - mapDrawH;
                     }
-                    mapLayer.mMapAxis.x = (int) gameMain.appClass.touch.mPosX;
-                    mapLayer.mMapAxis.y = (int) gameMain.appClass.touch.mPosY;
+                    mapLayer.mMapScrollAxis.x = (int) gameMain.appClass.touch.mPosX;
+                    mapLayer.mMapScrollAxis.y = (int) gameMain.appClass.touch.mPosY;
 
-                    mapLayer.getTileNum(mapLayer.LeftTopTileNum,
-                            mapLayer.mMapAxis.x, mapLayer.mMapAxis.y);
+                    mapLayer.LeftTopTileAxis = mapLayer.getTileAxis(mapLayer.mMapScrollAxis.x, mapLayer.mMapScrollAxis.y);
 
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-                if (hasTouchMap && mapLayer.isClick) {
-                    //커서가 위치할 타일의 axis 계산
-                    int x = (int) gameMain.appClass.touch.mLastTouchX - mapLayer.mMapAxis.x - mapMarginLeft;
-                    int y = (int) gameMain.appClass.touch.mLastTouchY +
-                            mapLayer.mMapAxis.y - mapMarginTop;
-                    mapLayer.getTileNum(mapLayer.cursor.curTile, x, y);
+                if (isTouchMap && mapLayer.isClick) {
+                    touchMapTile();
+                } else {
+                    //유닛선택시 나타나는 커멘드 클릭
+                    if (selectUnitEnty != null) {
 
-                    // 커서가 위치할 타일의 타입(넘버) 체크
-                    mapLayer.cursor.tileObjectNum = getObjectTileNumber(mapLayer.cursor.curTile.x, mapLayer.cursor.curTile.y);
-//                    mapLayer.objectColumnList.get(mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x] - 1;
-//                    if (mapLayer.cursor.tileNum == -1)
-                    mapLayer.cursor.tileTerrianNum = getTerrainTileNumber(mapLayer.cursor.curTile.x, mapLayer.cursor.curTile.y);
-//                    mapLayer.terrainColumnList.get(mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x] - 1;
-
-                    switch (mapLayer.cursor.tileObjectNum) {
-                        case MAPTILE_TOWN:
-                            //temp party list에서 파티리스트를 불러온다
-                            break;
-                        default:
-                            break;
                     }
-
-                    // 커서가 유닛을 선택할 경우 zoc 체크
-                    unitZocList = null;
-                    selectUnitEnty = null;
-                    selectMonsterEnty = null;
-
-                    if (mapLayer.cursor.curTile.x == unitEnty.curAxisX &&
-                            mapLayer.cursor.curTile.y == unitEnty.curAxisY) {
-                        unitZocList = checkZOC(unitEnty.curAxisX, unitEnty.curAxisY);
-                        selectUnitEnty = unitEnty;
-                        break;
-                    }
-
-                    //커서가 몬스터를 선택할 경우 zoc 체크
-                    for (MonsterEnty monEnty : monsterList) {
-                        if (mapLayer.cursor.curTile.x == monEnty.curAxisX &&
-                                mapLayer.cursor.curTile.y == monEnty.curAxisY) {
-                            unitZocList = checkZOC(monEnty.curAxisX, monEnty.curAxisY);
-                            selectMonsterEnty = monEnty;
-                            break;
-                        }
-                    }
-
                 }
                 mapLayer.isClick = false;
+
+
                 break;
+        }
+    }
+
+    private void touchMapTile() {
+        //커서가 위치할 타일의 axis 계산
+        int x = (int) gameMain.appClass.touch.mLastTouchX - mapLayer.mMapScrollAxis.x - mapMarginLeft;
+        int y = (int) gameMain.appClass.touch.mLastTouchY +
+                mapLayer.mMapScrollAxis.y - mapMarginTop;
+        mapLayer.cursor.curTile = mapLayer.getTileAxis(x, y);
+
+        // 커서가 위치할 타일의 타입(넘버) 체크
+        mapLayer.cursor.tileObjectNum = getObjectTileNumber(mapLayer.cursor.curTile.x, mapLayer.cursor.curTile.y);
+//                    mapLayer.objectColumnList.get(mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x] - 1;
+//                    if (mapLayer.cursor.tileNum == -1)
+        mapLayer.cursor.tileTerrianNum = getTerrainTileNumber(mapLayer.cursor.curTile.x, mapLayer.cursor.curTile.y);
+//                    mapLayer.terrainColumnList.get(mapLayer.cursor.curTile.y)[mapLayer.cursor.curTile.x] - 1;
+
+        switch (mapLayer.cursor.tileObjectNum) {
+            case MAPTILE_TOWN:
+                //temp party list에서 파티리스트를 불러온다
+                break;
+            default:
+                break;
+        }
+
+        // 커서가 유닛을 선택할 경우 zoc 체크
+        unitZocList = null;
+        selectUnitEnty = null;
+        selectMonsterEnty = null;
+
+        if (mapLayer.cursor.curTile.x == unitEnty.curAxisX &&
+                mapLayer.cursor.curTile.y == unitEnty.curAxisY) {
+            unitZocList = checkZOC(unitEnty.curAxisX, unitEnty.curAxisY);
+            selectUnitEnty = unitEnty;
+            return;
+        }
+
+        //커서가 몬스터를 선택할 경우 zoc 체크
+        for (MonsterEnty monEnty : monsterList) {
+            if (mapLayer.cursor.curTile.x == monEnty.curAxisX &&
+                    mapLayer.cursor.curTile.y == monEnty.curAxisY) {
+                unitZocList = checkZOC(monEnty.curAxisX, monEnty.curAxisY);
+                selectMonsterEnty = monEnty;
+                break;
+            }
         }
     }
 }

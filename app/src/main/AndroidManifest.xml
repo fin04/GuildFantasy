@@ -22,6 +22,17 @@
             android:name=".util.DialogActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"></activity>
+
+        <service android:name=".util.FCM_MessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".util.FCM_InstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

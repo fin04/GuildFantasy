@@ -18,6 +18,8 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends GLActivity {
 
@@ -72,6 +74,10 @@ public class MainActivity extends GLActivity {
         FrameLayout layout = (FrameLayout) findViewById(R.id.surfaceFrame);
         layout.addView(mGLView);
         layout.addView(adView, adParams);*/
+
+//FCM
+        FirebaseMessaging.getInstance().subscribeToTopic("news");
+        FirebaseInstanceId.getInstance().getToken();
     }
 
     @Override

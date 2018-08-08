@@ -50,8 +50,14 @@ public class MapEnty {
         public int mMapTileRowNum;
         public int mMapTileColumnNum;
 
-        public Point mMapAxis;
-        public Point LeftTopTileNum;
+        /**
+         * 맵의 스크롤 이동 좌표
+         */
+        public Point mMapScrollAxis;
+        /**
+         * 맵의 최상단왼쪽에 위치하는 타일의 Axis
+         */
+        public Point LeftTopTileAxis;
 
         public CursorTile cursor;
 
@@ -63,10 +69,17 @@ public class MapEnty {
          */
         public int mTileHeightOnMap;
 
-        public Point getTileNum(Point point, int x, int y) {
+        /**
+         * 픽셀 좌표를 타일 좌표로 변환
+         * @param x
+         * @param y
+         * @return
+         */
+        public Point getTileAxis(int x, int y) {
             if (x < 0)
                 x *= -1;
             int selectTileMarginTop = getTileHeight() / 8;
+            Point point = new Point();
             point.y = (y - selectTileMarginTop) / (getTileHeight() / 4 * 3);
             if (point.y < 0)
                 point.y = 0;
