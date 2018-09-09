@@ -1,6 +1,7 @@
 package com.epriest.game.guildfantasy.main.enty;
 
 import android.graphics.Point;
+import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -47,8 +48,10 @@ public class MapEnty {
          */
         public ArrayList<int[]> objectColumnList;
 
-        public int mMapTileRowNum;
-        public int mMapTileColumnNum;
+        /**
+         * 캔버스 내에 그려지는 타일의 총 갯수
+         */
+        public int mapCanvasTileTotalX, mapCanvasTileTotalY;
 
         /**
          * 맵의 스크롤 이동 좌표
@@ -71,25 +74,35 @@ public class MapEnty {
 
         /**
          * 픽셀 좌표를 타일 좌표로 변환
-         * @param x
-         * @param y
+         * @param pX
+         * @param pY
          * @return
          */
-        public Point getTileAxis(int x, int y) {
-            if (x < 0)
-                x *= -1;
-            int selectTileMarginTop = getTileHeight() / 8;
-            Point point = new Point();
-            point.y = (y - selectTileMarginTop) / (getTileHeight() / 4 * 3);
-            if (point.y < 0)
-                point.y = 0;
+        public Point getTileAxis(int pX, int pY, int mapMarginLeft, int mapMarginTop) {
+            int x = pX - mapMarginLeft;
+            int y = pY - mapMarginTop;
 
-            if (point.y % 2 == 0)
-                point.x = (x + getTileWidth() / 2) / getTileWidth();
+            Point tilePoint = new Point();
+            //tileAxis Y 계산
+            tilePoint.y = y / (getTileHeight() / 4 * 3);
+            if (tilePoint.y < 0)
+                tilePoint.y = 0;
+            else if(tilePoint.y >= mapCanvasTileTotalY)
+                tilePoint.y = getLayers().get(0).getHeight()-mapCanvasTileTotalY-1;
+
+            //tileAxis X 계산
+            int cx = Math.abs(x);
+            if (tilePoint.y % 2 == 0)
+                tilePoint.x = (cx + getTileWidth() / 2) / getTileWidth();
             else
-                point.x = x / getTileWidth();
+                tilePoint.x = cx / getTileWidth();
+            if(tilePoint.x < 0)
+                tilePoint.x = 0;
+            else if(tilePoint.x >= mapCanvasTileTotalX)
+                tilePoint.x = getLayers().get(0).getWidth()-mapCanvasTileTotalX-1;
+            Log.d("","px:"+tilePoint.x+",py:"+tilePoint.y);
 
-            return point;
+            return tilePoint;
         }
     }
 

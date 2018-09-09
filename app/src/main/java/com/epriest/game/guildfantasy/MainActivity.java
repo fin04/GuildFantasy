@@ -1,29 +1,25 @@
 package com.epriest.game.guildfantasy;
 
-import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.Display;
-import android.view.Gravity;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
-import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.graphics.GLActivity;
-import com.epriest.game.guildfantasy.main.play.GameDbAdapter;
+import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends GLActivity {
 
     private MainGLView mGLView;
+    private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +73,13 @@ public class MainActivity extends GLActivity {
 
 //FCM
         FirebaseMessaging.getInstance().subscribeToTopic("news");
-        FirebaseInstanceId.getInstance().getToken();
+        String aa = FirebaseInstanceId.getInstance().getToken();
+
+//        UserData userData = new UserData();
+//        userData.userEmailID = email.substring(0, email.indexOf('@'));
+//        userData.fcmToken = FirebaseInstanceId.getInstance().getToken();
+
+//        firebaseDatabase.getReference("users").child(userData.userEmailID).setValue(userData);
     }
 
     @Override
