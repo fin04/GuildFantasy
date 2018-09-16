@@ -275,7 +275,7 @@ public class Scene_Stage extends Scene {
     private void drawPartyCard(Canvas mCanvas, UnitEnty enty) {
         int infoCardW = gameDungeon.canvasW / 4;
         int infoX = enty.num * infoCardW + 10;
-        int infoY = gameDungeon.mapMarginTop + gameDungeon.mapCanvasH + gameDungeon.commandBtnH;
+        int infoY = gameDungeon.mapMarginTop + gameDungeon.mapHeight + gameDungeon.commandBtnH;
         DrawUtil.drawBitmap(gameDungeon.img_unitCard, mCanvas, infoX, infoY);
         DrawUtil.drawClip(enty.chr_img, mCanvas, 0, 0, 150, 130, infoX, infoY + 10);
         Paint paint = new Paint();

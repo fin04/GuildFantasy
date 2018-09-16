@@ -375,9 +375,6 @@ public class MainGLView extends GLView {
                 final float dx = x - appClass.touch.mLastTouchX;
                 final float dy = y - appClass.touch.mLastTouchY;
 
-                appClass.touch.mPosX += dx;
-                appClass.touch.mPosY -= dy;
-
                 // Remember this touch position for the next move event
                 appClass.touch.mLastTouchX = x;
                 appClass.touch.mLastTouchY = y;
