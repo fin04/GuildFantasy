@@ -23,19 +23,19 @@ public class UnitEnty {
     public String id;
 
     /**
-     * 유닛의 첫 시작 포인트
+     * 유닛의 첫 시작 타일 위치
      */
-    public Point startAxis = new Point();
+    public Point startTileAxis = new Point();
 //    public int startAxisX;
 //    public int startAxisY;
     /**
-     * 유닛의 현재 포인트
+     * 유닛의 현재 타일 위치
      */
-    public Point curAxis = new Point();
+    public Point curTileAxis = new Point();
 //    public int curAxisX;
 //    public int curAxisY;
     /**
-     * 유닛의 다음 포인트
+     * 유닛의 다음 타일 위치
      */
     public int nextAxisX;
     public int nextAxisY;

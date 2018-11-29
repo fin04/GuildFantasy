@@ -9,8 +9,10 @@ import android.graphics.Point;
 import com.epriest.game.CanvasGL.graphics.CanvasUtil;
 import com.epriest.game.CanvasGL.util.ApplicationClass;
 import com.epriest.game.CanvasGL.util.Scene;
+import com.epriest.game.CanvasGL.util.gameLog;
 import com.epriest.game.guildfantasy.main.enty.ButtonEnty;
 import com.epriest.game.guildfantasy.main.enty.HexaEnty;
+import com.epriest.game.guildfantasy.main.enty.MapEnty;
 import com.epriest.game.guildfantasy.main.enty.MonsterEnty;
 import com.epriest.game.guildfantasy.main.enty.UnitEnty;
 import com.epriest.game.guildfantasy.util.DrawUtil;
@@ -55,11 +57,12 @@ public class Scene_Stage extends Scene {
 
     @Override
     public void draw(Canvas mCanvas) {
+        MapEnty.MapLayer mapLayer = gameDungeon.mapLayer;
         DrawUtil.drawBox(mCanvas, Color.argb(255, 40, 60, 60), true,
                 0, 0, gameDungeon.canvasW, gameDungeon.canvasH);
 
         //map draw
-        drawMap(mCanvas);
+        drawMap(mCanvas, mapLayer);
 
         //unit draw
         drawUnit(mCanvas, gameDungeon.unitEnty);
@@ -87,14 +90,22 @@ public class Scene_Stage extends Scene {
         }
 
         // 좌표 확인용 텍스트
-        String str = gameDungeon.mapLayer.mMapScrollAxis.x + "," + gameDungeon.mapLayer.mMapScrollAxis.y;
-        str += "("+gameDungeon.mapLayer.LeftTopTileAxis.x+","+gameDungeon.mapLayer.LeftTopTileAxis.y+")";
-        DrawUtil.drawString(mCanvas, str, 20, Color.RED, Paint.Align.LEFT, 10, 90);
-        DrawUtil.drawBox(mCanvas, Color.argb(200, 0, 180, 30), true,
-                0, gameDungeon.canvasH - gameDungeon.commandBtnH, gameDungeon.canvasW, gameDungeon.commandBtnH);
+//        String str = gameDungeon.mapLayer.gameMap_ScrollAxis.x + "," + gameDungeon.mapLayer.gameMap_ScrollAxis.y;
+//        str += "(" + gameDungeon.mapLayer.LeftTopTileAxis.x + "," + gameDungeon.mapLayer.LeftTopTileAxis.y + ")";
+//        DrawUtil.drawString(mCanvas, str, 20, Color.RED, Paint.Align.LEFT, 10, 90);
+//        DrawUtil.drawBox(mCanvas, Color.argb(200, 0, 180, 30), true,
+//                0, gameDungeon.canvasH - gameDungeon.commandBtnH, gameDungeon.canvasW, gameDungeon.commandBtnH);
 
 
         drawStageTab(mCanvas);
+
+        drawGuide(mCanvas);
+    }
+
+    private void drawGuide(Canvas mCanvas) {
+        //map tile 영역
+        DrawUtil.drawBox(mCanvas, Color.GREEN, false, gameDungeon.mapMarginLeft, gameDungeon.mapMarginTop
+                , gameDungeon.mapDrawWidth, gameDungeon.mapDrawHeight);
     }
 
     private void drawStageTab(Canvas mCanvas) {
@@ -179,16 +190,19 @@ public class Scene_Stage extends Scene {
         }
     }
 
-    private void drawMap(Canvas mCanvas) {
-        for (int i = gameDungeon.mapLayer.LeftTopTileAxis.y;
-             i < gameDungeon.mapLayer.mapCanvasTileTotalY + gameDungeon.mapLayer.LeftTopTileAxis.y; i++) {
+    private void drawMap(Canvas mCanvas, MapEnty.MapLayer mapLayer) {
+//        Point tileViewAxis = mapLayer.getTileAxis(mapLayer.canvasMap_FirstTile.x, mapLayer.canvasMap_FirstTile.y);
+        Point axis = gameDungeon.mapLayer.canvasMap_FirstTile;
+        for (int i = axis.y; i < mapLayer.canvasMap_LastTile.y + axis.y; i++) {
+            for (int j = axis.x; j < mapLayer.canvasMap_LastTile.x + axis.x; j++) {
+                //지형, 오브젝트 타일값 불러오기
+                int mapNum = mapLayer.terrainColumnList.get(i)[j] - 1;
+                int objNum = mapLayer.objectColumnList.get(i)[j] - 1;
 
-            for (int j = gameDungeon.mapLayer.LeftTopTileAxis.x;
-                 j < gameDungeon.mapLayer.mapCanvasTileTotalX + gameDungeon.mapLayer.LeftTopTileAxis.x; j++) {
-
-                Point hexaAxis = getHexaDrawAxis(j, i);
-                int mapNum = gameDungeon.mapLayer.terrainColumnList.get(i)[j] - 1;
-                int objNum = gameDungeon.mapLayer.objectColumnList.get(i)[j] - 1;
+                //타일의 실제 그려질 좌표를 계산
+                Point hexaAxis = mapLayer.getHexaDrawAxis(j-axis.x, i-axis.y);
+                hexaAxis.x += gameDungeon.mapMarginLeft;
+                hexaAxis.y += gameDungeon.mapMarginTop;
 
                 CanvasUtil.drawClip(gameDungeon.img_mapBg, mCanvas,
                         (mapNum % 4) * tileW, (mapNum / 4) * tileH,
@@ -196,6 +210,12 @@ public class Scene_Stage extends Scene {
                 CanvasUtil.drawClip(gameDungeon.img_mapBg, mCanvas,
                         (objNum % 4) * tileW, (objNum / 4) * tileH,
                         tileW, tileH, hexaAxis.x, hexaAxis.y);
+                //guide number
+                //타일좌표
+                int tile_i = i + axis.y;
+                int tile_j = j + axis.x;
+                CanvasUtil.drawString(mCanvas, tile_j + "," + tile_i, 20, Color.WHITE,
+                        Paint.Align.LEFT, hexaAxis.x + 20, hexaAxis.y + 20);
             }
         }
     }
@@ -214,7 +234,7 @@ public class Scene_Stage extends Scene {
                 continue;
             if (!gameDungeon.isMoveableTile(enty.terrain))
                 continue;
-            Point zocAxis = getHexaDrawAxis(enty.x, enty.y);
+            Point zocAxis = gameDungeon.mapLayer.getHexaDrawAxis(enty.x, enty.y);
             CanvasUtil.drawBitmap(gameDungeon.img_zoc, mCanvas, zocAxis.x, zocAxis.y);
             CanvasUtil.drawString(mCanvas, Integer.toString(enty.num), 20, Color.rgb(180, 0, 0),
                     Paint.Align.CENTER, zocAxis.x + tileCenter, zocAxis.y + tileCenter - 10);
@@ -222,7 +242,7 @@ public class Scene_Stage extends Scene {
     }
 
     private void drawCursor(Canvas mCanvas) {
-        Point curAxis = getHexaDrawAxis(gameDungeon.mapLayer.cursor.curTile.x,
+        Point curAxis = gameDungeon.mapLayer.getHexaDrawAxis(gameDungeon.mapLayer.cursor.curTile.x,
                 gameDungeon.mapLayer.cursor.curTile.y);
         CanvasUtil.drawClip(gameDungeon.img_curTile, mCanvas, (cursorTileAnimCnt / 8) * cursorMargin, 0,
                 cursorMargin, cursorMargin, curAxis.x - cursorCorr, curAxis.y - cursorCorr);
@@ -233,7 +253,7 @@ public class Scene_Stage extends Scene {
     }
 
     private void drawUnit(Canvas mCanvas, UnitEnty unitEnty) {
-        Point drawAxis = getHexaDrawAxis(unitEnty.curAxis.x, unitEnty.curAxis.y);
+        Point drawAxis = gameDungeon.mapLayer.getHexaDrawAxis(unitEnty.curTileAxis.x, unitEnty.curTileAxis.y);
 
         //unitBg
         DrawUtil.drawClip(gameDungeon.img_unit, mCanvas, 0, 0,
@@ -256,7 +276,7 @@ public class Scene_Stage extends Scene {
     }
 
     private void drawMon(Canvas mCanvas, MonsterEnty monEnty) {
-        Point monAxis = getHexaDrawAxis(monEnty.startAxisX, monEnty.startAxisy);
+        Point monAxis = gameDungeon.mapLayer.getHexaDrawAxis(monEnty.startAxisX, monEnty.startAxisy);
         int monMargin = (tileH - monEnty.mon_img.getHeight()) / 2;
         DrawUtil.drawBitmap(monEnty.mon_img, mCanvas, monAxis.x + monMargin, monAxis.y + monMargin);
     }
@@ -275,7 +295,7 @@ public class Scene_Stage extends Scene {
     private void drawPartyCard(Canvas mCanvas, UnitEnty enty) {
         int infoCardW = gameDungeon.canvasW / 4;
         int infoX = enty.num * infoCardW + 10;
-        int infoY = gameDungeon.mapMarginTop + gameDungeon.mapHeight + gameDungeon.commandBtnH;
+        int infoY = gameDungeon.mapMarginTop + gameDungeon.mapDrawHeight + gameDungeon.commandBtnH;
         DrawUtil.drawBitmap(gameDungeon.img_unitCard, mCanvas, infoX, infoY);
         DrawUtil.drawClip(enty.chr_img, mCanvas, 0, 0, 150, 130, infoX, infoY + 10);
         Paint paint = new Paint();
@@ -313,21 +333,5 @@ public class Scene_Stage extends Scene {
 
     }
 
-    /**
-     * hexa 좌표를 draw 좌표로 전환
-     *
-     * @param hexaX
-     * @param hexaY
-     * @return
-     */
-    private Point getHexaDrawAxis(int hexaX, int hexaY) {
-        Point point = new Point();
-        int startX = gameDungeon.mapLayer.mMapScrollAxis.x;
-        if (hexaY % 2 == 0)
-            startX = gameDungeon.mapLayer.mMapScrollAxis.x - (tileW / 2);
 
-        point.x = hexaX * tileW + startX + gameDungeon.mapMarginLeft;
-        point.y = hexaY * gameDungeon.mapLayer.mTileHeightOnMap + gameDungeon.mapMarginTop;
-        return point;
-    }
 }

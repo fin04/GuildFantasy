@@ -3,7 +3,6 @@ package com.epriest.game.guildfantasy.main;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import com.epriest.game.CanvasGL.graphics.GLUtil;
@@ -60,7 +59,7 @@ public class Game_Stage extends Game {
     /**
      * map의 배열된 타일 갯수
      */
-    public int mapTileTotalX, mapTileTotalY;
+//    public int mapTileTotalX, mapTileTotalY;
 
     /**
      * 맵이 그려지는 Top, Left 위치
@@ -68,11 +67,11 @@ public class Game_Stage extends Game {
     public int mapMarginTop, mapMarginLeft;
 
     /**
-     * 맵 스크롤 위치
+     * 맵이 그려지는 Width, Height
      */
-//    public int prevScrollX, prevScrollY;
+    public int mapDrawWidth, mapDrawHeight;
 
-    public int mapWidth, mapHeight;
+    public int mapTotalWidth, mapTotalHeight;
 
     public MapEnty.MapLayer mapLayer;
     public ArrayList<ButtonEnty> commandBtnList;
@@ -156,7 +155,7 @@ public class Game_Stage extends Game {
     }
 
     private void setMapLayer() {
-        String jsonStr = GameUtil.getAssetString(gameMain.appClass.getBaseContext(), "map/stage00.json");
+        String jsonStr = GameUtil.getAssetString(gameMain.appClass.getBaseContext(), "map/stage01.json");
         Gson gson = new Gson();
         mapLayer = gson.fromJson(jsonStr, MapEnty.MapLayer.class);
         mapLayer.terrainColumnList = new ArrayList<>();
@@ -191,48 +190,34 @@ public class Game_Stage extends Game {
     private void setMapInit() {
         int tileW = mapLayer.getTileWidth();
         int tileH = mapLayer.getTileHeight();
-        touchableTileArea = tileH / 3;
-        mapLayer.mapCanvasTileTotalX = mapLayer.getLayers().get(0).getWidth();
-        if (mapLayer.mapCanvasTileTotalX * tileW > canvasW + tileW) {
-            mapLayer.mapCanvasTileTotalX = gameMain.appClass.getGameCanvasWidth() / tileW + 2;
-        }
+        touchableTileArea = 3;
 
         // map이 그려질 영역
-        mapWidth = canvasW;
-        mapHeight = canvasH - cardH - commandBtnH;
-        mapLayer.mapCanvasTileTotalY = mapHeight / (tileH * 3 / 4);
-        if (mapLayer.mapCanvasTileTotalY > mapLayer.getLayers().get(0).getHeight())
-            mapLayer.mapCanvasTileTotalY = mapLayer.getLayers().get(0).getHeight();
+        mapMarginLeft = 50;
+        mapMarginTop = Game_Main.statusBarH;
+        mapDrawWidth = canvasW - mapMarginLeft * 2;
+        mapDrawHeight = canvasH - cardH - commandBtnH;
 
-        //그려지는 맵의 크기
-//        mapCanvasW = mapLayer.mapCanvasTileTotalX * tileW;
-//        mapCanvasH = mapLayer.mapCanvasTileTotalY * mapLayer.mTileHeightOnMap;
+        mapLayer.canvasMap_LastTile = new Point();
+        mapLayer.canvasMap_LastTile.y = mapDrawHeight / (tileH * 3 / 4);
+        if (mapLayer.canvasMap_LastTile.y > mapLayer.getLayers().get(0).getHeight())
+            mapLayer.canvasMap_LastTile.y = mapLayer.getLayers().get(0).getHeight();
+
+        mapLayer.canvasMap_LastTile.x = mapDrawWidth / tileW;
+        if (mapLayer.canvasMap_LastTile.x > mapLayer.getLayers().get(0).getWidth())
+            mapLayer.canvasMap_LastTile.x = mapLayer.getLayers().get(0).getWidth();
 
         //맵의 총 크기
-        mapTileTotalX = mapLayer.mapList.get(0).getWidth();//mapLayer.terrainColumnList.get(0).length * tileW;
-        mapTileTotalY = mapLayer.mapList.get(0).getHeight();//mapLayer.terrainColumnList.size() * mapLayer.mTileHeightOnMap;
+        mapLayer.gameMap_LastTile = new Point();
+        mapLayer.gameMap_LastTile.x = mapLayer.mapList.get(0).getWidth();//mapLayer.terrainColumnList.get(0).length * tileW;
+        mapLayer.gameMap_LastTile.y = mapLayer.mapList.get(0).getHeight();//mapLayer.terrainColumnList.size() * mapLayer.mTileHeightOnMap;
 
-        //맵이 그려지는 top margin 계산
-        mapMarginTop = Game_Main.statusBarH;
-        int mDrawMapAxisH = mapTileTotalY * mapLayer.mTileHeightOnMap;
-        if (mDrawMapAxisH < mapHeight) {
-            mapMarginTop = Game_Main.statusBarH + (mapHeight - mDrawMapAxisH) / 2;
-        }
-
-        //맵이 그려지는 left margin 계산
-        mapMarginLeft = 0;
-        int mDrawMapAxisW = mapTileTotalX * mapLayer.getTileWidth();
-        if (mDrawMapAxisW < canvasW) {
-            mapMarginLeft = (canvasW - mDrawMapAxisW) / 2;
-        }
-
-        mapLayer.LeftTopTileAxis = new Point();
-        mapLayer.mMapScrollAxis = new Point();
         //게임 처음 맵이 보여지는 위치 설정 (임시로 0)
-        mapLayer.mMapScrollAxis.x = 0;
-        mapLayer.mMapScrollAxis.y = 0;
-        mapLayer.LeftTopTileAxis = mapLayer.getTileAxis(mapLayer.mMapScrollAxis.x, mapLayer.mMapScrollAxis.y,
-                mapMarginLeft, mapMarginTop);
+        mapLayer.canvasMap_FirstTile = new Point();
+        mapLayer.canvasMap_FirstTile.x = 0;
+        mapLayer.canvasMap_FirstTile.y = 0;
+
+        mapLayer.gameMap_ScrollAxis = new Point();
     }
 
     private void setUnitEnty(int memberNum) {
@@ -259,30 +244,46 @@ public class Game_Stage extends Game {
 
         unitEnty.num = memberNum;
 
-
         // unit초기 위치는 gate가 있는 스타트 위치.
-        unitEnty.startAxis = getUnitTileAxis(mapTileTotalX, mapTileTotalY, INN.TILETYPE_GATE);
-        mapLayer.LeftTopTileAxis.x = unitEnty.startAxis.x - mapLayer.mapCanvasTileTotalX / 2;
-        mapLayer.LeftTopTileAxis.y = unitEnty.startAxis.y - mapLayer.mapCanvasTileTotalY / 2;
-        if (mapLayer.LeftTopTileAxis.x < 0)
-            mapLayer.LeftTopTileAxis.x = 0;
-        else if (mapLayer.LeftTopTileAxis.x + mapLayer.mapCanvasTileTotalX > mapTileTotalX)
-            mapLayer.LeftTopTileAxis.x = mapTileTotalX - mapLayer.mapCanvasTileTotalX;
-        if (mapLayer.LeftTopTileAxis.y < 0)
-            mapLayer.LeftTopTileAxis.y = 0;
-        else if (mapLayer.LeftTopTileAxis.y + mapLayer.mapCanvasTileTotalY > mapTileTotalY)
-            mapLayer.LeftTopTileAxis.y = mapTileTotalY - mapLayer.mapCanvasTileTotalY;
+        unitEnty.startTileAxis = getUnitTileAxis(mapLayer.gameMap_LastTile.x, mapLayer.gameMap_LastTile.y,
+                INN.TILETYPE_GATE);
 
-        unitEnty.curAxis.x = unitEnty.startAxis.x;
-        unitEnty.curAxis.y = unitEnty.startAxis.y;
+        //먼저 스타트위치가 캔버스 가운데 오는 뷰의 좌표를 구한다.
+        mapLayer.canvasMap_FirstTile.x = unitEnty.startTileAxis.x - mapLayer.canvasMap_LastTile.x / 2;
+        mapLayer.canvasMap_FirstTile.y = unitEnty.startTileAxis.y - mapLayer.canvasMap_LastTile.y / 2;
+
+        //만일 스타트 위치가 0보다 작으면 좌표는 0으로 하고, 타일맵의 마지막보다 크면 마지막 좌표값으로 한다.
+        if (mapLayer.canvasMap_FirstTile.x < 0)
+            mapLayer.canvasMap_FirstTile.x = 0;
+        else if (mapLayer.canvasMap_FirstTile.x >
+                mapLayer.gameMap_LastTile.x - mapLayer.canvasMap_LastTile.x)
+            mapLayer.canvasMap_FirstTile.x = mapLayer.gameMap_LastTile.x - mapLayer.canvasMap_LastTile.x;
+
+        if (mapLayer.canvasMap_FirstTile.y < 0)
+            mapLayer.canvasMap_FirstTile.y = 0;
+        else if (mapLayer.canvasMap_FirstTile.y >
+                mapLayer.gameMap_LastTile.y - mapLayer.canvasMap_LastTile.y)
+            mapLayer.canvasMap_FirstTile.y = mapLayer.gameMap_LastTile.y - mapLayer.canvasMap_LastTile.y;
+
+        //유닛 타일의 위치를 시작 지점으로 지정
+        unitEnty.curTileAxis.x = unitEnty.startTileAxis.x;
+        unitEnty.curTileAxis.y = unitEnty.startTileAxis.y;
+
+        // 유닛 멤버 불러오기
         unitEnty.memberEnty = new MemberEnty();
         unitEnty.memberEnty = DataManager.getMemberData(gameMain.dbAdapter, unitEnty.id);
         unitEnty.memberEnty.status.USE_HP = unitEnty.memberEnty.status.MAX_HP;
         unitEnty.memberEnty.status.USE_MP = unitEnty.memberEnty.status.MAX_MP;
         unitEnty.memberEnty.status.USE_AP = unitEnty.memberEnty.status.MAX_AP;
-
     }
 
+    /**
+     * 처음 시작 할때, Unit의 타일 위치를
+     * @param TotalX
+     * @param TotalY
+     * @param type
+     * @return
+     */
     private Point getUnitTileAxis(int TotalX, int TotalY, int type) {
         Point point = new Point();
         for (int i = 0; i < TotalY; i++) {
@@ -319,11 +320,11 @@ public class Game_Stage extends Game {
                 enty.pos = i;
                 memberCnt++;
 
-                enty.startAxis.x = enty.pos % 3 + 1;
-                enty.startAxis.y = mapLayer.mapCanvasTileTotalY - enty.pos / 3 - 3;
+                enty.startTileAxis.x = enty.pos % 3 + 1;
+                enty.startTileAxis.y = mapLayer.canvasMap_LastTile.y - enty.pos / 3 - 3;
 
-                enty.curAxis.x = enty.startAxis.x;
-                enty.curAxis.y = enty.startAxis.y;
+                enty.curTileAxis.x = enty.startTileAxis.x;
+                enty.curTileAxis.y = enty.startTileAxis.y;
                 enty.memberEnty = new MemberEnty();
                 enty.memberEnty = DataManager.getMemberData(gameMain.dbAdapter, id);
                 enty.memberEnty.status.USE_HP = enty.memberEnty.status.MAX_HP;
@@ -372,7 +373,7 @@ public class Game_Stage extends Game {
             enty.name = unitCommandArr[i];
             enty.num = i;
             enty.drawX = i * commandBtnW + btnX;
-            enty.drawY = mapMarginTop + mapHeight;
+            enty.drawY = mapMarginTop + mapDrawHeight;
             enty.drawW = commandBtnW;
             enty.drawH = commandBtnH - 10;
             enty.clipX = 210;
@@ -492,10 +493,10 @@ public class Game_Stage extends Game {
         boolean isTouchMapArea = false;
         Point scrollRange = new Point(0, 0);
 
-        if (GameUtil.equalsTouch(touch, mapMarginLeft, mapMarginTop, mapWidth, mapHeight)) {
+        if (GameUtil.equalsTouch(touch, mapMarginLeft, mapMarginTop, mapDrawWidth, mapDrawHeight)) {
             isTouchMapArea = true;
-            scrollRange.x = (int) (touch.mLastTouchX - touch.mDownX);
-            scrollRange.y = (int) (touch.mLastTouchY - touch.mDownY);
+            scrollRange.x = (int) (touch.mDownX - touch.mLastTouchX);
+            scrollRange.y = (int) (touch.mDownY - touch.mLastTouchY);
         }
 
         switch (touch.action) {
@@ -506,40 +507,42 @@ public class Game_Stage extends Game {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (isTouchMapArea) {
+                    // 타일 클릭 체크
                     if (mapLayer.isClick) {
                         if (Math.abs(scrollRange.x) > touchableTileArea ||
                                 Math.abs(scrollRange.y) > touchableTileArea) {
                             mapLayer.isClick = false;
                         } else {
-                            // Click (유격은 타일의 1/3)
+                            // Click
                             return;
                         }
                     }
 
+
                     // Map Scroll
                     // 맵 영역이 캔버스에 그려지는 영역보다 클때 스크롤 가능
-                    int mapTotalW = mapTileTotalX * mapLayer.getTileWidth();
-                    if (mapTotalW > mapWidth) {
+                    int mapTotalW = mapLayer.gameMap_LastTile.x * mapLayer.getTileWidth();
+                    if (mapTotalW > mapDrawWidth) {
                         if (scrollRange.x < 0) {
                             scrollRange.x = 0;
-                        } else if (scrollRange.x >= mapTotalW - mapWidth) {
-                            scrollRange.x = mapTotalW - mapWidth;
+                        } else if (scrollRange.x >= mapTotalW - mapDrawWidth) {
+                            scrollRange.x = mapTotalW - mapDrawWidth;
                         }
-                        mapLayer.mMapScrollAxis.x = scrollRange.x;
+                        mapLayer.gameMap_ScrollAxis.x = scrollRange.x;
                     }
 
-                    int mapTotalH = mapTileTotalY * mapLayer.getTileHeight();
-                    if (mapTotalH > mapHeight) {
+                    int mapTotalH = mapLayer.gameMap_LastTile.y * mapLayer.getTileHeight();
+                    if (mapTotalH > mapDrawHeight) {
                         if (scrollRange.y < 0) {
                             scrollRange.y = 0;
-                        } else if (scrollRange.y >= mapTotalH - mapHeight) {
-                            scrollRange.y = mapTotalH - mapHeight;
+                        } else if (scrollRange.y >= mapTotalH - mapDrawHeight) {
+                            scrollRange.y = mapTotalH - mapDrawHeight;
                         }
-                        mapLayer.mMapScrollAxis.y = scrollRange.y;
+                        mapLayer.gameMap_ScrollAxis.y = scrollRange.y;
                     }
 
-                    mapLayer.LeftTopTileAxis = mapLayer.getTileAxis(mapLayer.mMapScrollAxis.x,
-                            mapLayer.mMapScrollAxis.y, mapMarginLeft, mapMarginTop);
+//                    mapLayer.LeftTopTileAxis = mapLayer.getTileAxis(mapLayer.gameMap_ScrollAxis.x,
+//                            mapLayer.gameMap_ScrollAxis.y);//, mapMarginLeft, mapMarginTop);
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
@@ -560,8 +563,8 @@ public class Game_Stage extends Game {
 
     private void touchMapTile(int mTouchX, int mTouchY) {
         //커서가 위치할 타일의 axis 계산
-        mapLayer.cursor.curTile = mapLayer.getTileAxis(mTouchX - mapLayer.mMapScrollAxis.x,
-                mTouchY + mapLayer.mMapScrollAxis.y, mapMarginLeft, mapMarginTop);
+        mapLayer.cursor.curTile = mapLayer.getTileAxis(mTouchX - mapLayer.gameMap_ScrollAxis.x - mapMarginLeft,
+                mTouchY + mapLayer.gameMap_ScrollAxis.y - mapMarginTop);
 
         // 커서가 위치할 타일의 타입(넘버) 체크
         mapLayer.cursor.tileObjectNum = getObjectTileNumber(mapLayer.cursor.curTile.x, mapLayer.cursor.curTile.y);
@@ -583,9 +586,9 @@ public class Game_Stage extends Game {
         selectUnitEnty = null;
         selectMonsterEnty = null;
 
-        if (mapLayer.cursor.curTile.x == unitEnty.curAxis.x &&
-                mapLayer.cursor.curTile.y == unitEnty.curAxis.y) {
-            unitZocList = checkZOC(unitEnty.curAxis.x, unitEnty.curAxis.y);
+        if (mapLayer.cursor.curTile.x == unitEnty.curTileAxis.x &&
+                mapLayer.cursor.curTile.y == unitEnty.curTileAxis.y) {
+            unitZocList = checkZOC(unitEnty.curTileAxis.x, unitEnty.curTileAxis.y);
             selectUnitEnty = unitEnty;
             return;
         }
