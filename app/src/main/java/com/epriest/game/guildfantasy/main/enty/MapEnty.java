@@ -49,15 +49,11 @@ public class MapEnty {
         /**
          * 캔버스 내에 그려지는 타일의 총 갯수
          */
-        public Point canvasMap_LastTile;
+        public Point canvasMap_TileRange;
         /**
          * 게임 내에 존재하는 타일의 총 갯수
          */
         public Point gameMap_LastTile;
-        /**
-         * 맵의 스크롤 이동 좌표
-         */
-        public Point gameMap_ScrollAxis;
 
 
         public CursorTile cursor;
@@ -97,8 +93,8 @@ public class MapEnty {
             tilePoint.y = pY / (getTileHeight() / 4 * 3);
             if (tilePoint.y < 0)
                 tilePoint.y = 0;
-            else if (tilePoint.y >= canvasMap_LastTile.y)
-                tilePoint.y = canvasMap_LastTile.y - 1;
+            else if (tilePoint.y >= canvasMap_TileRange.y)
+                tilePoint.y = canvasMap_TileRange.y - 1;
 
             //tileAxis X 계산
             int cx = Math.abs(pX);
@@ -108,8 +104,8 @@ public class MapEnty {
                 tilePoint.x = cx / getTileWidth();
             if (tilePoint.x < 0)
                 tilePoint.x = 0;
-            else if (tilePoint.x >= canvasMap_LastTile.x)
-                tilePoint.x = canvasMap_LastTile.x - 1;
+            else if (tilePoint.x >= canvasMap_TileRange.x)
+                tilePoint.x = canvasMap_TileRange.x - 1;
 
             return tilePoint;
         }
@@ -121,8 +117,8 @@ public class MapEnty {
          */
         public Point checkTileDrawMapRange(int tileX, int tileY) {
             Point point = new Point();
-            int lastX = getLayers().get(0).getWidth() - canvasMap_LastTile.x;
-            int lastY = getLayers().get(0).getHeight() - canvasMap_LastTile.y;
+            int lastX = getLayers().get(0).getWidth() - canvasMap_TileRange.x;
+            int lastY = getLayers().get(0).getHeight() - canvasMap_TileRange.y;
             if (tileX > lastX)
                 point.x = lastX;
             if (tileY > lastY)
@@ -136,16 +132,16 @@ public class MapEnty {
          *
          * @return
          */
-        public Point getHexaDrawAxis(int hexaX, int hexaY) {
+        public Point getHexaDrawAxis(int hexaX, int hexaY, Point ScrollAxis) {
             Point point = new Point();
             int startX = 0;
             if (hexaY % 2 == 0)
-                startX = gameMap_ScrollAxis.x % tilewidth;
+                startX = ScrollAxis.x%tilewidth;
             else
-                startX = gameMap_ScrollAxis.x % tilewidth - (tilewidth / 2);
+                startX = ScrollAxis.x%tilewidth - (tilewidth / 2);
 
             point.x = hexaX * tilewidth - startX;
-            point.y = hexaY * mTileHeightOnMap - gameMap_ScrollAxis.y % tileheight;
+            point.y = hexaY * mTileHeightOnMap - ScrollAxis.y%tileheight;
             return point;
         }
     }

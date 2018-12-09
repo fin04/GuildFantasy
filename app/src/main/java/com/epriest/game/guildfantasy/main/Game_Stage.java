@@ -71,7 +71,10 @@ public class Game_Stage extends Game {
      */
     public int mapDrawWidth, mapDrawHeight;
 
-    public int mapTotalWidth, mapTotalHeight;
+    public Point maxScroll;
+    public Point curScroll;
+    public Point prevScroll;
+
 
     public MapEnty.MapLayer mapLayer;
     public ArrayList<ButtonEnty> commandBtnList;
@@ -154,6 +157,9 @@ public class Game_Stage extends Game {
 
     }
 
+    /**
+     * map json 불러와서 mapLayer에 입력
+     */
     private void setMapLayer() {
         String jsonStr = GameUtil.getAssetString(gameMain.appClass.getBaseContext(), "map/stage01.json");
         Gson gson = new Gson();
@@ -198,26 +204,20 @@ public class Game_Stage extends Game {
         mapDrawWidth = canvasW - mapMarginLeft * 2;
         mapDrawHeight = canvasH - cardH - commandBtnH;
 
-        mapLayer.canvasMap_LastTile = new Point();
-        mapLayer.canvasMap_LastTile.y = mapDrawHeight / (tileH * 3 / 4);
-        if (mapLayer.canvasMap_LastTile.y > mapLayer.getLayers().get(0).getHeight())
-            mapLayer.canvasMap_LastTile.y = mapLayer.getLayers().get(0).getHeight();
+        mapLayer.canvasMap_TileRange = new Point();
+        mapLayer.canvasMap_TileRange.y = mapDrawHeight / (tileH * 3 / 4);
+        if (mapLayer.canvasMap_TileRange.y > mapLayer.getLayers().get(0).getHeight())
+            mapLayer.canvasMap_TileRange.y = mapLayer.getLayers().get(0).getHeight();
 
-        mapLayer.canvasMap_LastTile.x = mapDrawWidth / tileW;
-        if (mapLayer.canvasMap_LastTile.x > mapLayer.getLayers().get(0).getWidth())
-            mapLayer.canvasMap_LastTile.x = mapLayer.getLayers().get(0).getWidth();
+        mapLayer.canvasMap_TileRange.x = mapDrawWidth / tileW;
+        if (mapLayer.canvasMap_TileRange.x > mapLayer.getLayers().get(0).getWidth())
+            mapLayer.canvasMap_TileRange.x = mapLayer.getLayers().get(0).getWidth();
 
         //맵의 총 크기
         mapLayer.gameMap_LastTile = new Point();
-        mapLayer.gameMap_LastTile.x = mapLayer.mapList.get(0).getWidth();//mapLayer.terrainColumnList.get(0).length * tileW;
-        mapLayer.gameMap_LastTile.y = mapLayer.mapList.get(0).getHeight();//mapLayer.terrainColumnList.size() * mapLayer.mTileHeightOnMap;
+        mapLayer.gameMap_LastTile.x = mapLayer.mapList.get(0).getWidth();
+        mapLayer.gameMap_LastTile.y = mapLayer.mapList.get(0).getHeight();
 
-        //게임 처음 맵이 보여지는 위치 설정 (임시로 0)
-        mapLayer.canvasMap_FirstTile = new Point();
-        mapLayer.canvasMap_FirstTile.x = 0;
-        mapLayer.canvasMap_FirstTile.y = 0;
-
-        mapLayer.gameMap_ScrollAxis = new Point();
     }
 
     private void setUnitEnty(int memberNum) {
@@ -248,23 +248,6 @@ public class Game_Stage extends Game {
         unitEnty.startTileAxis = getUnitTileAxis(mapLayer.gameMap_LastTile.x, mapLayer.gameMap_LastTile.y,
                 INN.TILETYPE_GATE);
 
-        //먼저 스타트위치가 캔버스 가운데 오는 뷰의 좌표를 구한다.
-        mapLayer.canvasMap_FirstTile.x = unitEnty.startTileAxis.x - mapLayer.canvasMap_LastTile.x / 2;
-        mapLayer.canvasMap_FirstTile.y = unitEnty.startTileAxis.y - mapLayer.canvasMap_LastTile.y / 2;
-
-        //만일 스타트 위치가 0보다 작으면 좌표는 0으로 하고, 타일맵의 마지막보다 크면 마지막 좌표값으로 한다.
-        if (mapLayer.canvasMap_FirstTile.x < 0)
-            mapLayer.canvasMap_FirstTile.x = 0;
-        else if (mapLayer.canvasMap_FirstTile.x >
-                mapLayer.gameMap_LastTile.x - mapLayer.canvasMap_LastTile.x)
-            mapLayer.canvasMap_FirstTile.x = mapLayer.gameMap_LastTile.x - mapLayer.canvasMap_LastTile.x;
-
-        if (mapLayer.canvasMap_FirstTile.y < 0)
-            mapLayer.canvasMap_FirstTile.y = 0;
-        else if (mapLayer.canvasMap_FirstTile.y >
-                mapLayer.gameMap_LastTile.y - mapLayer.canvasMap_LastTile.y)
-            mapLayer.canvasMap_FirstTile.y = mapLayer.gameMap_LastTile.y - mapLayer.canvasMap_LastTile.y;
-
         //유닛 타일의 위치를 시작 지점으로 지정
         unitEnty.curTileAxis.x = unitEnty.startTileAxis.x;
         unitEnty.curTileAxis.y = unitEnty.startTileAxis.y;
@@ -275,6 +258,39 @@ public class Game_Stage extends Game {
         unitEnty.memberEnty.status.USE_HP = unitEnty.memberEnty.status.MAX_HP;
         unitEnty.memberEnty.status.USE_MP = unitEnty.memberEnty.status.MAX_MP;
         unitEnty.memberEnty.status.USE_AP = unitEnty.memberEnty.status.MAX_AP;
+
+        //게임 처음 맵이 보여지는 위치 설정
+        mapLayer.canvasMap_FirstTile = new Point();
+//        mapLayer.canvasMap_FirstTile.x = 0;
+//        mapLayer.canvasMap_FirstTile.y = 0;
+
+        //먼저 스타트위치가 캔버스 가운데 오는 뷰의 좌표를 구한다.
+        mapLayer.canvasMap_FirstTile.x = unitEnty.startTileAxis.x - mapLayer.canvasMap_TileRange.x / 2;
+        mapLayer.canvasMap_FirstTile.y = unitEnty.startTileAxis.y - mapLayer.canvasMap_TileRange.y / 2;
+
+        //만일 스타트 위치가 0보다 작으면 좌표는 0으로 하고, 타일맵의 마지막보다 크면 마지막 좌표값으로 한다.
+        if (mapLayer.canvasMap_FirstTile.x < 0)
+            mapLayer.canvasMap_FirstTile.x = 0;
+        else if (mapLayer.canvasMap_FirstTile.x >
+                mapLayer.gameMap_LastTile.x - mapLayer.canvasMap_TileRange.x)
+            mapLayer.canvasMap_FirstTile.x = mapLayer.gameMap_LastTile.x - mapLayer.canvasMap_TileRange.x;
+
+        if (mapLayer.canvasMap_FirstTile.y < 0)
+            mapLayer.canvasMap_FirstTile.y = 0;
+        else if (mapLayer.canvasMap_FirstTile.y >
+                mapLayer.gameMap_LastTile.y - mapLayer.canvasMap_TileRange.y)
+            mapLayer.canvasMap_FirstTile.y = mapLayer.gameMap_LastTile.y - mapLayer.canvasMap_TileRange.y;
+
+        // 스타트 위치만큼 스크롤 좌표를 입력
+        curScroll = new Point();
+        curScroll.x = mapLayer.canvasMap_FirstTile.x*mapLayer.getTileWidth();
+        curScroll.y = mapLayer.canvasMap_FirstTile.y*mapLayer.getTileHeight();
+
+        maxScroll = new Point();
+        maxScroll.x = mapLayer.gameMap_LastTile.x*mapLayer.getTileWidth()-mapDrawWidth;
+        maxScroll.y = mapLayer.gameMap_LastTile.y*mapLayer.getTileHeight()-mapDrawHeight;
+
+        prevScroll = new Point();
     }
 
     /**
@@ -321,7 +337,7 @@ public class Game_Stage extends Game {
                 memberCnt++;
 
                 enty.startTileAxis.x = enty.pos % 3 + 1;
-                enty.startTileAxis.y = mapLayer.canvasMap_LastTile.y - enty.pos / 3 - 3;
+                enty.startTileAxis.y = mapLayer.canvasMap_TileRange.y - enty.pos / 3 - 3;
 
                 enty.curTileAxis.x = enty.startTileAxis.x;
                 enty.curTileAxis.y = enty.startTileAxis.y;
@@ -490,65 +506,29 @@ public class Game_Stage extends Game {
         if (gameMain.onStatusTouch())
             return;
 
+        // 터치가 맵 영역 안에서 이루어졌다면, 터치 무브 이동 값 계산
         boolean isTouchMapArea = false;
-        Point scrollRange = new Point(0, 0);
-
+//        Point scrollRange = new Point(0, 0);
         if (GameUtil.equalsTouch(touch, mapMarginLeft, mapMarginTop, mapDrawWidth, mapDrawHeight)) {
             isTouchMapArea = true;
-            scrollRange.x = (int) (touch.mDownX - touch.mLastTouchX);
-            scrollRange.y = (int) (touch.mDownY - touch.mLastTouchY);
+//            scrollRange.x = (int) (touch.mLastTouchX - touch.mDownX);
+//            mapLayer.gameMap_ScrollAxis.x += scrollRange.x;
+//            scrollRange.y = (int) (touch.mLastTouchY - touch.mDownY);
+//            mapLayer.gameMap_ScrollAxis.y += scrollRange.y;
         }
 
         switch (touch.action) {
             case MotionEvent.ACTION_DOWN:
                 if (isTouchMapArea) {
                     mapLayer.isClick = true;
-                }
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if (isTouchMapArea) {
-                    // 타일 클릭 체크
-                    if (mapLayer.isClick) {
-                        if (Math.abs(scrollRange.x) > touchableTileArea ||
-                                Math.abs(scrollRange.y) > touchableTileArea) {
-                            mapLayer.isClick = false;
-                        } else {
-                            // Click
-                            return;
-                        }
-                    }
-
-
-                    // Map Scroll
-                    // 맵 영역이 캔버스에 그려지는 영역보다 클때 스크롤 가능
-                    int mapTotalW = mapLayer.gameMap_LastTile.x * mapLayer.getTileWidth();
-                    if (mapTotalW > mapDrawWidth) {
-                        if (scrollRange.x < 0) {
-                            scrollRange.x = 0;
-                        } else if (scrollRange.x >= mapTotalW - mapDrawWidth) {
-                            scrollRange.x = mapTotalW - mapDrawWidth;
-                        }
-                        mapLayer.gameMap_ScrollAxis.x = scrollRange.x;
-                    }
-
-                    int mapTotalH = mapLayer.gameMap_LastTile.y * mapLayer.getTileHeight();
-                    if (mapTotalH > mapDrawHeight) {
-                        if (scrollRange.y < 0) {
-                            scrollRange.y = 0;
-                        } else if (scrollRange.y >= mapTotalH - mapDrawHeight) {
-                            scrollRange.y = mapTotalH - mapDrawHeight;
-                        }
-                        mapLayer.gameMap_ScrollAxis.y = scrollRange.y;
-                    }
-
-//                    mapLayer.LeftTopTileAxis = mapLayer.getTileAxis(mapLayer.gameMap_ScrollAxis.x,
-//                            mapLayer.gameMap_ScrollAxis.y);//, mapMarginLeft, mapMarginTop);
+                    prevScroll.x = curScroll.x;
+                    prevScroll.y = curScroll.y;
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 if (isTouchMapArea && mapLayer.isClick) {
-                    touchMapTile((int) touch.mLastTouchX, (int) touch.mLastTouchY);
+                    getTouchMapTileInfo((int) touch.mLastTouchX, (int) touch.mLastTouchY);
                 } else {
                     //유닛선택시 나타나는 커멘드 클릭
                     if (selectUnitEnty != null) {
@@ -558,13 +538,77 @@ public class Game_Stage extends Game {
                 mapLayer.isClick = false;
 
                 break;
+            case MotionEvent.ACTION_MOVE:
+                if (isTouchMapArea) {
+                    // 타일 클릭 체크
+                    if (mapLayer.isClick) {
+                        curScroll.y = prevScroll.y -
+                                (int) (gameMain.appClass.touch.mLastTouchY - gameMain.appClass.touch.mDownY);
+
+//                        if (maxScroll.y < 0) {
+//                            maxScroll.y = 0;
+//                            return;
+//                        }
+                        if (curScroll.y < 0) {
+                            curScroll.y = 0;
+                        } else if (curScroll.y > maxScroll.y) {
+                            curScroll.y = maxScroll.y;
+
+                        } else {
+
+                        }
+
+                        //터치 후에 무브가 일정 범위 밖으로 넘어서면 클릭이벤트를 취소하고 스크롤로 인식
+                        if (Math.abs(curScroll.x-prevScroll.x) > touchableTileArea ||
+                                Math.abs(curScroll.y-prevScroll.y) > touchableTileArea) {
+                            mapLayer.isClick = false;
+                        } else {
+                            // Click
+                            return;
+                        }
+                        mapLayer.canvasMap_FirstTile = mapLayer.getTileAxis(curScroll.x, curScroll.y);
+
+                    }
+
+                    // Map Scroll
+                    // 맵 영역이 캔버스에 그려지는 영역보다 클때 스크롤 가능
+//                    int mapTotalW = mapLayer.gameMap_LastTile.x * mapLayer.getTileWidth();
+//                    if (mapTotalW > mapDrawWidth) {
+//                        if (scrollRange.x < 0) {
+//                            scrollRange.x = 0;
+//                        } else if (scrollRange.x >= mapTotalW - mapDrawWidth) {
+//                            scrollRange.x = mapTotalW - mapDrawWidth;
+//                        }
+//                        mapLayer.gameMap_ScrollAxis.x = scrollRange.x;
+//                    }
+//
+//                    int mapTotalH = mapLayer.gameMap_LastTile.y * mapLayer.getTileHeight();
+//                    if (mapTotalH > mapDrawHeight) {
+//                        if (scrollRange.y < 0) {
+//                            scrollRange.y = 0;
+//                        } else if (scrollRange.y >= mapTotalH - mapDrawHeight) {
+//                            scrollRange.y = mapTotalH - mapDrawHeight;
+//                        }
+//                        mapLayer.gameMap_ScrollAxis.y = scrollRange.y;
+//                    }
+
+//                    mapLayer.LeftTopTileAxis = mapLayer.getTileAxis(mapLayer.gameMap_ScrollAxis.x,
+//                            mapLayer.gameMap_ScrollAxis.y);//, mapMarginLeft, mapMarginTop);
+                }
+                break;
+
         }
     }
 
-    private void touchMapTile(int mTouchX, int mTouchY) {
+    /**
+     * 커서가 위치하는 맵타일 정보 불러오기
+     * @param mTouchX
+     * @param mTouchY
+     */
+    private void getTouchMapTileInfo(int mTouchX, int mTouchY) {
         //커서가 위치할 타일의 axis 계산
-        mapLayer.cursor.curTile = mapLayer.getTileAxis(mTouchX - mapLayer.gameMap_ScrollAxis.x - mapMarginLeft,
-                mTouchY + mapLayer.gameMap_ScrollAxis.y - mapMarginTop);
+        mapLayer.cursor.curTile = mapLayer.getTileAxis(mTouchX - curScroll.x - mapMarginLeft,
+                mTouchY + curScroll.y - mapMarginTop);
 
         // 커서가 위치할 타일의 타입(넘버) 체크
         mapLayer.cursor.tileObjectNum = getObjectTileNumber(mapLayer.cursor.curTile.x, mapLayer.cursor.curTile.y);
